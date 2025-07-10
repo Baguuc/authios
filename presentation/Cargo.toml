@@ -1,0 +1,22 @@
+[package]
+name = "authin-presentation"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# layer deps
+authin-domain = { path = "../domain" }
+authin-application = { path = "../application" }
+
+actix-web = "4"
+thiserror = "2"
+clap = { version = "4.5.40", features = ["derive"] }
+
+# shared deps
+sqlx = { workspace = true }
+colored = { workspace = true }
+clin = { workspace = true }
+futures = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true }

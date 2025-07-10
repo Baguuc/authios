@@ -1,0 +1,17 @@
+[package]
+name = "authin-application"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# layer deps
+authin-domain = { path = "../domain" }
+
+# shared deps
+sqlx = { workspace = true }
+clin = { workspace = true }
+
+argon2 = { version = "0.5.3", features = ["std"] }
+thiserror = "2.0.12"
+jsonwebtoken = "9"
+chrono = "0.4.41"
