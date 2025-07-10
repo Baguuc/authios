@@ -1,4 +1,4 @@
-#[derive(serde::Serialize, serde::Deserialize, sqlx::FromRow, Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, sqlx::FromRow, Debug, Clone, Hash, PartialEq, Eq)]
 pub struct User {
     pub login: String,
     pub pwd: String,

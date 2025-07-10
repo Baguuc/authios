@@ -99,7 +99,7 @@ impl GroupRepository {
         };
     }
 
-    pub async fn sync(new_groups: &Vec<authin_domain::Group>, client: &sqlx::postgres::PgPool) -> Result<()> {
+    pub async fn sync(new: Vec<authin_domain::Group>, client: &sqlx::postgres::PgPool) -> Result<()> {
         use sqlx::query;
         use crate::PermissionRepository;
 
@@ -107,60 +107,22 @@ impl GroupRepository {
         
         let _ = query("SET CONSTRAINTS ALL DEFERRED;").execute(&mut *tx).await;
         
-        let current_groups = Self::list(&mut *tx)
+        let old = Self::list(&mut *tx)
             .await?;
-
-        for group in &current_groups {
-            let mut found = false;
-            
-            for n_group in new_groups {
-                if group.name == n_group.name { 
-                    found = true;
-                    break;
-                }
-            }
-
-            if !found {
-                let _ = Self::delete(&group.name, &mut *tx)
-                    .await?;
-            }
+        
+        let changes = crate::utils::detect_changes_in_vecs(old, new);
+        
+        for group in changes.delete {
+            let _ = Self::delete(&group.name, &mut *tx)
+                .await?;
         }
 
-        for group in new_groups {
-            let mut found = false;
-            
-            for c_group in &current_groups {
-                if group.name == c_group.name {
-                    // only permissions do not match
-                    found = true;
-
-                    if group.permissions == c_group.permissions {
-                        break;
-                    }
-
-                    for permission in &c_group.permissions {                     
-                        PermissionRepository::revoke(permission, &c_group.name, &mut *tx)
-                            .await?;
-                    }
-                    
-                    for permission in &group.permissions {
-                        PermissionRepository::grant(permission, &group.name, &mut *tx)
-                            .await?;
-                    }
-                    
-                    break;
-                } 
-            }
-
-            if found { continue; }
-            
-            // if couldn't be found just add it from scratch
-            Self::insert(&group.name, &mut *tx)
+        for group in changes.create {
+            let _ = Self::insert(&group.name, &mut *tx)
                 .await?;
 
-            for permission in &group.permissions {
-                PermissionRepository::grant(permission, &group.name, &mut *tx)
-                    .await?;
+            for permission in group.permissions {
+                 let _ = PermissionRepository::grant(&permission, &group.name, &mut *tx).await?;
             }
         }
         

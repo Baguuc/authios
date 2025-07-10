@@ -176,7 +176,7 @@ impl UserRepository {
         return Ok(password_hash);
     }
     
-    pub async fn sync(new_users: &Vec<authin_domain::User>, client: &sqlx::postgres::PgPool) -> Result<()> {
+    pub async fn sync(new: Vec<authin_domain::User>, client: &sqlx::postgres::PgPool) -> Result<()> {
         use sqlx::query;
         use crate::GroupRepository;
 
@@ -184,58 +184,23 @@ impl UserRepository {
 
         let _ = query("SET CONSTRAINTS ALL DEFERRED;").execute(&mut *tx).await;
         
-        let current_users = Self::list(&mut *tx)
+        let old = Self::list(&mut *tx)
             .await?;
 
-        for user in &current_users {
-            let mut found = false;
-            
-            for n_user in new_users {
-                if user.login == n_user.login { 
-                    found = true;
-                    break;
-                }
-            }
-
-            if !found {
-                let _ = Self::delete(&user.login, &mut *tx)
-                    .await?;
-            }
+        let changes = crate::utils::detect_changes_in_vecs(old, new);
+        
+        for user in changes.delete {
+            let _ = Self::delete(&user.login, &mut *tx)
+                .await?;
         }
 
-        for user in new_users {
-            let mut found = false;
-            
-            for c_user in &current_users {
-                if user.login == c_user.login {
-                    found = true;
+        for user in changes.create {
+            let _ = Self::insert(&user.login, &user.pwd, &mut *tx)
+                .await?;
 
-                    if user.groups == c_user.groups {
-                        break;
-                    }
-                    
-                    // only groups do not match
-                    for group in &c_user.groups {                     
-                        GroupRepository::revoke(group, &c_user.login, &mut *tx)
-                            .await?;
-                    }
-                    
-                    for group in &user.groups {                     
-                        GroupRepository::grant(&group, &user.login, &mut *tx)
-                            .await?;
-                    }
-                    
-                    break;
-                } 
-            }
-
-            if found { continue; }
-            // if couldn't be found just add it from scratch
-            Self::register(&user.login, &user.pwd, &mut *tx).await?;
-
-            for group in &user.groups {
-                GroupRepository::grant(&group, &user.login, &mut *tx)
-                    .await?;
+            for group in user.groups {
+                 let _ = GroupRepository::grant(&group, &user.login, &mut *tx)
+                     .await?;
             }
         }
 

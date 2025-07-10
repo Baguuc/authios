@@ -76,7 +76,7 @@ async fn run(args: Args) {
 }
 
 async fn sync(args: Args) {
-    use clin::components::{progress_bar, header};
+    use clin::components::{success, header};
     use crate::config::Config;
     use crate::error::error_if_necessary;
     use authin_application::{UserRepository,GroupRepository,PermissionRepository};
@@ -85,20 +85,12 @@ async fn sync(args: Args) {
     let pool = error_if_necessary(create_pool(config.database.clone()).await);
     
     header("Syncing configuration");
-        
-    progress_bar(30, 0);
 
-    error_if_necessary(PermissionRepository::sync(&config.permissions, &pool).await);
-    
-    progress_bar(30, 10);
-    
-    error_if_necessary(GroupRepository::sync(&config.groups, &pool).await);
-    
-    progress_bar(30, 20);
-    
-    error_if_necessary(UserRepository::sync(&config.users, &pool).await);
-    
-    progress_bar(30, 30);
+    error_if_necessary(PermissionRepository::sync(config.permissions, &pool).await);    
+    error_if_necessary(GroupRepository::sync(config.groups, &pool).await);
+    error_if_necessary(UserRepository::sync(config.users, &pool).await);
+
+    success("synced");
 }
 
 async fn migrate(args: Args) {
