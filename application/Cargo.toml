@@ -1,11 +1,11 @@
 [package]
-name = "authin-application"
+name = "authios-application"
 version = "0.1.0"
 edition = "2024"
 
 [dependencies]
 # layer deps
-authin-domain = { path = "../domain" }
+authios-domain = { path = "../domain" }
 
 # shared deps
 sqlx = { workspace = true }

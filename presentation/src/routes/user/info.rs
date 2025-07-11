@@ -6,7 +6,7 @@ pub async fn info_route(
 ) -> impl actix_web::Responder {
     use actix_web::{HttpResponse, http::header::ContentType};
     use serde_json::to_string;
-    use authin_application::UserRepository;
+    use authios_application::UserRepository;
     
     let client = client.into_inner();
 

@@ -15,7 +15,7 @@ impl GroupRepository {
         };
     }
     
-    pub async fn retrieve<'c, C: sqlx::postgres::PgExecutor<'c>>(name: &String, client: C) -> Result<authin_domain::Group> {
+    pub async fn retrieve<'c, C: sqlx::postgres::PgExecutor<'c>>(name: &String, client: C) -> Result<authios_domain::Group> {
         use sqlx::query_as;
 
         let sql = "SELECT 
@@ -40,7 +40,7 @@ impl GroupRepository {
         };
     }
     
-    pub async fn list<'c, C: sqlx::postgres::PgExecutor<'c>>(client: C) -> Result<Vec<authin_domain::Group>> {
+    pub async fn list<'c, C: sqlx::postgres::PgExecutor<'c>>(client: C) -> Result<Vec<authios_domain::Group>> {
         use sqlx::query_as;
 
         let sql = "SELECT 
@@ -99,7 +99,7 @@ impl GroupRepository {
         };
     }
 
-    pub async fn sync(new: Vec<authin_domain::Group>, client: &sqlx::postgres::PgPool) -> Result<()> {
+    pub async fn sync(new: Vec<authios_domain::Group>, client: &sqlx::postgres::PgPool) -> Result<()> {
         use sqlx::query;
         use crate::PermissionRepository;
 

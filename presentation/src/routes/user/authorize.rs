@@ -5,7 +5,7 @@ pub async fn authorize_route(
     client: actix_web::web::Data<sqlx::postgres::PgPool>,
     config: actix_web::web::Data<crate::config::Config>,
 ) -> impl actix_web::Responder {
-    use authin_application::UserRepository;
+    use authios_application::UserRepository;
     use actix_web::HttpResponse;
 
     let client = client.into_inner();

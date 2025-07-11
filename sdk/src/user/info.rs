@@ -1,7 +1,7 @@
 use crate::user::UserSdk;
 
 impl UserSdk {
-    pub async fn get_info(&self, params: InfoParams) -> Result<authin_domain::User, InfoError> {
+    pub async fn get_info(&self, params: InfoParams) -> Result<authios_domain::User, InfoError> {
         let result = reqwest::Url::options()
             .base_url(Some(&self.base_url))
             .parse("user");
@@ -22,7 +22,7 @@ impl UserSdk {
             return Err(InfoError::Unauthorized)
         }
 
-        let user: authin_domain::User = response
+        let user: authios_domain::User = response
             .json()
             .await?;
         

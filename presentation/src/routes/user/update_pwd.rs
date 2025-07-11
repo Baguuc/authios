@@ -6,7 +6,7 @@ pub async fn update_pwd_route(
     config: actix_web::web::Data<crate::config::Config>
 ) -> impl actix_web::Responder {
     use actix_web::HttpResponse;
-    use authin_application::UserRepository;
+    use authios_application::UserRepository;
 
     let client = client.into_inner();
     

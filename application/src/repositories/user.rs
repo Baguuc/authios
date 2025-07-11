@@ -15,7 +15,7 @@ impl UserRepository {
         };
     }
     
-    pub async fn retrieve<'c, C: sqlx::postgres::PgExecutor<'c>>(login: &String, client: C) -> Result<authin_domain::User> {
+    pub async fn retrieve<'c, C: sqlx::postgres::PgExecutor<'c>>(login: &String, client: C) -> Result<authios_domain::User> {
         use sqlx::query_as;
 
         let sql = "SELECT
@@ -41,7 +41,7 @@ impl UserRepository {
         };
     }
     
-    pub async fn list<'c, C: sqlx::postgres::PgExecutor<'c>>(client: C) -> Result<Vec<authin_domain::User>> {
+    pub async fn list<'c, C: sqlx::postgres::PgExecutor<'c>>(client: C) -> Result<Vec<authios_domain::User>> {
         use sqlx::query_as;
 
         let sql = "SELECT
@@ -153,7 +153,7 @@ impl UserRepository {
         return Ok(token);
     }
     
-    pub async fn from_token<'c, C: sqlx::postgres::PgExecutor<'c>>(token: &String, encoding_key: &String, client: C) -> Result<authin_domain::User> {
+    pub async fn from_token<'c, C: sqlx::postgres::PgExecutor<'c>>(token: &String, encoding_key: &String, client: C) -> Result<authios_domain::User> {
         let claims = Self::get_claims(token, encoding_key)?;
         let user = Self::retrieve(&claims.sub, client)
             .await?;
@@ -176,7 +176,7 @@ impl UserRepository {
         return Ok(password_hash);
     }
     
-    pub async fn sync(new: Vec<authin_domain::User>, client: &sqlx::postgres::PgPool) -> Result<()> {
+    pub async fn sync(new: Vec<authios_domain::User>, client: &sqlx::postgres::PgPool) -> Result<()> {
         use sqlx::query;
         use crate::GroupRepository;
 
@@ -224,7 +224,7 @@ impl UserRepository {
     fn generate_jwt(login: String, expires: usize, key: String) -> Result<String> {
         use jsonwebtoken::{encode, Header, EncodingKey};
 
-        let claims = authin_domain::Claims {
+        let claims = authios_domain::Claims {
             sub: login,
             exp: expires,
         };
@@ -238,10 +238,10 @@ impl UserRepository {
         return Ok(encoded);
     }
     
-    fn get_claims(token: &String, encoding_key: &String) -> Result<authin_domain::Claims> {
+    fn get_claims(token: &String, encoding_key: &String) -> Result<authios_domain::Claims> {
         use jsonwebtoken::{decode, DecodingKey, Validation};
         
-        let decoded = decode::<authin_domain::Claims>(
+        let decoded = decode::<authios_domain::Claims>(
             token,
             &DecodingKey::from_secret(encoding_key.as_ref()),
             &Validation::default()

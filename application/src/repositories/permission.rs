@@ -15,7 +15,7 @@ impl PermissionRepository {
         };
     }
     
-    pub async fn retrieve<'c, C: sqlx::postgres::PgExecutor<'c>>(name: &String, client: C) -> Result<authin_domain::Permission> {
+    pub async fn retrieve<'c, C: sqlx::postgres::PgExecutor<'c>>(name: &String, client: C) -> Result<authios_domain::Permission> {
         use sqlx::query_as;
 
         let sql = "SELECT * FROM permissions WHERE name = $1;";
@@ -27,7 +27,7 @@ impl PermissionRepository {
         };
     }
     
-    pub async fn list<'c, C: sqlx::postgres::PgExecutor<'c>>(client: C) -> Result<Vec<authin_domain::Permission>> {
+    pub async fn list<'c, C: sqlx::postgres::PgExecutor<'c>>(client: C) -> Result<Vec<authios_domain::Permission>> {
         use sqlx::query_as;
 
         let sql = "SELECT * FROM permissions;";

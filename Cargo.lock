@@ -317,11 +317,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "authin-application"
+name = "authios-application"
 version = "0.1.0"
 dependencies = [
  "argon2",
- "authin-domain",
+ "authios-domain",
  "chrono",
  "clin",
  "jsonwebtoken",
@@ -330,7 +330,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "authin-domain"
+name = "authios-domain"
 version = "0.1.0"
 dependencies = [
  "serde",
@@ -339,12 +339,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "authin-presentation"
+name = "authios-presentation"
 version = "0.1.0"
 dependencies = [
  "actix-web",
- "authin-application",
- "authin-domain",
+ "authios-application",
+ "authios-domain",
  "clap",
  "clin",
  "colored",
@@ -357,10 +357,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "authin-sdk"
+name = "authios-sdk"
 version = "0.1.0"
 dependencies = [
- "authin-domain",
+ "authios-domain",
  "reqwest",
  "serde",
  "thiserror",

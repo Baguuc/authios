@@ -6,8 +6,8 @@ pub struct Config {
     pub database: DatabaseConfig,
     pub jwt: JWTConfig,
     pub permissions: Vec<String>,
-    pub groups: Vec<authin_domain::Group>,
-    pub users: Vec<authin_domain::User>
+    pub groups: Vec<authios_domain::Group>,
+    pub users: Vec<authios_domain::User>
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Clone)]

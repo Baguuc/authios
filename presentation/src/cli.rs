@@ -1,8 +1,8 @@
 use crate::prelude::*;
 
 #[derive(clap::Parser)] // requires `derive` feature
-#[command(name = "authin")]
-#[command(bin_name = "authin")]
+#[command(name = "authios")]
+#[command(bin_name = "authios")]
 #[command(about = "A simple API for managing users and permissions in closed systems", long_about = None)]
 pub enum MainCli {
     #[command(about = "Run the HTTP server", long_about = None)]
@@ -46,12 +46,12 @@ async fn run(args: Args) {
     
     header("Running web server");
 
-    let config = error_if_necessary(Config::read(args.clone().config.unwrap_or(String::from("./authin.json"))));
+    let config = error_if_necessary(Config::read(args.clone().config.unwrap_or(String::from("./authios.json"))));
     
     success(format!("Server starting on port {}", config.port.to_string().underline()));
     
     let server = HttpServer::new(move || {
-        let config = error_if_necessary(Config::read(args.clone().config.unwrap_or(String::from("./authin.json"))));
+        let config = error_if_necessary(Config::read(args.clone().config.unwrap_or(String::from("./authios.json"))));
         let pool = error_if_necessary(block_on(create_pool(config.database.clone())));
         
         App::new()
@@ -79,9 +79,9 @@ async fn sync(args: Args) {
     use clin::components::{success, header};
     use crate::config::Config;
     use crate::error::error_if_necessary;
-    use authin_application::{UserRepository,GroupRepository,PermissionRepository};
+    use authios_application::{UserRepository,GroupRepository,PermissionRepository};
     
-    let config = error_if_necessary(Config::read(args.config.unwrap_or(String::from("./authin.json"))));
+    let config = error_if_necessary(Config::read(args.config.unwrap_or(String::from("./authios.json"))));
     let pool = error_if_necessary(create_pool(config.database.clone()).await);
     
     header("Syncing configuration");
@@ -98,12 +98,12 @@ async fn migrate(args: Args) {
     use crate::config::Config;
     use crate::error::error_if_necessary;
     
-    let config = error_if_necessary(Config::read(args.config.unwrap_or(String::from("./authin.json"))));
+    let config = error_if_necessary(Config::read(args.config.unwrap_or(String::from("./authios.json"))));
     let pool = error_if_necessary(create_pool(config.database.clone()).await);
      
     header("Migrating database");
     
-    error_if_necessary(authin_application::MigrationRepository::migrate(&pool).await);
+    error_if_necessary(authios_application::MigrationRepository::migrate(&pool).await);
     success("Migrated");
 }
 

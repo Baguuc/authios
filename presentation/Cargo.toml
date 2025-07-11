@@ -1,12 +1,12 @@
 [package]
-name = "authin-presentation"
+name = "authios-presentation"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 # layer deps
-authin-domain = { path = "../domain" }
-authin-application = { path = "../application" }
+authios-domain = { path = "../domain" }
+authios-application = { path = "../application" }
 
 actix-web = "4"
 thiserror = "2"
