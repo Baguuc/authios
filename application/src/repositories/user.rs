@@ -7,7 +7,7 @@ impl UserRepository {
         use sqlx::query;
 
         let sql = "INSERT INTO users (login, pwd) VALUES ($1, $2);";
-        let result = query(sql).bind(login).bind(pwd).execute(client).await;
+        let result = query(sql).bind(login).bind(Self::hash_password(pwd.clone())?).execute(client).await;
 
         match result {
             Ok(_) => return Ok(()),
@@ -212,10 +212,12 @@ impl UserRepository {
     fn verify_password(password: &String, password_hash: &String) -> bool {
         use argon2::{Argon2, PasswordHash, PasswordVerifier, password_hash::Encoding};
 
-        let password_hash = &PasswordHash::parse(password_hash.as_str(), Encoding::B64)
-            .unwrap();
+        let password_hash = match PasswordHash::parse(password_hash.as_str(), Encoding::B64) {
+            Ok(hash) => hash,
+            Err(_) => return false
+        };
 
-        let _ = match Argon2::default().verify_password(password.as_bytes(), password_hash) {
+        let _ = match Argon2::default().verify_password(password.as_bytes(), &password_hash) {
             Ok(_) => return true,
             Err(_) => return false
         };
