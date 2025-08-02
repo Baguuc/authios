@@ -1,6 +1,6 @@
-use crate::user::UserSdk;
+use crate::Sdk;
 
-impl UserSdk {
+impl Sdk {
     pub async fn authorize(&self, params: AuthorizeParams) -> Result<bool, AuthorizeError> {
         let result = reqwest::Url::options()
             .base_url(Some(&self.base_url))

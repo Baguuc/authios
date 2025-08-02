@@ -1,6 +1,6 @@
-use crate::user::UserSdk;
+use crate::Sdk;
 
-impl UserSdk {
+impl Sdk {
     pub async fn get_info(&self, params: InfoParams) -> Result<authios_domain::User, InfoError> {
         let result = reqwest::Url::options()
             .base_url(Some(&self.base_url))

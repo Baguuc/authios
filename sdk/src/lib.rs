@@ -14,8 +14,6 @@ impl Sdk {
         
         return Ok(Self { base_url });
     }
-
-    pub fn user(self) -> crate::user::UserSdk { crate::user::UserSdk { base_url: self.base_url } }
 }
 
 #[derive(thiserror::Error, Debug)]

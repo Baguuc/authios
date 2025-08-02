@@ -1,6 +1,6 @@
-use crate::user::UserSdk;
+use crate::Sdk;
 
-impl UserSdk {
+impl Sdk {
     pub async fn update_pwd(&self, params: UpdatePwdParams) -> Result<(), UpdatePwdError> {
         let result = reqwest::Url::options()
             .base_url(Some(&self.base_url))

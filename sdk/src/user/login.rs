@@ -1,6 +1,6 @@
-use crate::user::{UserSdk,Token};
+use crate::{Sdk,user::Token};
 
-impl UserSdk {
+impl Sdk {
     pub async fn login(&self, params: LoginParams) -> Result<Token, LoginError> {
         let result = reqwest::Url::options()
             .base_url(Some(&self.base_url))
