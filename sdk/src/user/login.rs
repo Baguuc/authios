@@ -1,7 +1,5 @@
-use crate::{Sdk,user::Token};
-
-impl Sdk {
-    pub async fn login(&self, params: LoginParams) -> Result<Token, LoginError> {
+impl crate::Sdk {
+    pub async fn login(&self, params: LoginParams) -> Result<String, LoginError> {
         let result = reqwest::Url::options()
             .base_url(Some(&self.base_url))
             .parse("user");
@@ -22,11 +20,9 @@ impl Sdk {
             return Err(LoginError::Unauthorized)
         }
 
-        let response_body = response
+        let token = response
             .text()
             .await?;
-        
-        let token = crate::user::Token(response_body);
         
         return Ok(token);
     }

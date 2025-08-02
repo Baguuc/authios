@@ -15,7 +15,7 @@ impl Sdk {
         let response = client
             .patch(url)
             .json(&params)
-            .header("Authorization", params.token.0)
+            .header("Authorization", params.token)
             .send()
             .await?;
 
@@ -29,7 +29,7 @@ impl Sdk {
 
 #[derive(serde::Serialize)]
 pub struct UpdatePwdParams {
-    pub token: crate::user::Token,
+    pub token: String,
     pub pwd: String
 }
 

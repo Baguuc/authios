@@ -1,6 +1,4 @@
-use crate::Sdk;
-
-impl Sdk {
+impl crate::Sdk {
     pub async fn authorize(&self, params: AuthorizeParams) -> Result<bool, AuthorizeError> {
         let result = reqwest::Url::options()
             .base_url(Some(&self.base_url))
@@ -14,7 +12,7 @@ impl Sdk {
         let client = reqwest::Client::new();
         let response = client
             .get(url)
-            .header("Authorization", params.token.0)
+            .header("Authorization", params.token)
             .send()
             .await?;
 
@@ -30,7 +28,7 @@ impl Sdk {
 
 #[derive(serde::Serialize)]
 pub struct AuthorizeParams {
-    pub token: crate::user::Token,
+    pub token: String,
     pub permission: String
 }
 
