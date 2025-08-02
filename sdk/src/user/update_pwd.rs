@@ -1,6 +1,17 @@
-use crate::Sdk;
-
-impl Sdk {
+impl crate::Sdk {
+    /// # Sdk::update_pwd
+    ///
+    /// update user password
+    ///
+    /// Params:
+    /// + token - session token retrieved from login, used to authorize the operation
+    /// + pwd - new password to set
+    ///
+    /// Errors:
+    /// + when the HTTP request cannot be sent to the API (UpdatePwdError::HTTP)
+    /// + when the url of the request cannot be created (UpdatePwdError::Url)
+    /// + when provided token is invalid (UpdatePwdError::Unauthorized) 
+    ///
     pub async fn update_pwd(&self, params: UpdatePwdParams) -> Result<(), UpdatePwdError> {
         let result = reqwest::Url::options()
             .base_url(Some(&self.base_url))

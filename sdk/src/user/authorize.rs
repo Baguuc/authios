@@ -1,13 +1,21 @@
 impl crate::Sdk {
+    /// # Sdk::authorize
+    ///
+    /// check if user has specified permission
+    /// 
+    /// Params:
+    /// + token - session token retrieved from login, used to authorize the operation
+    /// + permission - permission to check
+    ///
+    /// Errors:
+    /// + when the HTTP request cannot be sent to the API (AuthorizeParams::HTTP)
+    /// + when the url of the request cannot be created (AuthorizeParams::Url)
+    ///
     pub async fn authorize(&self, params: AuthorizeParams) -> Result<bool, AuthorizeError> {
-        let result = reqwest::Url::options()
+        let url = reqwest::Url::options()
             .base_url(Some(&self.base_url))
-            .parse(format!("authorize/{}", params.permission).as_str());
-
-        let url = match result {
-            Ok(url) => url,
-            Err(error) => return Err(AuthorizeError::UrlParse(error.to_string()))
-        };
+            .parse(format!("authorize/{}", params.permission).as_str())
+            .map_err(|error| AuthorizeError::Url(error.to_string()))?;
         
         let client = reqwest::Client::new();
         let response = client
@@ -15,8 +23,6 @@ impl crate::Sdk {
             .header("Authorization", params.token)
             .send()
             .await?;
-
-        println!("{:?}", response);
         
         if response.status() == 200 {
             return Ok(true);
@@ -35,9 +41,9 @@ pub struct AuthorizeParams {
 #[derive(thiserror::Error, Debug)]
 pub enum AuthorizeError {
     #[error(transparent)]
-    Reqwest(#[from] reqwest::Error),
+    HTTP(#[from] reqwest::Error),
     
     #[error("{0}")]
-    UrlParse(String),
+    Url(String),
 }
 

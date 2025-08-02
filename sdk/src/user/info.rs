@@ -1,13 +1,21 @@
 impl crate::Sdk {
+    /// # Sdk::get_info
+    ///
+    /// get info about a user by token
+    ///
+    /// Params:
+    /// + token - session token retrieved from login, used to authorize the operation
+    ///
+    /// Errors:
+    /// + when the HTTP request cannot be sent to the API (InfoError::HTTP)
+    /// + when the url of the request cannot be created (InfoError::Url)
+    /// + when provided token is invalid (InfoError::Unauthorized)
+    ///
     pub async fn get_info(&self, params: InfoParams) -> Result<authios_domain::User, InfoError> {
-        let result = reqwest::Url::options()
+        let url = reqwest::Url::options()
             .base_url(Some(&self.base_url))
-            .parse("user");
-
-        let url = match result {
-            Ok(url) => url,
-            Err(error) => return Err(InfoError::UrlParse(error.to_string()))
-        };
+            .parse("user")
+            .map_err(|error| InfoError::Url(error.to_string()))?;
 
         let client = reqwest::Client::new();
         let response = client
@@ -36,10 +44,10 @@ pub struct InfoParams {
 #[derive(thiserror::Error, Debug)]
 pub enum InfoError {
     #[error(transparent)]
-    Reqwest(#[from] reqwest::Error),
+    HTTP(#[from] reqwest::Error),
     
     #[error("{0}")]
-    UrlParse(String),
+    Url(String),
 
     #[error("Unauthorized")]
     Unauthorized
