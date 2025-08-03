@@ -1,8 +1,12 @@
 use crate::prelude::*;
 
 impl crate::GroupRepository {
-    pub async fn list<'c, C: sqlx::postgres::PgExecutor<'c>>(client: C) -> Result<Vec<authios_domain::Group>> {
+    pub async fn list<'c, C: sqlx::Acquire<'c, Database = sqlx::Postgres>>(client: C) -> Result<Vec<authios_domain::Group>> {
         use sqlx::query_as;
+        
+        let mut client = client
+            .acquire()
+            .await?;
 
         let sql = "SELECT 
           g.name,
@@ -16,7 +20,9 @@ impl crate::GroupRepository {
         GROUP BY
           g.name
         ;";
-        let result = query_as(sql).fetch_all(client).await;
+        let result = query_as(sql)
+            .fetch_all(&mut *client)
+            .await;
 
         match result {
             Ok(data) => return Ok(data),

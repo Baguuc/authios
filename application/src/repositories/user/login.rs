@@ -1,8 +1,12 @@
 use crate::prelude::*;
 
 impl crate::UserRepository {
-    pub async fn login<'c, C: sqlx::postgres::PgExecutor<'c>>(login: &String, pwd: &String, encoding_key: String, client: C) -> Result<String> {
-        let user = Self::retrieve(login, client)
+    pub async fn login<'c, C: sqlx::Acquire<'c, Database = sqlx::Postgres>>(login: &String, pwd: &String, encoding_key: String, client: C) -> Result<String> {
+        let mut client = client
+            .acquire()
+            .await?;
+        
+        let user = Self::retrieve(login, &mut *client)
             .await?;
 
         if !Self::verify_password(pwd, &user.pwd) {

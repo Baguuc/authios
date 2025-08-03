@@ -1,11 +1,18 @@
 use crate::prelude::*;
 
 impl crate::GroupRepository {
-    pub async fn insert<'c, C: sqlx::postgres::PgExecutor<'c>>(name: &String, client: C) -> Result<()> {
+    pub async fn insert<'c, C: sqlx::Acquire<'c, Database = sqlx::Postgres>>(name: &String, client: C) -> Result<()> {
         use sqlx::query;
+        
+        let mut client = client
+            .acquire()
+            .await?;
 
         let sql = "INSERT INTO groups (name) VALUES ($1);";
-        let result = query(sql).bind(name).execute(client).await;
+        let result = query(sql)
+            .bind(name)
+            .execute(&mut *client)
+            .await;
 
         match result {
             Ok(_) => return Ok(()),

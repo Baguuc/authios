@@ -1,5 +1,17 @@
 use crate::prelude::*;
 
+pub mod insert;
+pub mod retrieve;
+pub mod list;
+pub mod delete;
+pub mod sync;
+pub mod check_permission;
+pub mod from_token;
+pub mod hash_password;
+pub mod login;
+pub mod register;
+pub mod update_pwd;
+
 pub struct UserRepository;
 
 impl UserRepository {    

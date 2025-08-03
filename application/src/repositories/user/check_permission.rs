@@ -1,8 +1,12 @@
 use crate::prelude::*;
 
 impl crate::UserRepository {
-    pub async fn check_permission<'c, C: sqlx::postgres::PgExecutor<'c>>(login: &String, permission_name: &String, client: C) -> Result<bool> { 
+    pub async fn check_permission<'c, C: sqlx::Acquire<'c, Database = sqlx::Postgres>>(login: &String, permission_name: &String, client: C) -> Result<bool> { 
         use sqlx::query;
+        
+        let mut client = client
+            .acquire()
+            .await?;
 
         let sql = "    
         SELECT 
@@ -31,7 +35,11 @@ impl crate::UserRepository {
           p.name = $2
         ;
         ";
-        let result = query(sql).bind(login).bind(permission_name).execute(client).await;
+        let result = query(sql)
+            .bind(login)
+            .bind(permission_name)
+            .execute(&mut *client)
+            .await;
         
         match result {
             Ok(info) => return Ok(info.rows_affected() > 0),
