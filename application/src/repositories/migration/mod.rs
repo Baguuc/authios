@@ -1,3 +1,7 @@
+pub mod migrate;
+
+pub struct MigrationRepository;
+
 const MIGRATIONS: [&str; 10] = [
 "CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
@@ -35,23 +39,3 @@ const MIGRATIONS: [&str; 10] = [
 
 "ALTER TABLE user_groups ADD CONSTRAINT user_groups_pair_unique UNIQUE (user_login, group_name);"
 ];
-
-use crate::prelude::*;
-
-pub struct MigrationRepository;
-
-impl MigrationRepository {
-    pub async fn migrate(client: &sqlx::postgres::PgPool) -> Result<()> {
-        use sqlx::query;
-
-        let mut tx = client.begin().await?;
-
-        for sql in MIGRATIONS {
-            let _ = query(sql).execute(&mut *tx).await?;
-        }
-
-        let _ = tx.commit().await?;
-        
-        return Ok(());
-    }
-}
