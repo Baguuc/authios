@@ -16,12 +16,7 @@ pub async fn authorize_route(
         None => return HttpResponse::Unauthorized().body("")
     };
 
-    let user = match UsersUseCase::retrieve_from_token(&token, &config.jwt.encryption_key.clone(), &*client).await {
-        Ok(user) => user,
-        Err(_) => return HttpResponse::BadRequest().body("")
-    };
-
-    match UsersUseCase::check_permission(&user.login, &path.permission_name, &*client).await {
+    match UsersUseCase::check_permission(&token, &config.jwt.encryption_key, &path.permission_name, &*client).await {
         Ok(true) => return HttpResponse::Ok().body(""),
         Ok(false) | Err(_) => return HttpResponse::Unauthorized().body("")
     };

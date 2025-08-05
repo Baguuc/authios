@@ -4,11 +4,12 @@ impl crate::UsersUseCase {
     /// check if user has patricular permission
     ///
     /// Errors:
-    /// + when a user with provided login do not exist;
+    /// + when provided token is invalid;
+    /// + when a user with token login do not exist;
     /// + when a permission with provided name do not exist;
     /// + when database connection cannot be acquired;
     ///
-    pub async fn check_permission<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(login: &String, permission_name: &String, client: A) -> Result<bool, UserCheckPermissionError> {
+    pub async fn check_permission<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(token: &String, encoding_key: &String, permission_name: &String, client: A) -> Result<bool, UserCheckPermissionError> {
         type Error = UserCheckPermissionError; 
         
         let mut client = client.acquire()
@@ -16,11 +17,15 @@ impl crate::UsersUseCase {
             .map_err(|_| Error::Generic)?;
         
         // will optimize all of this if necessary
-        let _ = crate::UsersRepository::retrieve(permission_name, &mut *client)
+        let _ = crate::PermissionsRepository::retrieve(permission_name, &mut *client)
+            .await
+            .map_err(|_| Error::Generic)?;
+
+        let user = crate::UsersUseCase::retrieve_from_token(token, encoding_key, &mut *client)
             .await
             .map_err(|_| Error::Generic)?;
         
-        let data = crate::UsersRepository::retrieve(login, &mut *client)
+        let data = crate::UsersRepository::retrieve(&user.login, &mut *client)
             .await
             .map_err(|_| Error::Generic)?;
 

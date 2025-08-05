@@ -16,12 +16,7 @@ pub async fn update_pwd_route(
         None => return HttpResponse::Unauthorized().into()
     };
 
-    let user = match UsersUseCase::retrieve_from_token(&token, &config.jwt.encryption_key.clone(), &*client).await {
-        Ok(user) => user,
-        Err(_) => return HttpResponse::BadRequest().into()
-    };
-
-    match UsersUseCase::update_pwd(&user.login, &body.pwd, &*client).await {
+    match UsersUseCase::update_pwd(&token, &config.jwt.encryption_key, &body.pwd, &*client).await {
         Ok(_) => return HttpResponse::Ok().into(),
         Err(_) => return HttpResponse::InternalServerError().into()
     }
