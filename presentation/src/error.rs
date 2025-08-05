@@ -21,11 +21,11 @@ pub enum Error {
 
 pub type Result<T> = std::result::Result<T, crate::error::Error>;
 
-pub fn error_if_necessary<T, E: std::fmt::Display>(r: std::result::Result<T, E>) -> T {
+pub fn error_if_necessary<T, E: ToString>(r: std::result::Result<T, E>) -> T {
     match r {
         Ok(ok) => return ok,
         Err(err) => {
-            clin::components::error("something went wrong", err);
+            clin::components::error("something went wrong", err.to_string());
             std::process::exit(1);
         }
     }

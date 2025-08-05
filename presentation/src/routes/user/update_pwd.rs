@@ -4,31 +4,26 @@ pub async fn update_pwd_route(
     body: actix_web::web::Json<RequestBody>,
     client: actix_web::web::Data<sqlx::postgres::PgPool>,
     config: actix_web::web::Data<crate::config::Config>
-) -> impl actix_web::Responder {
+) -> actix_web::HttpResponse {
     use actix_web::HttpResponse;
-    use authios_application::UserRepository;
+    use authios_application::UsersUseCase;
 
     let client = client.into_inner();
     
     let headers = req.headers();
     let token = match headers.get("Authorization") {
         Some(token) => token.to_str().unwrap().to_string(),
-        None => return HttpResponse::Unauthorized().body("")
+        None => return HttpResponse::Unauthorized().into()
     };
 
-    let user = match UserRepository::from_token(&token, &config.jwt.encryption_key.clone(), &*client).await {
+    let user = match UsersUseCase::retrieve_from_token(&token, &config.jwt.encryption_key.clone(), &*client).await {
         Ok(user) => user,
-        Err(_) => return HttpResponse::BadRequest().body("")
+        Err(_) => return HttpResponse::BadRequest().into()
     };
 
-    let pwd = match UserRepository::hash_password(body.pwd.to_string()) {
-        Ok(pwd) => pwd,
-        Err(_) => return HttpResponse::BadRequest().body("")
-    };
-
-    match UserRepository::update_pwd(&user.login, &pwd, &*client).await {
-        Ok(_) => return HttpResponse::Ok().body(""),
-        Err(_) => return HttpResponse::InternalServerError().body("")
+    match UsersUseCase::update_pwd(&user.login, &body.pwd, &*client).await {
+        Ok(_) => return HttpResponse::Ok().into(),
+        Err(_) => return HttpResponse::InternalServerError().into()
     }
 }
 

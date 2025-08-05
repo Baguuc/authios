@@ -6,7 +6,7 @@ pub async fn info_route(
 ) -> impl actix_web::Responder {
     use actix_web::{HttpResponse, http::header::ContentType};
     use serde_json::to_string;
-    use authios_application::UserRepository;
+    use authios_application::UsersUseCase;
     
     let client = client.into_inner();
 
@@ -16,7 +16,7 @@ pub async fn info_route(
         None => return HttpResponse::Unauthorized().body("")
     };
 
-    let user = match UserRepository::from_token(&token, &config.jwt.encryption_key.clone(), &*client).await {
+    let user = match UsersUseCase::retrieve_from_token(&token, &config.jwt.encryption_key.clone(), &*client).await {
         Ok(user) => user,
         Err(_) => return HttpResponse::BadRequest().body("")
     };

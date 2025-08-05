@@ -1,9 +1,11 @@
-pub mod permission;
-pub mod group;
-pub mod user;
-pub mod migration;
+pub mod permissions;
+pub mod groups;
+pub mod group_permissions;
+pub mod users;
+pub mod user_groups;
 
-pub use permission::*;
-pub use group::*;
-pub use user::*;
-pub use migration::*;
+pub use permissions::PermissionsRepository;
+pub use groups::GroupsRepository;
+pub use group_permissions::GroupPermissionsRepository;
+pub use users::UsersRepository;
+pub use user_groups::UserGroupsRepository;

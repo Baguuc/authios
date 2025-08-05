@@ -79,16 +79,16 @@ async fn sync(args: Args) {
     use clin::components::{success, header};
     use crate::config::Config;
     use crate::error::error_if_necessary;
-    use authios_application::{UserRepository,GroupRepository,PermissionRepository};
+    use authios_application::{UsersUseCase,GroupsUseCase,PermissionsUseCase};
     
     let config = error_if_necessary(Config::read(args.config.unwrap_or(String::from("./authios.json"))));
     let pool = error_if_necessary(create_pool(config.database.clone()).await);
     
     header("Syncing configuration");
 
-    error_if_necessary(PermissionRepository::sync(config.permissions, &pool).await);    
-    error_if_necessary(GroupRepository::sync(config.groups, &pool).await);
-    error_if_necessary(UserRepository::sync(config.users, &pool).await);
+    error_if_necessary(PermissionsUseCase::sync(config.permissions, &pool).await);    
+    error_if_necessary(GroupsUseCase::sync(config.groups, &pool).await);
+    error_if_necessary(UsersUseCase::sync(config.users, &pool).await);
 
     success("synced");
 }
@@ -103,7 +103,7 @@ async fn migrate(args: Args) {
      
     header("Migrating database");
     
-    error_if_necessary(authios_application::MigrationRepository::migrate(&pool).await);
+    error_if_necessary(authios_application::utils::migrate(&pool).await);
     success("Migrated");
 }
 
