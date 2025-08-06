@@ -14,7 +14,7 @@ impl crate::Sdk {
     pub async fn authorize(&self, params: AuthorizeParams) -> Result<bool, AuthorizeError> {
         let url = reqwest::Url::options()
             .base_url(Some(&self.base_url))
-            .parse(format!("authorize/{}", params.permission).as_str())
+            .parse(format!("user/permissions/{}", params.permission).as_str())
             .map_err(|error| AuthorizeError::Url(error.to_string()))?;
         
         let client = reqwest::Client::new();

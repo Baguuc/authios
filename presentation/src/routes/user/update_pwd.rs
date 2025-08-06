@@ -6,7 +6,10 @@ pub async fn update_pwd_route(
     config: actix_web::web::Data<crate::config::Config>
 ) -> actix_web::HttpResponse {
     use actix_web::HttpResponse;
-    use authios_application::UsersUseCase;
+    use authios_application::{
+        UsersUseCase,
+        use_cases::user::update_pwd::UserUpdatePwdError as Error
+    };
 
     let client = client.into_inner();
     
@@ -16,9 +19,14 @@ pub async fn update_pwd_route(
         None => return HttpResponse::Unauthorized().into()
     };
 
-    match UsersUseCase::update_pwd(&token, &config.jwt.encryption_key, &body.pwd, &*client).await {
-        Ok(_) => return HttpResponse::Ok().into(),
-        Err(_) => return HttpResponse::InternalServerError().into()
+    return match UsersUseCase::update_pwd(&token, &config.jwt.encryption_key, &body.pwd, &*client).await {
+        Ok(_) => HttpResponse::Ok().into(),
+        Err(error) => match error {
+            Error::InvalidToken => HttpResponse::Unauthorized().body(error.to_string()),
+            Error::NotExist => HttpResponse::NotFound().body(error.to_string()),
+            Error::CannotHash => HttpResponse::InternalServerError().body(error.to_string()),
+            Error::DatabaseConnection => HttpResponse::InternalServerError().body(error.to_string()),
+        } 
     }
 }
 
