@@ -11,7 +11,7 @@ impl crate::PermissionsUseCase {
         
         let mut client = client.acquire()
             .await
-            .map_err(|_| Error::Generic)?;
+            .map_err(|_| Error::DatabaseConnection)?;
         
         let data = crate::PermissionsRepository::list(&mut *client)
             .await
@@ -21,14 +21,8 @@ impl crate::PermissionsUseCase {
     }
 }
 
+#[derive(thiserror::Error, Debug)]
 pub enum PermissionListError {
-    Generic
-}
-
-impl ToString for PermissionListError {
-    fn to_string(self: &Self) -> String {
-        return match self {
-            Self::Generic => String::from("GENERIC")
-        };
-    }
+    #[error("DATABASE_CONNECTION")]
+    DatabaseConnection
 }

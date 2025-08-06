@@ -12,11 +12,11 @@ impl crate::PermissionsUseCase {
 
         let mut client = client.acquire()
             .await
-            .map_err(|_| Error::Generic)?;
+            .map_err(|_| Error::DatabaseConnection)?;
         
         let _ = crate::PermissionsRepository::retrieve(name, &mut *client)
             .await
-            .map_err(|_| Error::Generic)?;
+            .map_err(|_| Error::NotExist)?;
         
         // this won't error so we can skip this result
         let _ = crate::PermissionsRepository::delete(name, &mut *client)
@@ -26,14 +26,10 @@ impl crate::PermissionsUseCase {
     }
 }
 
+#[derive(thiserror::Error, Debug)]
 pub enum PermissionDeleteError {
-    Generic
-}
-
-impl ToString for PermissionDeleteError {
-    fn to_string(self: &Self) -> String {
-        return match self {
-            Self::Generic => String::from("GENERIC")
-        };
-    }
+    #[error("NOT_EXIST")]
+    NotExist,
+    #[error("DATABASE_CONNECTION")]
+    DatabaseConnection,
 }

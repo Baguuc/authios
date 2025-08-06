@@ -14,33 +14,33 @@ impl crate::PermissionsUseCase {
 
         let mut client = client.acquire()
             .await
-            .map_err(|_| Error::Generic)?;
+            .map_err(|_| Error::DatabaseConnection)?;
         
         let _ = crate::PermissionsRepository::retrieve(permission_name, &mut *client)
             .await
-            .map_err(|_| Error::Generic)?;
+            .map_err(|_| Error::PermissionNotExist)?;
         
         let _ = crate::GroupsRepository::retrieve(group_name, &mut *client)
             .await
-            .map_err(|_| Error::Generic)?;
+            .map_err(|_| Error::GroupNotExist)?;
         
         crate::GroupPermissionsRepository::insert(group_name, permission_name, &mut *client)
             .await
             // already added
-            .map_err(|_| Error::Generic)?;
+            .map_err(|_| Error::AlreadyAdded)?;
         
         return Ok(());
     }
 }
 
+#[derive(thiserror::Error, Debug)]
 pub enum PermissionGrantError {
-    Generic
-}
-
-impl ToString for PermissionGrantError {
-    fn to_string(self: &Self) -> String {
-        return match self {
-            Self::Generic => String::from("GENERIC")
-        };
-    }
+    #[error("PERMISSION_NOT_EXIST")]
+    PermissionNotExist,
+    #[error("GROUP_NOT_EXIST")]
+    GroupNotExist,
+    #[error("ALREADY_ADDED")]
+    AlreadyAdded,
+    #[error("DATABASE_CONNECTION")]
+    DatabaseConnection,
 }

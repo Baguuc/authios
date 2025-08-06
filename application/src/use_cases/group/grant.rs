@@ -14,33 +14,33 @@ impl crate::GroupsUseCase {
 
         let mut client = client.acquire()
             .await
-            .map_err(|_| Error::Generic)?;
+            .map_err(|_| Error::DatabaseConnection)?;
         
         let _ = crate::GroupsRepository::retrieve(group_name, &mut *client)
             .await
-            .map_err(|_| Error::Generic)?;
+            .map_err(|_| Error::GroupNotExist)?;
         
-        let _ = crate::GroupsRepository::retrieve(group_name, &mut *client)
+        let _ = crate::UsersRepository::retrieve(user_login, &mut *client)
             .await
-            .map_err(|_| Error::Generic)?;
+            .map_err(|_| Error::UserNotExist)?;
         
         crate::UserGroupsRepository::insert(user_login, group_name, &mut *client)
             .await
             // already added
-            .map_err(|_| Error::Generic)?;
+            .map_err(|_| Error::AlreadyAdded)?;
         
         return Ok(());
     }
 }
 
+#[derive(thiserror::Error, Debug)]
 pub enum GroupGrantError {
-    Generic
-}
-
-impl ToString for GroupGrantError {
-    fn to_string(self: &Self) -> String {
-        return match self {
-            Self::Generic => String::from("GENERIC")
-        };
-    }
+    #[error("GROUP_NOT_EXIST")]
+    GroupNotExist,
+    #[error("USER_NOT_EXIST")]
+    UserNotExist,
+    #[error("ALREADY_ADDED")]
+    AlreadyAdded,
+    #[error("DATABASE_CONNECTION")]
+    DatabaseConnection
 }

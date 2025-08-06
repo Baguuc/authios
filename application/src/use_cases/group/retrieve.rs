@@ -12,24 +12,20 @@ impl crate::GroupsUseCase {
         
         let mut client = client.acquire()
             .await
-            .map_err(|_| Error::Generic)?;
+            .map_err(|_| Error::DatabaseConnection)?;
         
         let data = crate::GroupsRepository::retrieve(name, &mut *client)
             .await
-            .map_err(|_| Error::Generic)?; 
+            .map_err(|_| Error::NotExist)?; 
         
         return Ok(data);
     }
 }
 
+#[derive(thiserror::Error, Debug)]
 pub enum GroupRetrieveError {
-    Generic
-}
-
-impl ToString for GroupRetrieveError {
-    fn to_string(self: &Self) -> String {
-        return match self {
-            Self::Generic => String::from("GENERIC")
-        };
-    }
+    #[error("NOT_EXIST")]
+    NotExist,
+    #[error("DATABASE_CONNECTION")]
+    DatabaseConnection
 }

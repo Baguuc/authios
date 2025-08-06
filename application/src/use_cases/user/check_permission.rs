@@ -10,28 +10,30 @@ impl crate::UsersUseCase {
     /// + when database connection cannot be acquired;
     ///
     pub async fn check_permission<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(token: &String, encoding_key: &String, permission_name: &String, client: A) -> Result<bool, UserCheckPermissionError> {
+        use crate::use_cases::user::retrieve_from_token::UserRetrieveFromTokenError;
+        
         type Error = UserCheckPermissionError; 
         
         let mut client = client.acquire()
             .await
-            .map_err(|_| Error::Generic)?;
+            .map_err(|_| Error::DatabaseConnection)?;
         
         // will optimize all of this if necessary
         let _ = crate::PermissionsRepository::retrieve(permission_name, &mut *client)
             .await
-            .map_err(|_| Error::Generic)?;
+            .map_err(|_| Error::PermissionNotExist)?;
 
         let user = crate::UsersUseCase::retrieve_from_token(token, encoding_key, &mut *client)
             .await
-            .map_err(|_| Error::Generic)?;
+            .map_err(|error| match error {
+                 UserRetrieveFromTokenError::InvalidToken => Error::InvalidToken,
+                 UserRetrieveFromTokenError::NotExist => Error::UserNotExist,
+                 UserRetrieveFromTokenError::DatabaseConnection => Error::DatabaseConnection,
+            })?;
         
-        let data = crate::UsersRepository::retrieve(&user.login, &mut *client)
-            .await
-            .map_err(|_| Error::Generic)?;
-
         let mut permissions = vec![];
 
-        for group_name in data.groups {
+        for group_name in user.groups {
             let group = crate::GroupsRepository::retrieve(&group_name, &mut *client)
                 .await
                 // this won't error as we just fetched the permissions
@@ -46,14 +48,14 @@ impl crate::UsersUseCase {
     }
 }
 
+#[derive(thiserror::Error, Debug)]
 pub enum UserCheckPermissionError {
-    Generic
-}
-
-impl ToString for UserCheckPermissionError {
-    fn to_string(self: &Self) -> String {
-        return match self {
-            Self::Generic => String::from("GENERIC")
-        };
-    }
+    #[error("INVALID_TOKEN")]
+    InvalidToken,
+    #[error("USER_NOT_EXIST")]
+    UserNotExist,
+    #[error("PERMISSION_NOT_EXIST")]
+    PermissionNotExist,
+    #[error("DATABASE_CONNECTION")]
+    DatabaseConnection
 }

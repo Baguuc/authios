@@ -14,19 +14,19 @@ impl crate::GroupsUseCase {
 
         let mut client = client.acquire()
             .await
-            .map_err(|_| Error::Generic)?;
+            .map_err(|_| Error::DatabaseConnection)?;
         
         let _ = crate::GroupsRepository::retrieve(group_name, &mut *client)
             .await
-            .map_err(|_| Error::Generic)?;
+            .map_err(|_| Error::GroupNotExist)?;
         
-        let user = crate::UsersRepository::retrieve(group_name, &mut *client)
+        let user = crate::UsersRepository::retrieve(user_login, &mut *client)
             .await
-            .map_err(|_| Error::Generic)?;
+            .map_err(|_| Error::UserNotExist)?;
         
         // not added yet
         if !user.groups.contains(group_name) {
-            return Err(Error::Generic);
+            return Err(Error::NotAddedYet);
         }
         
         // this won't error so we can skip this result
@@ -37,14 +37,14 @@ impl crate::GroupsUseCase {
     }
 }
 
+#[derive(thiserror::Error, Debug)]
 pub enum GroupRevokeError {
-    Generic
-}
-
-impl ToString for GroupRevokeError {
-    fn to_string(self: &Self) -> String {
-        return match self {
-            Self::Generic => String::from("GENERIC")
-        };
-    }
+    #[error("GROUP_NOT_EXIST")]
+    GroupNotExist,
+    #[error("USER_NOT_EXIST")]
+    UserNotExist,
+    #[error("NOT_ADDED_YET")]
+    NotAddedYet,
+    #[error("DATABASE_CONNECTION")]
+    DatabaseConnection
 }

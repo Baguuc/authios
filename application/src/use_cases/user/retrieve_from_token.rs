@@ -13,27 +13,25 @@ impl crate::UsersUseCase {
         
         let mut client = client.acquire()
             .await
-            .map_err(|_| Error::Generic)?;
+            .map_err(|_| Error::DatabaseConnection)?;
         
         let claims = crate::utils::jwt_token::get_claims(token, encoding_key)
-            .map_err(|_| Error::Generic)?;
+            .map_err(|_| Error::InvalidToken)?;
 
         let data = Self::retrieve(&claims.sub, &mut *client)
             .await
-            .map_err(|_| Error::Generic)?;
+            .map_err(|_| Error::NotExist)?;
         
         return Ok(data);
     }
 }
 
+#[derive(thiserror::Error, Debug)]
 pub enum UserRetrieveFromTokenError {
-    Generic
-}
-
-impl ToString for UserRetrieveFromTokenError {
-    fn to_string(self: &Self) -> String {
-        return match self {
-            Self::Generic => String::from("GENERIC")
-        };
-    }
+    #[error("INVALID_TOKEN")]
+    InvalidToken,
+    #[error("NotExist")]
+    NotExist,
+    #[error("DATABASE_CONNECTION")]
+    DatabaseConnection
 }

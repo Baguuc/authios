@@ -12,24 +12,20 @@ impl crate::GroupsUseCase {
         
         let mut client = client.acquire()
             .await
-            .map_err(|_| Error::Generic)?;
+            .map_err(|_| Error::DatabaseConnection)?;
         
         crate::GroupsRepository::insert(data, &mut *client)
             .await
-            .map_err(|_| Error::Generic)?; 
+            .map_err(|_| Error::AlreadyExist)?; 
         
         return Ok(());
     }
 }
 
+#[derive(thiserror::Error, Debug)]
 pub enum GroupCreateError {
-    Generic
-}
-
-impl ToString for GroupCreateError {
-    fn to_string(self: &Self) -> String {
-        return match self {
-            Self::Generic => String::from("GENERIC")
-        };
-    }
+    #[error("ALREADY_EXIST")]
+    AlreadyExist,
+    #[error("DATABASE_CONNECTION")]
+    DatabaseConnection
 }

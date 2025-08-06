@@ -15,34 +15,34 @@ impl crate::UsersUseCase {
         let mut client = client
             .acquire()
             .await
-            .map_err(|_| Error::Generic)?;
+            .map_err(|_| Error::DatabaseConnection)?;
         
         let user = Self::retrieve(login, &mut *client)
             .await
-            .map_err(|_| Error::Generic)?;
+            .map_err(|_| Error::NotExist)?;
 
         if !crate::utils::password_hash::verify_password(pwd, &user.pwd) {
-            return Err(Error::Generic);
+            return Err(Error::InvalidCredentials);
         };
         
         let token = crate::utils::jwt_token::generate(
             user.login,
             (chrono::Utc::now() + chrono::Duration::days(7)).timestamp() as usize,
             encoding_key
-        ).map_err(|_| Error::Generic)?;
+        ).map_err(|_| Error::CannotGenerateToken)?;
         
         return Ok(token);
     }
 }
 
+#[derive(thiserror::Error, Debug)]
 pub enum UserLoginError {
-    Generic
-}
-
-impl ToString for UserLoginError {
-    fn to_string(self: &Self) -> String {
-        return match self {
-            Self::Generic => String::from("GENERIC")
-        };
-    }
+    #[error("NOT_EXIST")]
+    NotExist,
+    #[error("INVALID_CREDENTIALS")]
+    InvalidCredentials,
+    #[error("CANNOT_GENERATE_TOKEN")]
+    CannotGenerateToken,
+    #[error("DATABASE_CONNECTION")]
+    DatabaseConnection
 }

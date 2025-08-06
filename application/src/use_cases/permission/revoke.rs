@@ -14,19 +14,19 @@ impl crate::PermissionsUseCase {
 
         let mut client = client.acquire()
             .await
-            .map_err(|_| Error::Generic)?;
+            .map_err(|_| Error::DatabaseConnection)?;
         
         let _ = crate::PermissionsRepository::retrieve(permission_name, &mut *client)
             .await
-            .map_err(|_| Error::Generic)?;
+            .map_err(|_| Error::PermissionNotExist)?;
         
         let group = crate::GroupsRepository::retrieve(group_name, &mut *client)
             .await
-            .map_err(|_| Error::Generic)?;
+            .map_err(|_| Error::GroupNotExist)?;
         
         // not added yet
         if group.permissions.contains(permission_name) {
-            return Err(Error::Generic);
+            return Err(Error::NotAddedYet);
         }
         
         // this won't error so we can skip this result
@@ -37,14 +37,14 @@ impl crate::PermissionsUseCase {
     }
 }
 
+#[derive(thiserror::Error, Debug)]
 pub enum PermissionRevokeError {
-    Generic
-}
-
-impl ToString for PermissionRevokeError {
-    fn to_string(self: &Self) -> String {
-        return match self {
-            Self::Generic => String::from("GENERIC")
-        };
-    }
+    #[error("PERMISSION_NOT_EXIST")]
+    PermissionNotExist,
+    #[error("GROUP_NOT_EXIST")]
+    GroupNotExist,
+    #[error("NOT_ADDED_YET")]
+    NotAddedYet,
+    #[error("DATABASE_CONNECTION")]
+    DatabaseConnection
 }

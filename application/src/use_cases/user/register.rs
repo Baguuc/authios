@@ -13,10 +13,10 @@ impl crate::UsersUseCase {
         
         let mut client = client.acquire()
             .await
-            .map_err(|_| Error::Generic)?;
+            .map_err(|_| Error::DatabaseConnection)?;
         
         let pwd = crate::utils::password_hash::hash_password(data.pwd.clone())
-            .map_err(|_| Error::Generic)?;
+            .map_err(|_| Error::CannotHash)?;
         
         let data = authios_domain::User {
             login: data.login.clone(),
@@ -27,20 +27,18 @@ impl crate::UsersUseCase {
         
         crate::UsersRepository::insert(&data, &mut *client)
             .await
-            .map_err(|_| Error::Generic)?; 
+            .map_err(|_| Error::AlreadyExist)?; 
         
         return Ok(());
     }
 }
 
+#[derive(thiserror::Error, Debug)]
 pub enum UserRegisterError {
-    Generic
-}
-
-impl ToString for UserRegisterError {
-    fn to_string(self: &Self) -> String {
-        return match self {
-            Self::Generic => String::from("GENERIC")
-        };
-    }
+    #[error("ALREADY_EXIST")]
+    AlreadyExist,
+    #[error("CANNOT_HASH")]
+    CannotHash,
+    #[error("DATABASE_CONNECTION")]
+    DatabaseConnection
 }

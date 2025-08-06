@@ -12,24 +12,20 @@ impl crate::PermissionsUseCase {
         
         let mut client = client.acquire()
             .await
-            .map_err(|_| Error::Generic)?;
+            .map_err(|_| Error::DatabaseConnection)?;
         
         crate::PermissionsRepository::insert(data, &mut *client)
             .await
-            .map_err(|_| Error::Generic)?; 
+            .map_err(|_| Error::AlreadyExist)?; 
         
         return Ok(());
     }
 }
 
+#[derive(thiserror::Error, Debug)]
 pub enum PermissionCreateError {
-    Generic
-}
-
-impl ToString for PermissionCreateError {
-    fn to_string(self: &Self) -> String {
-        return match self {
-            Self::Generic => String::from("GENERIC")
-        };
-    }
+    #[error("ALREADY_EXIST")]
+    AlreadyExist,
+    #[error("DATABASE_CONNECTION")]
+    DatabaseConnection,
 }

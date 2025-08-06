@@ -11,7 +11,7 @@ impl crate::GroupsUseCase {
         
         let mut client = client.acquire()
             .await
-            .map_err(|_| Error::Generic)?;
+            .map_err(|_| Error::DatabaseConnection)?;
         
         let data = crate::GroupsRepository::list(&mut *client)
             .await
@@ -21,14 +21,8 @@ impl crate::GroupsUseCase {
     }
 }
 
+#[derive(thiserror::Error, Debug)]
 pub enum GroupListError {
-    Generic
-}
-
-impl ToString for GroupListError {
-    fn to_string(self: &Self) -> String {
-        return match self {
-            Self::Generic => String::from("GENERIC")
-        };
-    }
+    #[error("DATABASE_CONNECTION")]
+    DatabaseConnection
 }

@@ -12,11 +12,11 @@ impl crate::UsersUseCase {
 
         let mut client = client.acquire()
             .await
-            .map_err(|_| Error::Generic)?;
+            .map_err(|_| Error::DatabaseConnection)?;
         
         let _ = crate::UsersRepository::retrieve(login, &mut *client)
             .await
-            .map_err(|_| Error::Generic)?;
+            .map_err(|_| Error::NotExist)?;
         
         // this won't error so we can skip this result
         let _ = crate::UsersRepository::delete(login, &mut *client)
@@ -26,14 +26,10 @@ impl crate::UsersUseCase {
     }
 }
 
+#[derive(thiserror::Error, Debug)]
 pub enum UserDeleteError {
-    Generic
-}
-
-impl ToString for UserDeleteError {
-    fn to_string(self: &Self) -> String {
-        return match self {
-            Self::Generic => String::from("GENERIC")
-        };
-    }
+    #[error("USER_NOT_EXIST")]
+    NotExist,
+    #[error("DATABASE_CONNECTION")]
+    DatabaseConnection
 }

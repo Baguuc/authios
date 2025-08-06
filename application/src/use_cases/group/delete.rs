@@ -12,11 +12,11 @@ impl crate::GroupsUseCase {
 
         let mut client = client.acquire()
             .await
-            .map_err(|_| Error::Generic)?;
+            .map_err(|_| Error::DatabaseConnection)?;
         
         let _ = crate::GroupsRepository::retrieve(name, &mut *client)
             .await
-            .map_err(|_| Error::Generic)?;
+            .map_err(|_| Error::NotExist)?;
         
         // this won't error so we can skip this result
         let _ = crate::GroupsRepository::delete(name, &mut *client)
@@ -26,14 +26,10 @@ impl crate::GroupsUseCase {
     }
 }
 
+#[derive(thiserror::Error, Debug)]
 pub enum GroupDeleteError {
-    Generic
-}
-
-impl ToString for GroupDeleteError {
-    fn to_string(self: &Self) -> String {
-        return match self {
-            Self::Generic => String::from("GENERIC")
-        };
-    }
+    #[error("NOT_EXIST")]
+    NotExist,
+    #[error("DATABASE_CONNECTION")]
+    DatabaseConnection
 }
