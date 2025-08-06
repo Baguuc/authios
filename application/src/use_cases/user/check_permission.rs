@@ -23,7 +23,7 @@ impl crate::UsersUseCase {
             .await
             .map_err(|_| Error::PermissionNotExist)?;
 
-        let user = crate::UsersUseCase::retrieve_from_token(token, encoding_key, &mut *client)
+        let user = Self::retrieve_from_token(token, encoding_key, &mut *client)
             .await
             .map_err(|error| match error {
                  UserRetrieveFromTokenError::InvalidToken => Error::InvalidToken,

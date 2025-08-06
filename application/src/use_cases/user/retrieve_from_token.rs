@@ -9,6 +9,8 @@ impl crate::UsersUseCase {
     /// + when database connection cannot be acquired;
     ///
     pub async fn retrieve_from_token<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(token: &String, encoding_key: &String, client: A) -> Result<authios_domain::User, UserRetrieveFromTokenError> {
+        use crate::UsersRepository; 
+
         type Error = UserRetrieveFromTokenError; 
         
         let mut client = client.acquire()
@@ -18,7 +20,7 @@ impl crate::UsersUseCase {
         let claims = crate::utils::jwt_token::get_claims(token, encoding_key)
             .map_err(|_| Error::InvalidToken)?;
 
-        let data = Self::retrieve(&claims.sub, &mut *client)
+        let data = UsersRepository::retrieve(&claims.sub, &mut *client)
             .await
             .map_err(|_| Error::NotExist)?;
         

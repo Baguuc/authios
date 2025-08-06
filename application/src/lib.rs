@@ -1,7 +1,5 @@
 pub mod repositories;
 pub mod use_cases;
-pub mod error;
-pub mod prelude;
 pub mod utils;
 
 use repositories::{
@@ -16,7 +14,6 @@ pub use use_cases::{
     GroupsUseCase,
     UsersUseCase,
 };
-pub use prelude::*;
 
 const MIGRATIONS: [&str; 10] = [
 "CREATE TABLE IF NOT EXISTS users (

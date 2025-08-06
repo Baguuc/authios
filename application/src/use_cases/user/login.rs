@@ -10,6 +10,10 @@ impl crate::UsersUseCase {
     /// + when database connection cannot be acquired;
     ///
     pub async fn login<'c, C: sqlx::Acquire<'c, Database = sqlx::Postgres>>(login: &String, pwd: &String, encoding_key: String, client: C) -> Result<String, UserLoginError> {
+        use crate::UsersRepository; 
+        use crate::utils::password_hash::verify_password;
+        use crate::utils::jwt_token::generate;
+        
         type Error = UserLoginError; 
         
         let mut client = client
@@ -17,15 +21,15 @@ impl crate::UsersUseCase {
             .await
             .map_err(|_| Error::DatabaseConnection)?;
         
-        let user = Self::retrieve(login, &mut *client)
+        let user = UsersRepository::retrieve(login, &mut *client)
             .await
             .map_err(|_| Error::NotExist)?;
 
-        if !crate::utils::password_hash::verify_password(pwd, &user.pwd) {
+        if !verify_password(pwd, &user.pwd) {
             return Err(Error::InvalidCredentials);
         };
         
-        let token = crate::utils::jwt_token::generate(
+        let token = generate(
             user.login,
             (chrono::Utc::now() + chrono::Duration::days(7)).timestamp() as usize,
             encoding_key
