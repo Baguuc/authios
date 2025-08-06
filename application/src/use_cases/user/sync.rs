@@ -29,11 +29,11 @@ impl crate::UsersUseCase {
             let _ = UsersRepository::delete(&user.login, &mut *client).await;
         }
 
-        for mut user in changes.create {
-            user.pwd = crate::utils::hash_password(user.pwd)
+        for user in changes.create {
+            let pwd = crate::utils::hash_password(user.pwd)
                 .map_err(|_| Error::CannotHash(user.login.clone()))?;
 
-            let _ = UsersRepository::insert(&user, &mut *client).await;
+            let _ = UsersRepository::insert(&user.login, &pwd, &mut *client).await;
 
             for group_name in user.groups {
                  let _ = UserGroupsRepository::insert(&user.login, &group_name, &mut *client)

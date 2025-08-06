@@ -29,7 +29,7 @@ impl crate::GroupsUseCase {
         }
 
         for group in changes.create {
-            let _ = GroupsRepository::insert(&group, &mut *client).await;
+            let _ = GroupsRepository::insert(&group.name, &mut *client).await;
 
             for permission_name in group.permissions {
                  let _ = GroupPermissionsRepository::insert(&permission_name, &group.name, &mut *client)

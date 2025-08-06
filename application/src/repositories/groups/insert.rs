@@ -3,7 +3,7 @@ impl crate::GroupsRepository {
     ///
     /// insert a group into the database
     ///
-    pub async fn insert<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(data: &authios_domain::Group, client: A) -> Result<(), sqlx::Error> {
+    pub async fn insert<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(name: &String, client: A) -> Result<(), sqlx::Error> {
         use sqlx::query;
 
         let mut client = client
@@ -11,7 +11,7 @@ impl crate::GroupsRepository {
             .await?;
         
         let sql = "INSERT INTO groups (name) VALUES ($1);";
-        let query = query(sql).bind(&data.name);
+        let query = query(sql).bind(name);
 
         query.execute(&mut *client).await?;
 

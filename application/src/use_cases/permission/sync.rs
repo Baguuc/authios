@@ -30,11 +30,7 @@ impl crate::PermissionsUseCase {
         }
 
         for permission_name in changes.create {
-            let permission = authios_domain::Permission {
-                name: permission_name
-            };
-
-            let _ = PermissionsRepository::insert(&permission, &mut *client).await;
+            let _ = PermissionsRepository::insert(&permission_name, &mut *client).await;
         }
         
         return Ok(());

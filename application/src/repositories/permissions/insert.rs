@@ -3,7 +3,7 @@ impl crate::PermissionsRepository {
     ///
     /// insert a permission into the database
     ///
-    pub async fn insert<'c, C: sqlx::Acquire<'c, Database = sqlx::Postgres>>(data: &authios_domain::Permission, client: C) -> Result<(), sqlx::Error> {
+    pub async fn insert<'c, C: sqlx::Acquire<'c, Database = sqlx::Postgres>>(name: &String, client: C) -> Result<(), sqlx::Error> {
         use sqlx::query;
 
         let mut client = client
@@ -11,7 +11,7 @@ impl crate::PermissionsRepository {
             .await?;
         
         let sql = "INSERT INTO permissions (name) VALUES ($1);";
-        let query = query(sql).bind(&data.name);
+        let query = query(sql).bind(name);
 
         query.execute(&mut *client).await?;
 
