@@ -16,7 +16,7 @@ pub async fn info_route(
     let headers = req.headers();
     let token = match headers.get("Authorization") {
         Some(token) => token.to_str().unwrap().to_string(),
-        None => return HttpResponse::Unauthorized().body("")
+        None => return HttpResponse::Unauthorized().body("NO_TOKEN")
     };
 
     return match UsersUseCase::retrieve_from_token(&token, &config.jwt.encryption_key.clone(), &*client).await {

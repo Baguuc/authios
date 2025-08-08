@@ -16,7 +16,7 @@ pub async fn authorize_route(
     let headers = req.headers();
     let token = match headers.get("Authorization") {
         Some(token) => token.to_str().unwrap().to_string(),
-        None => return HttpResponse::Unauthorized().into()
+        None => return HttpResponse::Unauthorized().body("NO_TOKEN")
     };
 
     return match UsersUseCase::check_permission(&token, &config.jwt.encryption_key, &path.permission_name, &*client).await {
