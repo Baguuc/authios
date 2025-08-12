@@ -32,7 +32,7 @@ impl crate::GroupsUseCase {
             let _ = GroupsRepository::insert(&group.name, &mut *client).await;
 
             for permission_name in group.permissions {
-                 let _ = GroupPermissionsRepository::insert(&permission_name, &group.name, &mut *client)
+                 let _ = GroupPermissionsRepository::insert(&group.name, &permission_name, &mut *client)
                      .await
                      .map_err(|_| Error::PermissionNotExist(permission_name));
             }
