@@ -7,14 +7,17 @@ impl crate::PermissionsUseCase {
     /// + when a permission with provided name already exist;
     /// + when database connection cannot be acquired;
     ///
-    pub async fn create<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(name: &String, client: A) -> Result<(), PermissionCreateError> {
+    pub async fn create<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
+        params: authios_domain::PermissionCreateParams,
+        client: A
+    ) -> Result<(), PermissionCreateError> {
         type Error = PermissionCreateError; 
         
         let mut client = client.acquire()
             .await
             .map_err(|_| Error::DatabaseConnection)?;
         
-        crate::PermissionsRepository::insert(name, &mut *client)
+        crate::PermissionsRepository::insert(&params.name, &mut *client)
             .await
             .map_err(|_| Error::AlreadyExist)?; 
         

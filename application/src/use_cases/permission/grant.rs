@@ -9,22 +9,25 @@ impl crate::PermissionsUseCase {
     /// + when a group with provided name already has provided permission;
     /// + when database connection cannot be acquired;
     ///
-    pub async fn grant<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(permission_name: &String, group_name: &String, client: A) -> Result<(), PermissionGrantError> {
+    pub async fn grant<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
+        params: authios_domain::PermissionGrantParams,
+        client: A
+    ) -> Result<(), PermissionGrantError> {
         type Error = PermissionGrantError;
 
         let mut client = client.acquire()
             .await
             .map_err(|_| Error::DatabaseConnection)?;
         
-        let _ = crate::PermissionsRepository::retrieve(permission_name, &mut *client)
+        let _ = crate::PermissionsRepository::retrieve(&params.name, &mut *client)
             .await
             .map_err(|_| Error::PermissionNotExist)?;
         
-        let _ = crate::GroupsRepository::retrieve(group_name, &mut *client)
+        let _ = crate::GroupsRepository::retrieve(&params.group_name, &mut *client)
             .await
             .map_err(|_| Error::GroupNotExist)?;
         
-        crate::GroupPermissionsRepository::insert(group_name, permission_name, &mut *client)
+        crate::GroupPermissionsRepository::insert(&params.group_name, &params.name, &mut *client)
             .await
             // already added
             .map_err(|_| Error::AlreadyAdded)?;

@@ -1,6 +1,9 @@
 pub mod group;
 pub use group::*;
 
+pub mod permission;
+pub use permission::*;
+
 pub struct AuthParams {
     pub token: String,
     pub encoding_key: String

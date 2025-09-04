@@ -9,28 +9,31 @@ impl crate::PermissionsUseCase {
     /// + when a group with provided name didn't had provided permission;
     /// + when database connection cannot be acquired;
     ///
-    pub async fn revoke<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(permission_name: &String, group_name: &String, client: A) -> Result<(), PermissionRevokeError> {
+    pub async fn revoke<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
+        params: authios_domain::PermissionRevokeParams,
+        client: A
+    ) -> Result<(), PermissionRevokeError> {
         type Error = PermissionRevokeError;
 
         let mut client = client.acquire()
             .await
             .map_err(|_| Error::DatabaseConnection)?;
         
-        let _ = crate::PermissionsRepository::retrieve(permission_name, &mut *client)
+        let _ = crate::PermissionsRepository::retrieve(&params.name, &mut *client)
             .await
             .map_err(|_| Error::PermissionNotExist)?;
         
-        let group = crate::GroupsRepository::retrieve(group_name, &mut *client)
+        let group = crate::GroupsRepository::retrieve(&params.group_name, &mut *client)
             .await
             .map_err(|_| Error::GroupNotExist)?;
         
         // not added yet
-        if group.permissions.contains(permission_name) {
+        if group.permissions.contains(&params.name) {
             return Err(Error::NotAddedYet);
         }
         
         // this won't error so we can skip this result
-        let _ = crate::GroupPermissionsRepository::delete(group_name, permission_name, &mut *client)
+        let _ = crate::GroupPermissionsRepository::delete(&params.group_name, &params.name, &mut *client)
             .await;
         
         return Ok(());
