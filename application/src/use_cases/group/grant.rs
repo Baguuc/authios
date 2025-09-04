@@ -10,27 +10,30 @@ impl crate::GroupsUseCase {
     /// + when the user is not authorized for this operation;
     /// + when database connection cannot be acquired;
     ///
-    pub async fn grant<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(user_login: &String, group_name: &String, token: &String, encoding_key: &String, client: A) -> Result<(), GroupGrantError> {
+    pub async fn grant<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
+        params: authios_domain::GroupGrantParams,
+        client: A
+    ) -> Result<(), GroupGrantError> {
         type Error = GroupGrantError;
         
         let mut client = client.acquire()
             .await
             .map_err(|_| Error::DatabaseConnection)?;
         
-        match crate::UsersUseCase::check_permission(token, encoding_key, &String::from("authios:root:write"), &mut *client).await {
+        match crate::UsersUseCase::check_permission(&params.auth.token, &params.auth.encoding_key, &String::from("authios:root:write"), &mut *client).await {
             Ok(true) => (),
             Err(_) | Ok(false) => return Err(Error::Unauthorized)
         };
         
-        let _ = crate::GroupsRepository::retrieve(group_name, &mut *client)
+        let _ = crate::GroupsRepository::retrieve(&params.name, &mut *client)
             .await
             .map_err(|_| Error::GroupNotExist)?;
         
-        let _ = crate::UsersRepository::retrieve(user_login, &mut *client)
+        let _ = crate::UsersRepository::retrieve(&params.user_login, &mut *client)
             .await
             .map_err(|_| Error::UserNotExist)?;
         
-        crate::UserGroupsRepository::insert(user_login, group_name, &mut *client)
+        crate::UserGroupsRepository::insert(&params.user_login, &params.group_name, &mut *client)
             .await
             // already added
             .map_err(|_| Error::AlreadyAdded)?;

@@ -9,9 +9,7 @@ impl crate::GroupsUseCase {
     /// + when the user is not authorized for this operation;
     ///
     pub async fn create<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
-        name: &String,
-        token: &String,
-        encoding_key: &String,
+        params: authios_domain::GroupCreateParams,
         client: A
     ) -> Result<(), GroupCreateError> {
         type Error = GroupCreateError; 
@@ -20,12 +18,12 @@ impl crate::GroupsUseCase {
             .await
             .map_err(|_| Error::DatabaseConnection)?;
 
-        match crate::UsersUseCase::check_permission(token, encoding_key, &String::from("authios:root:write"), &mut *client).await {
+        match crate::UsersUseCase::check_permission(&params.auth.token, &params.auth.encoding_key, &String::from("authios:root:write"), &mut *client).await {
             Ok(true) => (),
             Err(_) | Ok(false) => return Err(Error::Unauthorized)
         };
         
-        crate::GroupsRepository::insert(name, &mut *client)
+        crate::GroupsRepository::insert(&params.name, &mut *client)
             .await
             .map_err(|_| Error::AlreadyExist)?; 
         

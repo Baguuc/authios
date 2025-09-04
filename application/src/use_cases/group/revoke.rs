@@ -9,33 +9,36 @@ impl crate::GroupsUseCase {
     /// + when the user with provided login didn't had provided group;
     /// + when database connection cannot be acquired;
     ///
-    pub async fn revoke<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(user_login: &String, group_name: &String, token: &String, encoding_key: &String, client: A) -> Result<(), GroupRevokeError> {
+    pub async fn revoke<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
+        params: authios_domain::GroupRevokeParams,
+        client: A
+    ) -> Result<(), GroupRevokeError> {
         type Error = GroupRevokeError;
 
         let mut client = client.acquire()
             .await
             .map_err(|_| Error::DatabaseConnection)?;
         
-        match crate::UsersUseCase::check_permission(token, encoding_key, &String::from("authios:root:write"), &mut *client).await {
+        match crate::UsersUseCase::check_permission(&params.auth.token, &params.auth.encoding_key, &String::from("authios:root:write"), &mut *client).await {
             Ok(true) => (),
             Err(_) | Ok(false) => return Err(Error::Unauthorized)
         };
         
-        let _ = crate::GroupsRepository::retrieve(group_name, &mut *client)
+        let _ = crate::GroupsRepository::retrieve(&params.name, &mut *client)
             .await
             .map_err(|_| Error::GroupNotExist)?;
         
-        let user = crate::UsersRepository::retrieve(user_login, &mut *client)
+        let user = crate::UsersRepository::retrieve(&params.user_login, &mut *client)
             .await
             .map_err(|_| Error::UserNotExist)?;
         
         // not added yet
-        if !user.groups.contains(group_name) {
+        if !user.groups.contains(&params.name) {
             return Err(Error::NotAddedYet);
         }
         
         // this won't error so we can skip this result
-        let _ = crate::UserGroupsRepository::delete(user_login, group_name, &mut *client)
+        let _ = crate::UserGroupsRepository::delete(&params.user_login, &params.name, &mut *client)
             .await;
         
         return Ok(());

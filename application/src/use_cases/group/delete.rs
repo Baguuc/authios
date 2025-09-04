@@ -8,24 +8,27 @@ impl crate::GroupsUseCase {
     /// + when database connection cannot be acquired;
     /// + when the user is not authorized for this operation;
     ///
-    pub async fn delete<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(name: &String, token: &String, encoding_key: &String, client: A) -> Result<(), GroupDeleteError> {
+    pub async fn delete<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
+        params: authios_domain::GroupDeleteParams,
+        client: A
+    ) -> Result<(), GroupDeleteError> {
         type Error = GroupDeleteError;
 
         let mut client = client.acquire()
             .await
             .map_err(|_| Error::DatabaseConnection)?;
         
-        match crate::UsersUseCase::check_permission(token, encoding_key, &String::from("authios:root:write"), &mut *client).await {
+        match crate::UsersUseCase::check_permission(&params.auth.token, &params.auth.encoding_key, &String::from("authios:root:write"), &mut *client).await {
             Ok(true) => (),
             Err(_) | Ok(false) => return Err(Error::Unauthorized)
         };
         
-        let _ = crate::GroupsRepository::retrieve(name, &mut *client)
+        let _ = crate::GroupsRepository::retrieve(&params.name, &mut *client)
             .await
             .map_err(|_| Error::NotExist)?;
         
         // this won't error so we can skip this result
-        let _ = crate::GroupsRepository::delete(name, &mut *client)
+        let _ = crate::GroupsRepository::delete(&params.name, &mut *client)
             .await;
         
         return Ok(());
