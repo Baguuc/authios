@@ -8,6 +8,7 @@ impl crate::PermissionsUseCase {
     /// + when a group with provided name do not exist;
     /// + when a group with provided name already has provided permission;
     /// + when database connection cannot be acquired;
+    /// + when the user is not authorized for this operation;
     ///
     pub async fn grant<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: authios_domain::PermissionGrantParams,
@@ -18,6 +19,11 @@ impl crate::PermissionsUseCase {
         let mut client = client.acquire()
             .await
             .map_err(|_| Error::DatabaseConnection)?;
+        
+        match crate::UsersUseCase::check_permission(&params.auth.token, &params.auth.encoding_key, &String::from("authios:root:write"), &mut *client).await {
+            Ok(true) => (),
+            Err(_) | Ok(false) => return Err(Error::Unauthorized)
+        };
         
         let _ = crate::PermissionsRepository::retrieve(&params.name, &mut *client)
             .await
@@ -40,6 +46,8 @@ impl crate::PermissionsUseCase {
 pub enum PermissionGrantError {
     #[error("PERMISSION_NOT_EXIST")]
     PermissionNotExist,
+    #[error("Unauthorized")]
+    Unauthorized,
     #[error("GROUP_NOT_EXIST")]
     GroupNotExist,
     #[error("ALREADY_ADDED")]
