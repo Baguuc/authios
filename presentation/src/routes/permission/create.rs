@@ -6,9 +6,10 @@ pub async fn controller(
     config: actix_web::web::Data<crate::config::Config>,
 ) -> impl actix_web::Responder {
     use authios_application::{
-        UsersUseCase,
-        use_cases::user::check_permission::UserCheckPermissionError as Error
+        PermissionsUseCase,
+        use_cases::permission::create::PermissionCreateError as Error
     };
+    use authios_domain::{PermissionCreateParamsBuilder, AuthParamsBuilder};
     use actix_web::HttpResponse;
 
     let client = client.into_inner();
@@ -19,13 +20,24 @@ pub async fn controller(
         None => return HttpResponse::Unauthorized().body("NO_TOKEN")
     };
 
-    return match UsersUseCase::check_permission(&token, &config.jwt.encryption_key, &body.name, &*client).await {
-        Ok(true) => HttpResponse::Ok().into(),
-        Ok(false) => HttpResponse::Unauthorized().into(),
+    let auth_params = AuthParamsBuilder::new()
+        .set_encoding_key(config.jwt.encryption_key.clone())
+        .set_token(token)
+        .build()
+        // won't error
+        .unwrap();
+
+    let params = PermissionCreateParamsBuilder::new()
+        .set_name(body.name.clone())
+        .set_auth(auth_params)
+        .build()
+        .unwrap();
+
+    return match PermissionsUseCase::create(params, &*client).await {
+        Ok(_) => HttpResponse::Ok().into(),
         Err(error) => match error {
-            Error::InvalidToken => HttpResponse::Unauthorized().body(error.to_string()),
-            Error::UserNotExist => HttpResponse::NotFound().body(error.to_string()),
-            Error::PermissionNotExist => HttpResponse::Conflict().body(error.to_string()),
+            Error::AlreadyExist => HttpResponse::Conflict().body(error.to_string()),
+            Error::Unauthorized => HttpResponse::Unauthorized().body(error.to_string()),
             Error::DatabaseConnection => HttpResponse::InternalServerError().body(error.to_string())
         }
     };
