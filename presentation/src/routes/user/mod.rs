@@ -3,6 +3,7 @@ pub mod info;
 pub mod authorize;
 pub mod update_pwd;
 pub mod grant;
+pub mod revoke;
 
 pub fn scope() -> actix_web::Scope {
     actix_web::web::scope("/user")
@@ -11,4 +12,5 @@ pub fn scope() -> actix_web::Scope {
         .service(authorize::controller)
         .service(update_pwd::controller)
         .service(grant::controller)
+        .service(revoke::controller)
 }
