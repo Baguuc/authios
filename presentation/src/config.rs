@@ -5,9 +5,7 @@ pub struct Config {
     pub port: u16,
     pub database: DatabaseConfig,
     pub jwt: JWTConfig,
-    pub permissions: Vec<String>,
-    pub groups: Vec<authios_domain::Group>,
-    pub users: Vec<authios_domain::User>
+    pub root: RootConfig
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Clone)]
@@ -22,6 +20,11 @@ pub struct DatabaseConfig {
 #[derive(serde::Serialize, serde::Deserialize, Clone)]
 pub struct JWTConfig {
     pub encryption_key: String
+}
+
+#[derive(serde::Serialize, serde::Deserialize, Clone)]
+pub struct RootConfig {
+    pub pwd: String
 }
 
 impl Config {

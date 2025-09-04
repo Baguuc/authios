@@ -7,8 +7,6 @@ use crate::prelude::*;
 pub enum MainCli {
     #[command(about = "Run the HTTP server", long_about = None)]
     Run(Args),
-    #[command(about = "Sync permissions, groups and users data defined in supplied config.json", long_about = None)]
-    Sync(Args),
     #[command(about = "Run migrations on the database")]
     Migrate(Args)
 }
@@ -25,7 +23,6 @@ impl MainCli {
 
         match self {
             Self::Run(args) => { block_on(run(args)); },
-            Self::Sync(args) => { block_on(sync(args)); },
             Self::Migrate(args) => { block_on(migrate(args)); }
         };
     }
@@ -36,12 +33,11 @@ async fn run(args: Args) {
     use actix_web::{HttpServer, App, web::Data};
     use futures::executor::block_on;
     use clin::components::{success, error, header};
+    use authios_application::{PermissionsUseCase, GroupsUseCase, UsersUseCase};
     use crate::config::Config;
     use crate::error::error_if_necessary;
     
     migrate(args.clone()).await;
-    println!("");
-    sync(args.clone()).await;
     println!("");
     
     header("Running web server");
@@ -53,6 +49,20 @@ async fn run(args: Args) {
     let server = HttpServer::new(move || {
         let config = error_if_necessary(Config::read(args.clone().config.unwrap_or(String::from("./authios.json"))));
         let pool = error_if_necessary(block_on(create_pool(config.database.clone())));
+
+        let _ = {
+            let _ = block_on(PermissionsUseCase::create(&String::from("authios:root:read"), &pool));
+            let _ = block_on(PermissionsUseCase::create(&String::from("authios:root:write"), &pool));
+            
+            let _ = block_on(GroupsUseCase::create(&String::from("authios:root"), &pool));
+            
+            let _ = block_on(PermissionsUseCase::grant(&String::from("authios:root:read"), &String::from("authios:root"), &pool));
+            let _ = block_on(PermissionsUseCase::grant(&String::from("authios:root:write"), &String::from("authios:root"), &pool));
+
+            let _ = block_on(UsersUseCase::register(&String::from("root"), &config.root.pwd, &pool));
+            
+            let _ = block_on(GroupsUseCase::grant(&String::from("authios:root:write"), &String::from("authios:root"), &pool));
+        };
         
         App::new()
             .app_data(Data::new(pool))
@@ -70,24 +80,6 @@ async fn run(args: Args) {
     };
 
     let _ = binded_server.run().await;
-}
-
-async fn sync(args: Args) {
-    use clin::components::{success, header};
-    use crate::config::Config;
-    use crate::error::error_if_necessary;
-    use authios_application::{UsersUseCase,GroupsUseCase,PermissionsUseCase};
-    
-    let config = error_if_necessary(Config::read(args.config.unwrap_or(String::from("./authios.json"))));
-    let pool = error_if_necessary(create_pool(config.database.clone()).await);
-    
-    header("Syncing configuration");
-
-    error_if_necessary(PermissionsUseCase::sync(config.permissions, &pool).await);    
-    error_if_necessary(GroupsUseCase::sync(config.groups, &pool).await);
-    error_if_necessary(UsersUseCase::sync(config.users, &pool).await);
-
-    success("synced");
 }
 
 async fn migrate(args: Args) {

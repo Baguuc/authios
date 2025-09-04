@@ -7,14 +7,14 @@ impl crate::GroupsUseCase {
     /// + when a group with provided name already exist;
     /// + when database connection cannot be acquired;
     ///
-    pub async fn create<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(data: &authios_domain::Group, client: A) -> Result<(), GroupCreateError> {
+    pub async fn create<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(name: &String, client: A) -> Result<(), GroupCreateError> {
         type Error = GroupCreateError; 
         
         let mut client = client.acquire()
             .await
             .map_err(|_| Error::DatabaseConnection)?;
         
-        crate::GroupsRepository::insert(data, &mut *client)
+        crate::GroupsRepository::insert(name, &mut *client)
             .await
             .map_err(|_| Error::AlreadyExist)?; 
         
