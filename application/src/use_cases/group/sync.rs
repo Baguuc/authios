@@ -7,9 +7,6 @@ impl crate::GroupsUseCase {
     /// + when database connection cannot be acquired;
     ///
     pub async fn sync<'c, C: sqlx::Acquire<'c, Database = sqlx::Postgres>>(new: Vec<authios_domain::Group>, client: C) -> Result<(), GroupSyncError> {        
-        use crate::GroupsRepository; 
-        use crate::GroupPermissionsRepository; 
-
         type Error = GroupSyncError; 
 
         let mut client = client
@@ -17,24 +14,27 @@ impl crate::GroupsUseCase {
             .await
             .map_err(|_| Error::DatabaseConnection)?;
         
-        // won't error
-        let old = GroupsRepository::list(&mut *client)
+        let old = Self::list(&mut *client)
             .await
-            .unwrap();
+            .map_err(|_| Error::DatabaseConnection)?;
         
         let changes = crate::utils::detect_changes_in_vecs(old, new);
         
         for group in changes.delete {
-            let _ = GroupsRepository::delete(&group.name, &mut *client).await;
+            let _ = Self::delete(&group.name, &mut *client)
+                .await
+                .map_err(|_| Error::DatabaseConnection)?;
         }
 
         for group in changes.create {
-            let _ = GroupsRepository::insert(&group.name, &mut *client).await;
+            let _ = Self::create(&group, &mut *client)
+                .await
+                .map_err(|_| Error::DatabaseConnection)?;
 
-            for permission_name in group.permissions {
-                 let _ = GroupPermissionsRepository::insert(&group.name, &permission_name, &mut *client)
+            for permission in group.permissions {
+                 let _ = crate::PermissionsUseCase::grant(&permission, &group.name, &mut *client)
                      .await
-                     .map_err(|_| Error::PermissionNotExist(permission_name));
+                    .map_err(|_| Error::DatabaseConnection)?;
             }
         }
         
@@ -44,8 +44,6 @@ impl crate::GroupsUseCase {
 
 #[derive(thiserror::Error, Debug)]
 pub enum GroupSyncError {
-    #[error("PERMISSION_NOT_EXIST:{0}")]
-    PermissionNotExist(String),
     #[error("DATABASE_CONNECTION")]
     DatabaseConnection,
 }
