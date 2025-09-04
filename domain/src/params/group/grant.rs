@@ -14,6 +14,7 @@ impl GrantParamsBuilder {
     pub fn new() -> Self {
         return Self {
             name: None,
+            user_login: None,
             auth: None
         };
     }
@@ -54,7 +55,7 @@ impl GrantParamsBuilder {
 
         let params = GrantParams {
             name: self.name.unwrap(),
-            user_login: self.name.unwrap(),
+            user_login: self.user_login.unwrap(),
             auth: self.auth.unwrap()
         };
 

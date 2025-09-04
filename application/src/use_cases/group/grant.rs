@@ -33,7 +33,7 @@ impl crate::GroupsUseCase {
             .await
             .map_err(|_| Error::UserNotExist)?;
         
-        crate::UserGroupsRepository::insert(&params.user_login, &params.group_name, &mut *client)
+        crate::UserGroupsRepository::insert(&params.user_login, &params.name, &mut *client)
             .await
             // already added
             .map_err(|_| Error::AlreadyAdded)?;
