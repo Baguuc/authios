@@ -69,6 +69,7 @@ async fn run(args: Args) {
             .app_data(Data::new(config.clone()))
             .service(crate::routes::user::scope())
             .service(crate::routes::permission::scope())
+            .service(crate::routes::group::scope())
     });
 
     let binded_server = match server.bind(("0.0.0.0", config.port.clone())) {
