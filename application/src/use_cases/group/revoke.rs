@@ -1,19 +1,20 @@
 impl crate::GroupsUseCase {
     /// # GroupsUseCase::revoke
     ///
-    /// revoke a group from a group, checking for possible errors
+    /// revoke a permission from a group, checking for possible errors
     ///
     /// Errors:
-    /// + when the group with provided name do not exist;
-    /// + when the user with provided name do not exist;
-    /// + when the user with provided login didn't had provided group;
+    /// + when a permission with provided name do not exist;
+    /// + when a group with provided name do not exist;
+    /// + when a group with provided name didn't had provided permission;
     /// + when database connection cannot be acquired;
+    /// + when the user is not authorized for this operation;
     ///
     pub async fn revoke<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
-        params: authios_domain::GroupRevokeParams,
+        params: authios_domain::PermissionRevokeParams,
         client: A
-    ) -> Result<(), GroupRevokeError> {
-        type Error = GroupRevokeError;
+    ) -> Result<(), GroupPermissionRevokeError> {
+        type Error = GroupPermissionRevokeError;
 
         let mut client = client.acquire()
             .await
@@ -24,21 +25,21 @@ impl crate::GroupsUseCase {
             Err(_) | Ok(false) => return Err(Error::Unauthorized)
         };
         
-        let _ = crate::GroupsRepository::retrieve(&params.name, &mut *client)
+        let _ = crate::PermissionsRepository::retrieve(&params.name, &mut *client)
+            .await
+            .map_err(|_| Error::PermissionNotExist)?;
+        
+        let group = crate::GroupsRepository::retrieve(&params.group_name, &mut *client)
             .await
             .map_err(|_| Error::GroupNotExist)?;
         
-        let user = crate::UsersRepository::retrieve(&params.user_login, &mut *client)
-            .await
-            .map_err(|_| Error::UserNotExist)?;
-        
         // not added yet
-        if !user.groups.contains(&params.name) {
+        if group.permissions.contains(&params.name) {
             return Err(Error::NotAddedYet);
         }
         
         // this won't error so we can skip this result
-        let _ = crate::UserGroupsRepository::delete(&params.user_login, &params.name, &mut *client)
+        let _ = crate::GroupPermissionsRepository::delete(&params.group_name, &params.name, &mut *client)
             .await;
         
         return Ok(());
@@ -46,15 +47,15 @@ impl crate::GroupsUseCase {
 }
 
 #[derive(thiserror::Error, Debug)]
-pub enum GroupRevokeError {
+pub enum GroupPermissionRevokeError {
+    #[error("PERMISSION_NOT_EXIST")]
+    PermissionNotExist,
+    #[error("Unauthorized")]
+    Unauthorized,
     #[error("GROUP_NOT_EXIST")]
     GroupNotExist,
-    #[error("USER_NOT_EXIST")]
-    UserNotExist,
     #[error("NOT_ADDED_YET")]
     NotAddedYet,
-    #[error("UNAUTHORIZED")]
-    Unauthorized,
     #[error("DATABASE_CONNECTION")]
     DatabaseConnection
 }
