@@ -1,5 +1,5 @@
-#[actix_web::post("/user")]
-pub async fn login_route(
+#[actix_web::post("/")]
+pub async fn controller(
     body: actix_web::web::Json<RequestBody>,
     client: actix_web::web::Data<sqlx::postgres::PgPool>,
     config: actix_web::web::Data<crate::config::Config>,

@@ -57,10 +57,7 @@ async fn run(args: Args) {
         App::new()
             .app_data(Data::new(pool))
             .app_data(Data::new(config.clone()))
-            .service(crate::routes::user::login::login_route)
-            .service(crate::routes::user::info::info_route)
-            .service(crate::routes::user::authorize::authorize_route)
-            .service(crate::routes::user::update_pwd::update_pwd_route)
+            .service(crate::routes::user::scope())
     });
 
     let binded_server = match server.bind(("0.0.0.0", config.port.clone())) {

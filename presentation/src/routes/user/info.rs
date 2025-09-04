@@ -1,5 +1,5 @@
-#[actix_web::get("/user")]
-pub async fn info_route(
+#[actix_web::get("")]
+pub async fn controller(
     req: actix_web::HttpRequest,
     client: actix_web::web::Data<sqlx::postgres::PgPool>,
     config: actix_web::web::Data<crate::config::Config>,

@@ -1,5 +1,5 @@
-#[actix_web::get("/user/permissions/{permission_name}")]
-pub async fn authorize_route(
+#[actix_web::get("/permissions/{permission_name}")]
+pub async fn controller(
     req: actix_web::HttpRequest,
     path: actix_web::web::Path<RequestPath>,
     client: actix_web::web::Data<sqlx::postgres::PgPool>,
