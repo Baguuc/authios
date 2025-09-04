@@ -7,14 +7,20 @@ impl crate::GroupsUseCase {
     /// + when the group with provided name do not exist;
     /// + when the user with provided name do not exist;
     /// + when the user with provided login already has provided group;
+    /// + when the user is not authorized for this operation;
     /// + when database connection cannot be acquired;
     ///
-    pub async fn grant<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(user_login: &String, group_name: &String, client: A) -> Result<(), GroupGrantError> {
+    pub async fn grant<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(user_login: &String, group_name: &String, token: &String, encoding_key: &String, client: A) -> Result<(), GroupGrantError> {
         type Error = GroupGrantError;
-
+        
         let mut client = client.acquire()
             .await
             .map_err(|_| Error::DatabaseConnection)?;
+        
+        match crate::UsersUseCase::check_permission(token, encoding_key, &String::from("authios:root:write"), &mut *client).await {
+            Ok(true) => (),
+            Err(_) | Ok(false) => return Err(Error::Unauthorized)
+        };
         
         let _ = crate::GroupsRepository::retrieve(group_name, &mut *client)
             .await
@@ -41,6 +47,8 @@ pub enum GroupGrantError {
     UserNotExist,
     #[error("ALREADY_ADDED")]
     AlreadyAdded,
+    #[error("UNAUTHORIZED_EXIST")]
+    Unauthorized,
     #[error("DATABASE_CONNECTION")]
     DatabaseConnection
 }

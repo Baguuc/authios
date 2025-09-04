@@ -9,12 +9,17 @@ impl crate::GroupsUseCase {
     /// + when the user with provided login didn't had provided group;
     /// + when database connection cannot be acquired;
     ///
-    pub async fn revoke<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(user_login: &String, group_name: &String, client: A) -> Result<(), GroupRevokeError> {
+    pub async fn revoke<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(user_login: &String, group_name: &String, token: &String, encoding_key: &String, client: A) -> Result<(), GroupRevokeError> {
         type Error = GroupRevokeError;
 
         let mut client = client.acquire()
             .await
             .map_err(|_| Error::DatabaseConnection)?;
+        
+        match crate::UsersUseCase::check_permission(token, encoding_key, &String::from("authios:root:write"), &mut *client).await {
+            Ok(true) => (),
+            Err(_) | Ok(false) => return Err(Error::Unauthorized)
+        };
         
         let _ = crate::GroupsRepository::retrieve(group_name, &mut *client)
             .await
@@ -45,6 +50,8 @@ pub enum GroupRevokeError {
     UserNotExist,
     #[error("NOT_ADDED_YET")]
     NotAddedYet,
+    #[error("UNAUTHORIZED")]
+    Unauthorized,
     #[error("DATABASE_CONNECTION")]
     DatabaseConnection
 }

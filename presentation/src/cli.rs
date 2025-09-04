@@ -33,7 +33,7 @@ async fn run(args: Args) {
     use actix_web::{HttpServer, App, web::Data};
     use futures::executor::block_on;
     use clin::components::{success, error, header};
-    use authios_application::{PermissionsUseCase, GroupsUseCase, UsersUseCase};
+    use authios_application::{repositories::{PermissionsRepository, GroupsRepository, GroupPermissionsRepository, UsersRepository, UserGroupsRepository}, utils::hash_password};
     use crate::config::Config;
     use crate::error::error_if_necessary;
     
@@ -50,18 +50,18 @@ async fn run(args: Args) {
         let config = error_if_necessary(Config::read(args.clone().config.unwrap_or(String::from("./authios.json"))));
         let pool = error_if_necessary(block_on(create_pool(config.database.clone())));
 
-        let _ = {
-            let _ = block_on(PermissionsUseCase::create(&String::from("authios:root:read"), &pool));
-            let _ = block_on(PermissionsUseCase::create(&String::from("authios:root:write"), &pool));
+        {
+            let _ = block_on(PermissionsRepository::insert(&String::from("authios:root:read"), &pool));
+            let _ = block_on(PermissionsRepository::insert(&String::from("authios:root:write"), &pool));
             
-            let _ = block_on(GroupsUseCase::create(&String::from("authios:root"), &pool));
+            let _ = block_on(GroupsRepository::insert(&String::from("authios:root"), &pool));
             
-            let _ = block_on(PermissionsUseCase::grant(&String::from("authios:root:read"), &String::from("authios:root"), &pool));
-            let _ = block_on(PermissionsUseCase::grant(&String::from("authios:root:write"), &String::from("authios:root"), &pool));
+            let _ = block_on(GroupPermissionsRepository::insert(&String::from("authios:root"), &String::from("authios:root:read"), &pool));
+            let _ = block_on(GroupPermissionsRepository::insert(&String::from("authios:root"), &String::from("authios:root:write"), &pool));
 
-            let _ = block_on(UsersUseCase::register(&String::from("root"), &config.root.pwd, &pool));
+            let _ = block_on(UsersRepository::insert(&String::from("root"), &hash_password(config.root.pwd.clone()).expect("Cannot hash password"), &pool));
             
-            let _ = block_on(GroupsUseCase::grant(&String::from("authios:root:write"), &String::from("authios:root"), &pool));
+            let _ = block_on(UserGroupsRepository::insert(&String::from("authios:root:write"), &String::from("authios:root"), &pool));
         };
         
         App::new()
