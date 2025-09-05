@@ -19,11 +19,6 @@ impl crate::UsersUseCase {
             .await
             .map_err(|_| Error::DatabaseConnection)?;
         
-        match crate::UsersUseCase::authorize(&params.auth.token, &params.auth.encoding_key, &String::from("authios:root:write"), &mut *client).await {
-            Ok(true) => (),
-            Err(_) | Ok(false) => return Err(Error::Unauthorized)
-        };
-        
         let _ = crate::GroupsRepository::retrieve(&params.group_name, &mut *client)
             .await
             .map_err(|_| Error::GroupNotExist)?;
@@ -53,8 +48,6 @@ pub enum UserRevokeGroupError {
     UserNotExist,
     #[error("NOT_ADDED_YET")]
     NotAddedYet,
-    #[error("UNAUTHORIZED")]
-    Unauthorized,
     #[error("DATABASE_CONNECTION")]
     DatabaseConnection
 }

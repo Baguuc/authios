@@ -1,18 +1,15 @@
 pub struct DeleteParams {
-    pub name: String,
-    pub auth: crate::AuthParams
+    pub name: String
 }
 
 pub struct DeleteParamsBuilder {
-    name: Option<String>,
-    auth: Option<crate::AuthParams>
+    name: Option<String>
 }
 
 impl DeleteParamsBuilder {
     pub fn new() -> Self {
         return Self {
-            name: None,
-            auth: None
+            name: None
         };
     }
     
@@ -23,25 +20,13 @@ impl DeleteParamsBuilder {
         };
     }
     
-    pub fn set_auth(self, auth: crate::AuthParams) -> Self {
-        return Self {
-            auth: Some(auth),
-            ..self
-        };
-    }
-    
     pub fn build(self) -> Option<DeleteParams> {
         if self.name.is_none() {
             return None;
         }
 
-        if self.auth.is_none() {
-            return None;
-        }
-
         let params = DeleteParams {
-            name: self.name.unwrap(),
-            auth: self.auth.unwrap()
+            name: self.name.unwrap()
         };
 
         return Some(params);

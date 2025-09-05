@@ -9,26 +9,22 @@ pub async fn controller(
         GroupsUseCase,
         use_cases::group::create::GroupCreateError as Error
     };
-    use authios_domain::{GroupCreateParamsBuilder, AuthParamsBuilder};
+    use authios_domain::GroupCreateParamsBuilder as ParamsBuilder;
     use actix_web::HttpResponse;
 
-    let token = req.headers()
+    let pwd = req.headers()
         .get("authorization")
         .unwrap()
         .to_str()
         .unwrap()
         .to_string();
 
-    let auth_params = AuthParamsBuilder::new()
-        .set_encoding_key(config.jwt.encryption_key.clone())
-        .set_token(token)
-        .build()
-        // won't error
-        .unwrap();
-
-    let params = GroupCreateParamsBuilder::new()
+    if pwd != config.root.pwd {
+        return HttpResponse::Unauthorized().body("UNAUTHORIZED");
+    }
+    
+    let params = ParamsBuilder::new()
         .set_name(body.name.clone())
-        .set_auth(auth_params)
         .build()
         .unwrap();
 
@@ -36,7 +32,6 @@ pub async fn controller(
         Ok(_) => HttpResponse::Ok().into(),
         Err(error) => match error {
             Error::AlreadyExist => HttpResponse::Conflict().body(error.to_string()),
-            Error::Unauthorized => HttpResponse::Unauthorized().body(error.to_string()),
             Error::DatabaseConnection => HttpResponse::InternalServerError().body(error.to_string())
         }
     };

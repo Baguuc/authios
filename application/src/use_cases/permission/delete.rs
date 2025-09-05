@@ -17,12 +17,7 @@ impl crate::PermissionsUseCase {
         let mut client = client.acquire()
             .await
             .map_err(|_| Error::DatabaseConnection)?;
-        
-        match crate::UsersUseCase::authorize(&params.auth.token, &params.auth.encoding_key, &String::from("authios:root:write"), &mut *client).await {
-            Ok(true) => (),
-            Err(_) | Ok(false) => return Err(Error::Unauthorized)
-        };
-        
+                
         let _ = crate::PermissionsRepository::retrieve(&params.name, &mut *client)
             .await
             .map_err(|_| Error::NotExist)?;
@@ -39,8 +34,6 @@ impl crate::PermissionsUseCase {
 pub enum PermissionDeleteError {
     #[error("NOT_EXIST")]
     NotExist,
-    #[error("Unauthorized")]
-    Unauthorized,
     #[error("DATABASE_CONNECTION")]
     DatabaseConnection,
 }

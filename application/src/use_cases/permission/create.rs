@@ -17,12 +17,7 @@ impl crate::PermissionsUseCase {
         let mut client = client.acquire()
             .await
             .map_err(|_| Error::DatabaseConnection)?;
-        
-        match crate::UsersUseCase::authorize(&params.auth.token, &params.auth.encoding_key, &String::from("authios:root:write"), &mut *client).await {
-            Ok(true) => (),
-            Err(_) | Ok(false) => return Err(Error::Unauthorized)
-        };
-        
+                
         crate::PermissionsRepository::insert(&params.name, &mut *client)
             .await
             .map_err(|_| Error::AlreadyExist)?; 
@@ -35,8 +30,6 @@ impl crate::PermissionsUseCase {
 pub enum PermissionCreateError {
     #[error("ALREADY_EXIST")]
     AlreadyExist,
-    #[error("UNAUTHORIZED")]
-    Unauthorized,
     #[error("DATABASE_CONNECTION")]
     DatabaseConnection,
 }

@@ -49,20 +49,6 @@ async fn run(args: Args) {
     let server = HttpServer::new(move || {
         let config = error_if_necessary(Config::read(args.clone().config.unwrap_or(String::from("./authios.json"))));
         let pool = error_if_necessary(block_on(create_pool(config.database.clone())));
-
-        {
-            let _ = block_on(PermissionsRepository::insert(&String::from("authios:root:read"), &pool));
-            let _ = block_on(PermissionsRepository::insert(&String::from("authios:root:write"), &pool));
-            
-            let _ = block_on(GroupsRepository::insert(&String::from("authios:root"), &pool));
-            
-            let _ = block_on(GroupPermissionsRepository::insert(&String::from("authios:root"), &String::from("authios:root:read"), &pool));
-            let _ = block_on(GroupPermissionsRepository::insert(&String::from("authios:root"), &String::from("authios:root:write"), &pool));
-
-            let _ = block_on(UsersRepository::insert(&String::from("root"), &hash_password(config.root.pwd.clone()).expect("Cannot hash password"), &pool));
-            
-            let _ = block_on(UserGroupsRepository::insert(&String::from("authios:root:write"), &String::from("authios:root"), &pool));
-        };
         
         App::new()
             .app_data(Data::new(pool))

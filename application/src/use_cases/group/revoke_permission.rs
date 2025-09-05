@@ -20,11 +20,6 @@ impl crate::GroupsUseCase {
             .await
             .map_err(|_| Error::DatabaseConnection)?;
         
-        match crate::UsersUseCase::authorize(&params.auth.token, &params.auth.encoding_key, &String::from("authios:root:write"), &mut *client).await {
-            Ok(true) => (),
-            Err(_) | Ok(false) => return Err(Error::Unauthorized)
-        };
-        
         let _ = crate::PermissionsRepository::retrieve(&params.permission_name, &mut *client)
             .await
             .map_err(|_| Error::PermissionNotExist)?;
@@ -50,8 +45,6 @@ impl crate::GroupsUseCase {
 pub enum GroupRevokePermissionError {
     #[error("PERMISSION_NOT_EXIST")]
     PermissionNotExist,
-    #[error("Unauthorized")]
-    Unauthorized,
     #[error("GROUP_NOT_EXIST")]
     GroupNotExist,
     #[error("NOT_ADDED_YET")]
