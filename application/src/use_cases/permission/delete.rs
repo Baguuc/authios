@@ -11,8 +11,8 @@ impl crate::PermissionsUseCase {
     pub async fn delete<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: authios_domain::PermissionDeleteParams,
         client: A
-    ) -> Result<(), PermissionDeleteError> {
-        type Error = PermissionDeleteError;
+    ) -> Result<(), authios_domain::PermissionDeleteError> {
+        type Error = authios_domain::PermissionDeleteError;
 
         let mut client = client.acquire()
             .await
@@ -28,12 +28,4 @@ impl crate::PermissionsUseCase {
         
         return Ok(());
     }
-}
-
-#[derive(thiserror::Error, Debug)]
-pub enum PermissionDeleteError {
-    #[error("NOT_EXIST")]
-    NotExist,
-    #[error("DATABASE_CONNECTION")]
-    DatabaseConnection,
 }

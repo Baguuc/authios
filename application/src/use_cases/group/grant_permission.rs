@@ -13,8 +13,8 @@ impl crate::GroupsUseCase {
     pub async fn grant_permission<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: authios_domain::GroupGrantPermissionParams,
         client: A
-    ) -> Result<(), GroupGrantPermissionError> {
-        type Error = GroupGrantPermissionError;
+    ) -> Result<(), authios_domain::GroupGrantPermissionError> {
+        type Error = authios_domain::GroupGrantPermissionError;
 
         let mut client = client.acquire()
             .await
@@ -35,16 +35,4 @@ impl crate::GroupsUseCase {
         
         return Ok(());
     }
-}
-
-#[derive(thiserror::Error, Debug)]
-pub enum GroupGrantPermissionError {
-    #[error("PERMISSION_NOT_EXIST")]
-    PermissionNotExist,
-    #[error("GROUP_NOT_EXIST")]
-    GroupNotExist,
-    #[error("ALREADY_ADDED")]
-    AlreadyAdded,
-    #[error("DATABASE_CONNECTION")]
-    DatabaseConnection,
 }

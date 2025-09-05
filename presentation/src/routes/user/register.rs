@@ -4,11 +4,11 @@ pub async fn controller(
     client: actix_web::web::Data<sqlx::postgres::PgPool>
 ) -> actix_web::HttpResponse {
     use actix_web::HttpResponse;
-    use authios_application::{
-        UsersUseCase,
-        use_cases::user::register::UserRegisterError as Error
+    use authios_application::UsersUseCase;
+    use authios_domain::{
+        UserRegisterParamsBuilder as ParamsBuilder,
+        UserRegisterError as Error
     };
-    use authios_domain::UserRegisterParamsBuilder as ParamsBuilder;
     
     let params = ParamsBuilder::new()
         .set_login(body.login.clone())

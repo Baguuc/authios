@@ -11,10 +11,10 @@ impl crate::UsersUseCase {
     pub async fn info<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: authios_domain::UserInfoParams,
         client: A
-    ) -> Result<authios_domain::User, UserInfoError> {
+    ) -> Result<authios_domain::User, authios_domain::UserInfoError> {
         use crate::UsersRepository; 
 
-        type Error = UserInfoError; 
+        type Error = authios_domain::UserInfoError; 
         
         let mut client = client.acquire()
             .await
@@ -29,14 +29,4 @@ impl crate::UsersUseCase {
         
         return Ok(data);
     }
-}
-
-#[derive(thiserror::Error, Debug)]
-pub enum UserInfoError {
-    #[error("INVALID_TOKEN")]
-    InvalidToken,
-    #[error("NotExist")]
-    NotExist,
-    #[error("DATABASE_CONNECTION")]
-    DatabaseConnection
 }

@@ -6,11 +6,11 @@ pub async fn controller(
 ) -> impl actix_web::Responder {
     use actix_web::{HttpResponse, http::header::ContentType};
     use serde_json::to_string;
-    use authios_application::{
-        UsersUseCase,
-        use_cases::user::info::UserInfoError as Error
+    use authios_application::UsersUseCase;
+    use authios_domain::{
+        UserInfoParamsBuilder as ParamsBuilder,
+        UserInfoError as Error
     };
-    use authios_domain::UserInfoParamsBuilder as ParamsBuilder;
     
     let token = req.headers()
         .get("authorization")

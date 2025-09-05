@@ -1,12 +1,12 @@
 pub mod models;
-pub mod params;
-
 pub use models::{
     Permission, 
     Group,
     User,
     Claims
 };
+
+pub mod params;
 pub use params::{
     // permission params
     PermissionCreateParams,
@@ -49,4 +49,26 @@ pub use params::{
     
     UserRevokeGroupParams,
     UserRevokeGroupParamsBuilder,
+};
+
+pub mod errors;
+pub use errors::{
+    // permission errors
+    PermissionCreateError,
+    PermissionDeleteError,
+
+    // group errors
+    GroupCreateError,
+    GroupDeleteError,
+    GroupGrantPermissionError,
+    GroupRevokePermissionError,
+    
+    // user errors
+    UserInfoError,
+    UserAuthorizeError,
+    UserLoginError,
+    UserUpdatePwdError,
+    UserRegisterError,
+    UserGrantGroupError,
+    UserRevokeGroupError
 };

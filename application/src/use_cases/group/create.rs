@@ -11,8 +11,8 @@ impl crate::GroupsUseCase {
     pub async fn create<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: authios_domain::GroupCreateParams,
         client: A
-    ) -> Result<(), GroupCreateError> {
-        type Error = GroupCreateError; 
+    ) -> Result<(), authios_domain::GroupCreateError> {
+        type Error = authios_domain::GroupCreateError; 
         
         let mut client = client.acquire()
             .await
@@ -24,12 +24,4 @@ impl crate::GroupsUseCase {
         
         return Ok(());
     }
-}
-
-#[derive(thiserror::Error, Debug)]
-pub enum GroupCreateError {
-    #[error("ALREADY_EXIST")]
-    AlreadyExist,
-    #[error("DATABASE_CONNECTION")]
-    DatabaseConnection
 }

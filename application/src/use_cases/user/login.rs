@@ -12,12 +12,12 @@ impl crate::UsersUseCase {
     pub async fn login<'c, C: sqlx::Acquire<'c, Database = sqlx::Postgres>>(
         params: authios_domain::UserLoginParams,
         client: C
-    ) -> Result<String, UserLoginError> {
+    ) -> Result<String, authios_domain::UserLoginError> {
         use crate::UsersRepository; 
         use crate::utils::password_hash::verify_password;
         use crate::utils::jwt_token::generate;
         
-        type Error = UserLoginError; 
+        type Error = authios_domain::UserLoginError; 
         
         let mut client = client
             .acquire()
@@ -40,16 +40,4 @@ impl crate::UsersUseCase {
         
         return Ok(token);
     }
-}
-
-#[derive(thiserror::Error, Debug)]
-pub enum UserLoginError {
-    #[error("NOT_EXIST")]
-    NotExist,
-    #[error("INVALID_CREDENTIALS")]
-    InvalidCredentials,
-    #[error("CANNOT_GENERATE_TOKEN")]
-    CannotGenerateToken,
-    #[error("DATABASE_CONNECTION")]
-    DatabaseConnection
 }

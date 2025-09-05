@@ -13,8 +13,8 @@ impl crate::UsersUseCase {
     pub async fn grant_group<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: authios_domain::UserGrantGroupParams,
         client: A
-    ) -> Result<(), UserGrantGroupError> {
-        type Error = UserGrantGroupError;
+    ) -> Result<(), authios_domain::UserGrantGroupError> {
+        type Error = authios_domain::UserGrantGroupError;
         
         let mut client = client.acquire()
             .await
@@ -35,16 +35,4 @@ impl crate::UsersUseCase {
         
         return Ok(());
     }
-}
-
-#[derive(thiserror::Error, Debug)]
-pub enum UserGrantGroupError {
-    #[error("GROUP_NOT_EXIST")]
-    GroupNotExist,
-    #[error("USER_NOT_EXIST")]
-    UserNotExist,
-    #[error("ALREADY_ADDED")]
-    AlreadyAdded,
-    #[error("DATABASE_CONNECTION")]
-    DatabaseConnection
 }

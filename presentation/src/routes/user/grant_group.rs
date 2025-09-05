@@ -5,11 +5,11 @@ pub async fn controller(
     client: actix_web::web::Data<sqlx::postgres::PgPool>,
     config: actix_web::web::Data<crate::config::Config>,
 ) -> impl actix_web::Responder {
-    use authios_application::{
-        UsersUseCase,
-        use_cases::user::grant_group::UserGrantGroupError as Error
+    use authios_application::UsersUseCase;
+    use authios_domain::{
+        UserGrantGroupParamsBuilder as ParamsBuilder,
+        UserGrantGroupError as Error
     };
-    use authios_domain::UserGrantGroupParamsBuilder as ParamsBuilder;
     use actix_web::HttpResponse;
 
     let pwd = req.headers()

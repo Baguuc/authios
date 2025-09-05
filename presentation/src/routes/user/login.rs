@@ -5,11 +5,11 @@ pub async fn controller(
     config: actix_web::web::Data<crate::config::Config>,
 ) -> actix_web::HttpResponse {
     use actix_web::HttpResponse;
-    use authios_application::{
-        UsersUseCase,
-        use_cases::user::login::UserLoginError as Error
+    use authios_application::UsersUseCase;
+    use authios_domain::{
+        UserLoginParamsBuilder as ParamsBuilder,
+        UserLoginError as Error
     };
-    use authios_domain::UserLoginParamsBuilder as ParamsBuilder;
     
     let params = ParamsBuilder::new()
         .set_login(body.login.clone())

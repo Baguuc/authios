@@ -12,8 +12,8 @@ impl crate::UsersUseCase {
     pub async fn update_pwd<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: authios_domain::UserUpdatePwdParams,
         client: A
-    ) -> Result<(), UserUpdatePwdError> {
-        type Error = UserUpdatePwdError;
+    ) -> Result<(), authios_domain::UserUpdatePwdError> {
+        type Error = authios_domain::UserUpdatePwdError;
         
         let mut client = client.acquire()
             .await
@@ -36,16 +36,4 @@ impl crate::UsersUseCase {
         
         return Ok(());
     }
-}
-
-#[derive(thiserror::Error, Debug)]
-pub enum UserUpdatePwdError {
-    #[error("INVALID_TOKEN")]
-    InvalidToken,
-    #[error("NOT_EXIST")]
-    NotExist,
-    #[error("CANNOT_HASH")]
-    CannotHash,
-    #[error("DATABASE_CONNECTION")]
-    DatabaseConnection
 }

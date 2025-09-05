@@ -12,8 +12,8 @@ impl crate::UsersUseCase {
     pub async fn authorize<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: authios_domain::UserAuthorizeParams,
         client: A
-    ) -> Result<bool, UserAuthorizeError> {
-        type Error = UserAuthorizeError; 
+    ) -> Result<bool, authios_domain::UserAuthorizeError> {
+        type Error = authios_domain::UserAuthorizeError; 
         
         let mut client = client.acquire()
             .await
@@ -48,16 +48,4 @@ impl crate::UsersUseCase {
         
         return Ok(permissions.contains(&params.permission_name));
     }
-}
-
-#[derive(thiserror::Error, Debug)]
-pub enum UserAuthorizeError {
-    #[error("INVALID_TOKEN")]
-    InvalidToken,
-    #[error("USER_NOT_EXIST")]
-    UserNotExist,
-    #[error("PERMISSION_NOT_EXIST")]
-    PermissionNotExist,
-    #[error("DATABASE_CONNECTION")]
-    DatabaseConnection
 }

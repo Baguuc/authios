@@ -5,11 +5,11 @@ pub async fn controller(
     client: actix_web::web::Data<sqlx::postgres::PgPool>,
     config: actix_web::web::Data<crate::config::Config>,
 ) -> impl actix_web::Responder {
-    use authios_application::{
-        PermissionsUseCase,
-        use_cases::permission::delete::PermissionDeleteError as Error
+    use authios_application::PermissionsUseCase;
+    use authios_domain::{
+        PermissionDeleteParamsBuilder as ParamsBuilder,
+        PermissionDeleteError as Error
     };
-    use authios_domain::PermissionDeleteParamsBuilder as ParamsBuilder;
     use actix_web::HttpResponse;
 
     let pwd = req.headers()

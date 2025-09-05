@@ -13,8 +13,8 @@ impl crate::GroupsUseCase {
     pub async fn revoke<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: authios_domain::GroupRevokePermissionParams,
         client: A
-    ) -> Result<(), GroupRevokePermissionError> {
-        type Error = GroupRevokePermissionError;
+    ) -> Result<(), authios_domain::GroupRevokePermissionError> {
+        type Error = authios_domain::GroupRevokePermissionError;
 
         let mut client = client.acquire()
             .await
@@ -39,16 +39,4 @@ impl crate::GroupsUseCase {
         
         return Ok(());
     }
-}
-
-#[derive(thiserror::Error, Debug)]
-pub enum GroupRevokePermissionError {
-    #[error("PERMISSION_NOT_EXIST")]
-    PermissionNotExist,
-    #[error("GROUP_NOT_EXIST")]
-    GroupNotExist,
-    #[error("NOT_ADDED_YET")]
-    NotAddedYet,
-    #[error("DATABASE_CONNECTION")]
-    DatabaseConnection
 }

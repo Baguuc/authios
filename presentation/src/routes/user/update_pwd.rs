@@ -6,11 +6,11 @@ pub async fn controller(
     config: actix_web::web::Data<crate::config::Config>
 ) -> actix_web::HttpResponse {
     use actix_web::HttpResponse;
-    use authios_application::{
-        UsersUseCase,
-        use_cases::user::update_pwd::UserUpdatePwdError as Error
+    use authios_application::UsersUseCase;
+    use authios_domain::{
+        UserUpdatePwdParamsBuilder as ParamsBuilder,
+        UserUpdatePwdError as Error
     };
-    use authios_domain::UserUpdatePwdParamsBuilder as ParamsBuilder;
     
     let token = req.headers()
         .get("authorization")

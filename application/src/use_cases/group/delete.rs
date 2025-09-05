@@ -11,8 +11,8 @@ impl crate::GroupsUseCase {
     pub async fn delete<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: authios_domain::GroupDeleteParams,
         client: A
-    ) -> Result<(), GroupDeleteError> {
-        type Error = GroupDeleteError;
+    ) -> Result<(), authios_domain::GroupDeleteError> {
+        type Error = authios_domain::GroupDeleteError;
 
         let mut client = client.acquire()
             .await
@@ -28,12 +28,4 @@ impl crate::GroupsUseCase {
         
         return Ok(());
     }
-}
-
-#[derive(thiserror::Error, Debug)]
-pub enum GroupDeleteError {
-    #[error("NOT_EXIST")]
-    NotExist,
-    #[error("DATABASE_CONNECTION")]
-    DatabaseConnection
 }

@@ -11,10 +11,10 @@ impl crate::UsersUseCase {
     pub async fn register<'c, C: sqlx::Acquire<'c, Database = sqlx::Postgres>>(
         params: authios_domain::UserRegisterParams,
         client: C
-    ) -> Result<(), UserRegisterError> {
+    ) -> Result<(), authios_domain::UserRegisterError> {
         use crate::UsersRepository; 
         
-        type Error = UserRegisterError; 
+        type Error = authios_domain::UserRegisterError; 
         
         let mut client = client
             .acquire()
@@ -31,14 +31,4 @@ impl crate::UsersUseCase {
         
         return Ok(());
     }
-}
-
-#[derive(thiserror::Error, Debug)]
-pub enum UserRegisterError {
-    #[error("ALREADY_EXIST")]
-    AlreadyExist,
-    #[error("CANNOT_HASH_PASSWORD")]
-    CannotHashPassword,
-    #[error("DATABASE_CONNECTION")]
-    DatabaseConnection
 }
