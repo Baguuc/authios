@@ -1,5 +1,5 @@
 impl crate::GroupsUseCase {
-    /// # GroupsUseCase::grant
+    /// # GroupsUseCase::grant_permission
     ///
     /// grant a permission to a group, checking for possible errors
     ///
@@ -10,22 +10,22 @@ impl crate::GroupsUseCase {
     /// + when database connection cannot be acquired;
     /// + when the user is not authorized for this operation;
     ///
-    pub async fn grant<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
-        params: authios_domain::PermissionGrantParams,
+    pub async fn grant_permission<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
+        params: authios_domain::GroupGrantPermissionParams,
         client: A
-    ) -> Result<(), GroupPermissionGrantError> {
-        type Error = GroupPermissionGrantError;
+    ) -> Result<(), GroupGrantPermissionError> {
+        type Error = GroupGrantPermissionError;
 
         let mut client = client.acquire()
             .await
             .map_err(|_| Error::DatabaseConnection)?;
         
-        match crate::UsersUseCase::check_permission(&params.auth.token, &params.auth.encoding_key, &String::from("authios:root:write"), &mut *client).await {
+        match crate::UsersUseCase::authorize(&params.auth.token, &params.auth.encoding_key, &String::from("authios:root:write"), &mut *client).await {
             Ok(true) => (),
             Err(_) | Ok(false) => return Err(Error::Unauthorized)
         };
         
-        let _ = crate::PermissionsRepository::retrieve(&params.name, &mut *client)
+        let _ = crate::PermissionsRepository::retrieve(&params.permission_name, &mut *client)
             .await
             .map_err(|_| Error::PermissionNotExist)?;
         
@@ -33,7 +33,7 @@ impl crate::GroupsUseCase {
             .await
             .map_err(|_| Error::GroupNotExist)?;
         
-        crate::GroupPermissionsRepository::insert(&params.group_name, &params.name, &mut *client)
+        crate::GroupPermissionsRepository::insert(&params.group_name, &params.permission_name, &mut *client)
             .await
             // already added
             .map_err(|_| Error::AlreadyAdded)?;
@@ -43,7 +43,7 @@ impl crate::GroupsUseCase {
 }
 
 #[derive(thiserror::Error, Debug)]
-pub enum GroupPermissionGrantError {
+pub enum GroupGrantPermissionError {
     #[error("PERMISSION_NOT_EXIST")]
     PermissionNotExist,
     #[error("Unauthorized")]

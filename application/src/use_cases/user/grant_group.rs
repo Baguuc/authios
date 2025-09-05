@@ -1,5 +1,5 @@
 impl crate::UsersUseCase {
-    /// # UsersUseCase::grant
+    /// # UsersUseCase::grant_group
     ///
     /// grant a group to a user, checking for possible errors
     ///
@@ -10,22 +10,22 @@ impl crate::UsersUseCase {
     /// + when the user is not authorized for this operation;
     /// + when database connection cannot be acquired;
     ///
-    pub async fn grant<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
-        params: authios_domain::GroupGrantParams,
+    pub async fn grant_group<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
+        params: authios_domain::UserGrantGroupParams,
         client: A
-    ) -> Result<(), UserGroupGrantError> {
-        type Error = UserGroupGrantError;
+    ) -> Result<(), UserGrantGroupError> {
+        type Error = UserGrantGroupError;
         
         let mut client = client.acquire()
             .await
             .map_err(|_| Error::DatabaseConnection)?;
         
-        match crate::UsersUseCase::check_permission(&params.auth.token, &params.auth.encoding_key, &String::from("authios:root:write"), &mut *client).await {
+        match crate::UsersUseCase::authorize(&params.auth.token, &params.auth.encoding_key, &String::from("authios:root:write"), &mut *client).await {
             Ok(true) => (),
             Err(_) | Ok(false) => return Err(Error::Unauthorized)
         };
         
-        let _ = crate::GroupsRepository::retrieve(&params.name, &mut *client)
+        let _ = crate::GroupsRepository::retrieve(&params.group_name, &mut *client)
             .await
             .map_err(|_| Error::GroupNotExist)?;
         
@@ -33,7 +33,7 @@ impl crate::UsersUseCase {
             .await
             .map_err(|_| Error::UserNotExist)?;
         
-        crate::UserGroupsRepository::insert(&params.user_login, &params.name, &mut *client)
+        crate::UserGroupsRepository::insert(&params.user_login, &params.group_name, &mut *client)
             .await
             // already added
             .map_err(|_| Error::AlreadyAdded)?;
@@ -43,7 +43,7 @@ impl crate::UsersUseCase {
 }
 
 #[derive(thiserror::Error, Debug)]
-pub enum UserGroupGrantError {
+pub enum UserGrantGroupError {
     #[error("GROUP_NOT_EXIST")]
     GroupNotExist,
     #[error("USER_NOT_EXIST")]

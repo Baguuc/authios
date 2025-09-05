@@ -10,7 +10,7 @@ impl crate::UsersUseCase {
     /// + when database connection cannot be acquired;
     ///
     pub async fn update_pwd<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(token: &String, encoding_key: &String, pwd: &String, client: A) -> Result<(), UserUpdatePwdError> {
-        use crate::use_cases::user::retrieve_from_token::UserRetrieveFromTokenError;
+        use crate::use_cases::user::info::UserInfoError;
         
         type Error = UserUpdatePwdError;
         
@@ -18,12 +18,12 @@ impl crate::UsersUseCase {
             .await
             .map_err(|_| Error::DatabaseConnection)?;
         
-        let user = crate::UsersUseCase::retrieve_from_token(token, encoding_key, &mut *client)
+        let user = crate::UsersUseCase::info(token, encoding_key, &mut *client)
             .await
             .map_err(|error| match error {
-                 UserRetrieveFromTokenError::InvalidToken => Error::InvalidToken,
-                 UserRetrieveFromTokenError::NotExist => Error::NotExist,
-                 UserRetrieveFromTokenError::DatabaseConnection => Error::DatabaseConnection,
+                 UserInfoError::InvalidToken => Error::InvalidToken,
+                 UserInfoError::NotExist => Error::NotExist,
+                 UserInfoError::DatabaseConnection => Error::DatabaseConnection,
             })?;
         
         let pwd = crate::utils::password_hash::hash_password(pwd.clone())

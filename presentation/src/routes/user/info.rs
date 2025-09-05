@@ -8,7 +8,7 @@ pub async fn controller(
     use serde_json::to_string;
     use authios_application::{
         UsersUseCase,
-        use_cases::user::retrieve_from_token::UserRetrieveFromTokenError as Error
+        use_cases::user::info::UserInfoError as Error
     };
     
     let token = req.headers()
@@ -18,7 +18,7 @@ pub async fn controller(
         .unwrap()
         .to_string();
 
-    return match UsersUseCase::retrieve_from_token(&token, &config.jwt.encryption_key.clone(), &*client.into_inner()).await {
+    return match UsersUseCase::info(&token, &config.jwt.encryption_key.clone(), &*client.into_inner()).await {
         Ok(user) => HttpResponse::Ok().content_type(ContentType::json()).body(to_string(&user).unwrap()),
         Err(error) => match error {
             Error::InvalidToken => HttpResponse::Unauthorized().body(error.to_string()),

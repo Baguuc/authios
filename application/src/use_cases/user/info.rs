@@ -1,5 +1,5 @@
 impl crate::UsersUseCase {
-    /// # UsersUseCase::retrieve_from_token
+    /// # UsersUseCase::info
     ///
     /// retrieve a user from JWT token, checking for possible errors
     ///
@@ -8,10 +8,10 @@ impl crate::UsersUseCase {
     /// + when a user login specified in the token not exist;
     /// + when database connection cannot be acquired;
     ///
-    pub async fn retrieve_from_token<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(token: &String, encoding_key: &String, client: A) -> Result<authios_domain::User, UserRetrieveFromTokenError> {
+    pub async fn info<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(token: &String, encoding_key: &String, client: A) -> Result<authios_domain::User, UserInfoError> {
         use crate::UsersRepository; 
 
-        type Error = UserRetrieveFromTokenError; 
+        type Error = UserInfoError; 
         
         let mut client = client.acquire()
             .await
@@ -29,7 +29,7 @@ impl crate::UsersUseCase {
 }
 
 #[derive(thiserror::Error, Debug)]
-pub enum UserRetrieveFromTokenError {
+pub enum UserInfoError {
     #[error("INVALID_TOKEN")]
     InvalidToken,
     #[error("NotExist")]

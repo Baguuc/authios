@@ -11,21 +11,21 @@ impl crate::GroupsUseCase {
     /// + when the user is not authorized for this operation;
     ///
     pub async fn revoke<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
-        params: authios_domain::PermissionRevokeParams,
+        params: authios_domain::GroupRevokePermissionParams,
         client: A
-    ) -> Result<(), GroupPermissionRevokeError> {
-        type Error = GroupPermissionRevokeError;
+    ) -> Result<(), GroupRevokePermissionError> {
+        type Error = GroupRevokePermissionError;
 
         let mut client = client.acquire()
             .await
             .map_err(|_| Error::DatabaseConnection)?;
         
-        match crate::UsersUseCase::check_permission(&params.auth.token, &params.auth.encoding_key, &String::from("authios:root:write"), &mut *client).await {
+        match crate::UsersUseCase::authorize(&params.auth.token, &params.auth.encoding_key, &String::from("authios:root:write"), &mut *client).await {
             Ok(true) => (),
             Err(_) | Ok(false) => return Err(Error::Unauthorized)
         };
         
-        let _ = crate::PermissionsRepository::retrieve(&params.name, &mut *client)
+        let _ = crate::PermissionsRepository::retrieve(&params.permission_name, &mut *client)
             .await
             .map_err(|_| Error::PermissionNotExist)?;
         
@@ -34,12 +34,12 @@ impl crate::GroupsUseCase {
             .map_err(|_| Error::GroupNotExist)?;
         
         // not added yet
-        if group.permissions.contains(&params.name) {
+        if group.permissions.contains(&params.permission_name) {
             return Err(Error::NotAddedYet);
         }
         
         // this won't error so we can skip this result
-        let _ = crate::GroupPermissionsRepository::delete(&params.group_name, &params.name, &mut *client)
+        let _ = crate::GroupPermissionsRepository::delete(&params.group_name, &params.permission_name, &mut *client)
             .await;
         
         return Ok(());
@@ -47,7 +47,7 @@ impl crate::GroupsUseCase {
 }
 
 #[derive(thiserror::Error, Debug)]
-pub enum GroupPermissionRevokeError {
+pub enum GroupRevokePermissionError {
     #[error("PERMISSION_NOT_EXIST")]
     PermissionNotExist,
     #[error("Unauthorized")]

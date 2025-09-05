@@ -1,34 +1,34 @@
 pub struct GrantParams {
-    pub name: String,
     pub group_name: String,
+    pub user_login: String,
     pub auth: crate::AuthParams
 }
 
 pub struct GrantParamsBuilder {
-    name: Option<String>,
     group_name: Option<String>,
+    user_login: Option<String>,
     auth: Option<crate::AuthParams>
 }
 
 impl GrantParamsBuilder {
     pub fn new() -> Self {
         return Self {
-            name: None,
             group_name: None,
+            user_login: None,
             auth: None
-        };
-    }
-    
-    pub fn set_name(self, name: String) -> Self {
-        return Self {
-            name: Some(name),
-            ..self
         };
     }
     
     pub fn set_group_name(self, group_name: String) -> Self {
         return Self {
             group_name: Some(group_name),
+            ..self
+        };
+    }
+    
+    pub fn set_user_login(self, user_login: String) -> Self {
+        return Self {
+            user_login: Some(user_login),
             ..self
         };
     }
@@ -41,11 +41,11 @@ impl GrantParamsBuilder {
     }
     
     pub fn build(self) -> Option<GrantParams> {
-        if self.name.is_none() {
+        if self.group_name.is_none() {
             return None;
         }
         
-        if self.group_name.is_none() {
+        if self.user_login.is_none() {
             return None;
         }
 
@@ -54,8 +54,8 @@ impl GrantParamsBuilder {
         }
 
         let params = GrantParams {
-            name: self.name.unwrap(),
             group_name: self.group_name.unwrap(),
+            user_login: self.user_login.unwrap(),
             auth: self.auth.unwrap()
         };
 

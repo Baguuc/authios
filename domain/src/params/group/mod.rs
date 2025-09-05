@@ -10,14 +10,14 @@ pub use delete::{
     DeleteParamsBuilder as GroupDeleteParamsBuilder
 };
 
-pub mod grant;
-pub use grant::{
-    GrantParams as GroupGrantParams,
-    GrantParamsBuilder as GroupGrantParamsBuilder
+pub mod grant_permission;
+pub use grant_permission::{
+    GrantParams as GroupGrantPermissionParams,
+    GrantParamsBuilder as GroupGrantPermissionParamsBuilder
 };
 
-pub mod revoke;
-pub use revoke::{
-    RevokeParams as GroupRevokeParams,
-    RevokeParamsBuilder as GroupRevokeParamsBuilder
+pub mod revoke_permission;
+pub use revoke_permission::{
+    RevokeParams as GroupRevokePermissionParams,
+    RevokeParamsBuilder as GroupRevokePermissionParamsBuilder
 };

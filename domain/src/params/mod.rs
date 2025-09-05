@@ -1,8 +1,17 @@
+// login params
+// info params
+// authorize params
+// update pwd params
+
+
 pub mod group;
 pub use group::*;
 
 pub mod permission;
 pub use permission::*;
+
+pub mod user;
+pub use user::*;
 
 pub struct AuthParams {
     pub token: String,

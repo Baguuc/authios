@@ -1,27 +1,27 @@
-pub struct RevokeParams {
-    pub name: String,
+pub struct GrantParams {
+    pub permission_name: String,
     pub group_name: String,
     pub auth: crate::AuthParams
 }
 
-pub struct RevokeParamsBuilder {
-    name: Option<String>,
+pub struct GrantParamsBuilder {
+    permission_name: Option<String>,
     group_name: Option<String>,
     auth: Option<crate::AuthParams>
 }
 
-impl RevokeParamsBuilder {
+impl GrantParamsBuilder {
     pub fn new() -> Self {
         return Self {
-            name: None,
+            permission_name: None,
             group_name: None,
             auth: None
         };
     }
     
-    pub fn set_name(self, name: String) -> Self {
+    pub fn set_permission_name(self, permission_name: String) -> Self {
         return Self {
-            name: Some(name),
+            permission_name: Some(permission_name),
             ..self
         };
     }
@@ -40,8 +40,8 @@ impl RevokeParamsBuilder {
         };
     }
     
-    pub fn build(self) -> Option<RevokeParams> {
-        if self.name.is_none() {
+    pub fn build(self) -> Option<GrantParams> {
+        if self.permission_name.is_none() {
             return None;
         }
         
@@ -53,8 +53,8 @@ impl RevokeParamsBuilder {
             return None;
         }
 
-        let params = RevokeParams {
-            name: self.name.unwrap(),
+        let params = GrantParams {
+            permission_name: self.permission_name.unwrap(),
             group_name: self.group_name.unwrap(),
             auth: self.auth.unwrap()
         };

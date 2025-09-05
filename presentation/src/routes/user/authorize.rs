@@ -7,7 +7,7 @@ pub async fn controller(
 ) -> impl actix_web::Responder {
     use authios_application::{
         UsersUseCase,
-        use_cases::user::check_permission::UserCheckPermissionError as Error
+        use_cases::user::authorize::UserAuthorizeError as Error
     };
     use actix_web::HttpResponse;
 
@@ -18,7 +18,7 @@ pub async fn controller(
         .unwrap()
         .to_string();
 
-    return match UsersUseCase::check_permission(&token, &config.jwt.encryption_key, &path.permission_name, &*client.into_inner()).await {
+    return match UsersUseCase::authorize(&token, &config.jwt.encryption_key, &path.permission_name, &*client.into_inner()).await {
         Ok(true) => HttpResponse::Ok().into(),
         Ok(false) => HttpResponse::Unauthorized().into(),
         Err(error) => match error {

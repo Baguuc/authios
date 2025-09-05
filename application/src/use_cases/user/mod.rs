@@ -1,9 +1,9 @@
-pub mod check_permission;
-pub mod retrieve_from_token;
+pub mod info;
+pub mod authorize;
 pub mod login;
 pub mod update_pwd;
 pub mod register;
-pub mod grant;
-pub mod revoke;
+pub mod grant_group;
+pub mod revoke_group;
 
 pub struct UsersUseCase;
