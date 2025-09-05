@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["presentation", "domain", "application", "sdk"]
+members = ["presentation", "domain", "application"]
 
 [workspace.dependencies]
 sqlx = { version = "0.8", features = [ "runtime-tokio", "postgres" ] }
