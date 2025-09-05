@@ -1,4 +1,4 @@
-#[actix_web::post("/")]
+#[actix_web::post("")]
 pub async fn controller(
     body: actix_web::web::Json<RequestBody>,
     client: actix_web::web::Data<sqlx::postgres::PgPool>,
@@ -10,9 +10,7 @@ pub async fn controller(
         use_cases::user::login::UserLoginError as Error
     };
     
-    let client = client.into_inner();
-    
-    return match UsersUseCase::login(&body.login, &body.pwd, config.jwt.encryption_key.clone(), &*client).await {
+    return match UsersUseCase::login(&body.login, &body.pwd, config.jwt.encryption_key.clone(), &*client.into_inner()).await {
         Ok(token) => HttpResponse::Ok().body(token),
         Err(error) => match error {
             Error::InvalidCredentials => HttpResponse::Unauthorized().body(error.to_string()),

@@ -8,9 +8,12 @@ pub mod revoke;
 pub fn scope() -> actix_web::Scope {
     actix_web::web::scope("/user")
         .service(login::controller)
-        .service(info::controller)
-        .service(authorize::controller)
-        .service(update_pwd::controller)
-        .service(grant::controller)
-        .service(revoke::controller)
+        .service(actix_web::web::scope("")
+            .guard(actix_web::guard::fn_guard(|ctx| ctx.head().headers().get("authorization").is_some()))
+            .service(info::controller)
+            .service(authorize::controller)
+            .service(update_pwd::controller)
+            .service(grant::controller)
+            .service(revoke::controller)
+        )
 }

@@ -11,14 +11,13 @@ pub async fn controller(
     };
     use authios_domain::{GroupDeleteParamsBuilder, AuthParamsBuilder};
     use actix_web::HttpResponse;
-
-    let client = client.into_inner();
     
-    let headers = req.headers();
-    let token = match headers.get("Authorization") {
-        Some(token) => token.to_str().unwrap().to_string(),
-        None => return HttpResponse::Unauthorized().body("NO_TOKEN")
-    };
+    let token = req.headers()
+        .get("authorization")
+        .unwrap()
+        .to_str()
+        .unwrap()
+        .to_string();
 
     let auth_params = AuthParamsBuilder::new()
         .set_encoding_key(config.jwt.encryption_key.clone())
@@ -33,7 +32,7 @@ pub async fn controller(
         .build()
         .unwrap();
 
-    return match GroupsUseCase::delete(params, &*client).await {
+    return match GroupsUseCase::delete(params, &*client.into_inner()).await {
         Ok(_) => HttpResponse::Ok().into(),
         Err(error) => match error {
             Error::NotExist => HttpResponse::Conflict().body(error.to_string()),

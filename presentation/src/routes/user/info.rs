@@ -11,15 +11,14 @@ pub async fn controller(
         use_cases::user::retrieve_from_token::UserRetrieveFromTokenError as Error
     };
     
-    let client = client.into_inner();
+    let token = req.headers()
+        .get("authorization")
+        .unwrap()
+        .to_str()
+        .unwrap()
+        .to_string();
 
-    let headers = req.headers();
-    let token = match headers.get("Authorization") {
-        Some(token) => token.to_str().unwrap().to_string(),
-        None => return HttpResponse::Unauthorized().body("NO_TOKEN")
-    };
-
-    return match UsersUseCase::retrieve_from_token(&token, &config.jwt.encryption_key.clone(), &*client).await {
+    return match UsersUseCase::retrieve_from_token(&token, &config.jwt.encryption_key.clone(), &*client.into_inner()).await {
         Ok(user) => HttpResponse::Ok().content_type(ContentType::json()).body(to_string(&user).unwrap()),
         Err(error) => match error {
             Error::InvalidToken => HttpResponse::Unauthorized().body(error.to_string()),

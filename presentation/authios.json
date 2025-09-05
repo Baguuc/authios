@@ -1,0 +1,16 @@
+{
+  "port": 3001,
+  "database": {
+    "host": "localhost",
+    "port": 5431,
+    "password": "123",
+    "user": "baguuc",
+    "database": "baguuc"
+  },
+  "jwt": {
+    "encryption_key": "123"
+  },
+  "root": {
+    "pwd": "123"
+  }
+}

@@ -10,16 +10,15 @@ pub async fn controller(
         UsersUseCase,
         use_cases::user::update_pwd::UserUpdatePwdError as Error
     };
-
-    let client = client.into_inner();
     
-    let headers = req.headers();
-    let token = match headers.get("Authorization") {
-        Some(token) => token.to_str().unwrap().to_string(),
-        None => return HttpResponse::Unauthorized().into()
-    };
+    let token = req.headers()
+        .get("authorization")
+        .unwrap()
+        .to_str()
+        .unwrap()
+        .to_string();
 
-    return match UsersUseCase::update_pwd(&token, &config.jwt.encryption_key, &body.pwd, &*client).await {
+    return match UsersUseCase::update_pwd(&token, &config.jwt.encryption_key, &body.pwd, &*client.into_inner()).await {
         Ok(_) => HttpResponse::Ok().into(),
         Err(error) => match error {
             Error::InvalidToken => HttpResponse::Unauthorized().body(error.to_string()),

@@ -11,15 +11,14 @@ pub async fn controller(
     };
     use actix_web::HttpResponse;
 
-    let client = client.into_inner();
-    
-    let headers = req.headers();
-    let token = match headers.get("Authorization") {
-        Some(token) => token.to_str().unwrap().to_string(),
-        None => return HttpResponse::Unauthorized().body("NO_TOKEN")
-    };
+    let token = req.headers()
+        .get("authorization")
+        .unwrap()
+        .to_str()
+        .unwrap()
+        .to_string();
 
-    return match UsersUseCase::check_permission(&token, &config.jwt.encryption_key, &path.permission_name, &*client).await {
+    return match UsersUseCase::check_permission(&token, &config.jwt.encryption_key, &path.permission_name, &*client.into_inner()).await {
         Ok(true) => HttpResponse::Ok().into(),
         Ok(false) => HttpResponse::Unauthorized().into(),
         Err(error) => match error {
