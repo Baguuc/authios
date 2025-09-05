@@ -10,6 +10,7 @@ pub async fn controller(
         UsersUseCase,
         use_cases::user::update_pwd::UserUpdatePwdError as Error
     };
+    use authios_domain::UserUpdatePwdParamsBuilder as ParamsBuilder;
     
     let token = req.headers()
         .get("authorization")
@@ -18,7 +19,14 @@ pub async fn controller(
         .unwrap()
         .to_string();
 
-    return match UsersUseCase::update_pwd(&token, &config.jwt.encryption_key, &body.pwd, &*client.into_inner()).await {
+    let params = ParamsBuilder::new()
+        .set_token(token)
+        .set_new_pwd(body.pwd.clone())
+        .set_encryption_key(config.jwt.encryption_key.clone())
+        .build()
+        .unwrap();
+
+    return match UsersUseCase::update_pwd(params, &*client.into_inner()).await {
         Ok(_) => HttpResponse::Ok().into(),
         Err(error) => match error {
             Error::InvalidToken => HttpResponse::Unauthorized().body(error.to_string()),

@@ -9,6 +9,7 @@ pub async fn controller(
         UsersUseCase,
         use_cases::user::authorize::UserAuthorizeError as Error
     };
+    use authios_domain::UserAuthorizeParamsBuilder as ParamsBuilder;
     use actix_web::HttpResponse;
 
     let token = req.headers()
@@ -18,7 +19,14 @@ pub async fn controller(
         .unwrap()
         .to_string();
 
-    return match UsersUseCase::authorize(&token, &config.jwt.encryption_key, &path.permission_name, &*client.into_inner()).await {
+    let params = ParamsBuilder::new()
+        .set_token(token)
+        .set_encryption_key(config.jwt.encryption_key.clone())
+        .set_permission_name(path.permission_name.clone())
+        .build()
+        .unwrap();
+
+    return match UsersUseCase::authorize(params, &*client.into_inner()).await {
         Ok(true) => HttpResponse::Ok().into(),
         Ok(false) => HttpResponse::Unauthorized().into(),
         Err(error) => match error {

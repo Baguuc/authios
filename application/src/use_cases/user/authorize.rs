@@ -9,9 +9,10 @@ impl crate::UsersUseCase {
     /// + when a permission with provided name do not exist;
     /// + when database connection cannot be acquired;
     ///
-    pub async fn authorize<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(token: &String, encoding_key: &String, permission_name: &String, client: A) -> Result<bool, UserAuthorizeError> {
-        use crate::use_cases::user::info::UserInfoError;
-        
+    pub async fn authorize<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
+        params: authios_domain::UserAuthorizeParams,
+        client: A
+    ) -> Result<bool, UserAuthorizeError> {
         type Error = UserAuthorizeError; 
         
         let mut client = client.acquire()
@@ -19,18 +20,19 @@ impl crate::UsersUseCase {
             .map_err(|_| Error::DatabaseConnection)?;
         
         // will optimize all of this if necessary
-        let _ = crate::PermissionsRepository::retrieve(permission_name, &mut *client)
+        let _ = crate::PermissionsRepository::retrieve(&params.permission_name, &mut *client)
             .await
             .map_err(|_| Error::PermissionNotExist)?;
 
-        let user = Self::info(token, encoding_key, &mut *client)
+
+        let claims = crate::utils::jwt_token::get_claims(&params.token, &params.encryption_key)
+            .map_err(|_| Error::InvalidToken)?;
+
+        let user = crate::UsersRepository::retrieve(&claims.sub, &mut *client)
             .await
-            .map_err(|error| match error {
-                 UserInfoError::InvalidToken => Error::InvalidToken,
-                 UserInfoError::NotExist => Error::UserNotExist,
-                 UserInfoError::DatabaseConnection => Error::DatabaseConnection,
-            })?;
+            .map_err(|_| Error::UserNotExist)?;
         
+
         let mut permissions = vec![];
 
         for group_name in user.groups {
@@ -44,7 +46,7 @@ impl crate::UsersUseCase {
 
         let permissions = permissions;
         
-        return Ok(permissions.contains(permission_name));
+        return Ok(permissions.contains(&params.permission_name));
     }
 }
 

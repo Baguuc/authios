@@ -9,24 +9,26 @@ impl crate::UsersUseCase {
     /// + when the provided password cannot be hashed;
     /// + when database connection cannot be acquired;
     ///
-    pub async fn update_pwd<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(token: &String, encoding_key: &String, pwd: &String, client: A) -> Result<(), UserUpdatePwdError> {
-        use crate::use_cases::user::info::UserInfoError;
-        
+    pub async fn update_pwd<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
+        params: authios_domain::UserUpdatePwdParams,
+        client: A
+    ) -> Result<(), UserUpdatePwdError> {
         type Error = UserUpdatePwdError;
         
         let mut client = client.acquire()
             .await
             .map_err(|_| Error::DatabaseConnection)?;
         
-        let user = crate::UsersUseCase::info(token, encoding_key, &mut *client)
-            .await
-            .map_err(|error| match error {
-                 UserInfoError::InvalidToken => Error::InvalidToken,
-                 UserInfoError::NotExist => Error::NotExist,
-                 UserInfoError::DatabaseConnection => Error::DatabaseConnection,
-            })?;
         
-        let pwd = crate::utils::password_hash::hash_password(pwd.clone())
+        let claims = crate::utils::jwt_token::get_claims(&params.token, &params.encryption_key)
+            .map_err(|_| Error::InvalidToken)?;
+
+        let user = crate::UsersRepository::retrieve(&claims.sub, &mut *client)
+            .await
+            .map_err(|_| Error::NotExist)?;
+        
+        
+        let pwd = crate::utils::password_hash::hash_password(params.new_pwd.clone())
             .map_err(|_| Error::CannotHash)?;
         
         let _ = crate::UsersRepository::update(&user.login, &pwd, &mut *client)

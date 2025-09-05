@@ -10,6 +10,7 @@ pub async fn controller(
         UsersUseCase,
         use_cases::user::info::UserInfoError as Error
     };
+    use authios_domain::UserInfoParamsBuilder as ParamsBuilder;
     
     let token = req.headers()
         .get("authorization")
@@ -17,8 +18,14 @@ pub async fn controller(
         .to_str()
         .unwrap()
         .to_string();
+    
+    let params = ParamsBuilder::new()
+        .set_token(token)
+        .set_encryption_key(config.jwt.encryption_key.clone())
+        .build()
+        .unwrap();
 
-    return match UsersUseCase::info(&token, &config.jwt.encryption_key.clone(), &*client.into_inner()).await {
+    return match UsersUseCase::info(params, &*client.into_inner()).await {
         Ok(user) => HttpResponse::Ok().content_type(ContentType::json()).body(to_string(&user).unwrap()),
         Err(error) => match error {
             Error::InvalidToken => HttpResponse::Unauthorized().body(error.to_string()),

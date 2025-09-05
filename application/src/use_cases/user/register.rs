@@ -8,7 +8,10 @@ impl crate::UsersUseCase {
     /// + when provided password cannot be hashed;
     /// + when database connection cannot be acquired;
     ///
-    pub async fn register<'c, C: sqlx::Acquire<'c, Database = sqlx::Postgres>>(login: &String, pwd: &String, client: C) -> Result<(), UserRegisterError> {
+    pub async fn register<'c, C: sqlx::Acquire<'c, Database = sqlx::Postgres>>(
+        params: authios_domain::UserRegisterParams,
+        client: C
+    ) -> Result<(), UserRegisterError> {
         use crate::UsersRepository; 
         
         type Error = UserRegisterError; 
@@ -18,12 +21,12 @@ impl crate::UsersUseCase {
             .await
             .map_err(|_| Error::DatabaseConnection)?;
         
-        let password_hash = match crate::utils::hash_password(pwd.clone()) {
+        let password_hash = match crate::utils::hash_password(params.pwd.clone()) {
             Ok(h) => h,
             Err(_) => return Err(Error::CannotHashPassword)
         };
 
-        let _ = UsersRepository::insert(login, &password_hash, &mut *client).await
+        let _ = UsersRepository::insert(&params.login, &password_hash, &mut *client).await
             .map_err(|_| Error::AlreadyExist)?;
         
         return Ok(());

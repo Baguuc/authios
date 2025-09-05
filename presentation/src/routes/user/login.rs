@@ -9,8 +9,16 @@ pub async fn controller(
         UsersUseCase,
         use_cases::user::login::UserLoginError as Error
     };
+    use authios_domain::UserLoginParamsBuilder as ParamsBuilder;
     
-    return match UsersUseCase::login(&body.login, &body.pwd, config.jwt.encryption_key.clone(), &*client.into_inner()).await {
+    let params = ParamsBuilder::new()
+        .set_login(body.login.clone())
+        .set_pwd(body.pwd.clone())
+        .set_encryption_key(config.jwt.encryption_key.clone())
+        .build()
+        .unwrap();
+    
+    return match UsersUseCase::login(params, &*client.into_inner()).await {
         Ok(token) => HttpResponse::Ok().body(token),
         Err(error) => match error {
             Error::InvalidCredentials => HttpResponse::Unauthorized().body(error.to_string()),
