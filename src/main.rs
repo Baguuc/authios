@@ -8,14 +8,11 @@ pub mod errors;
 pub mod repositories;
 pub mod use_cases;
 // presentation
-pub mod routes;
+pub mod web;
 pub mod config;
 pub mod cli;
 
 #[tokio::main]
 async fn main() {
-    use clap::Parser;
-
-    let cli = crate::cli::MainCli::parse();
-    cli.execute();
+    crate::cli::MainCli::run().await;
 }
