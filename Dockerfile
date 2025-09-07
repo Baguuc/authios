@@ -23,6 +23,6 @@ FROM alpine:latest AS final
 
 WORKDIR /app
 
-COPY --from=build /build/target/x86_64-unknown-linux-musl/release/authios-presentation /usr/local/bin/authios
+COPY --from=build /build/target/x86_64-unknown-linux-musl/release/authios /usr/local/bin/authios
 
 CMD ["authios", "run"]
