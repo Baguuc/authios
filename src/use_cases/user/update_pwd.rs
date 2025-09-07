@@ -14,9 +14,9 @@ impl UsersUseCase {
     pub async fn update_pwd<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: crate::params::UserUpdatePwdParams,
         client: A
-    ) -> Result<(), crate::errors::UserUpdatePwdError> {
+    ) -> Result<(), crate::errors::use_case::UserUpdatePwdError> {
         use crate::repositories::UsersRepository;
-        use crate::errors::UserUpdatePwdError as Error;
+        use crate::errors::use_case::UserUpdatePwdError as Error;
         
         let mut client = client.acquire()
             .await

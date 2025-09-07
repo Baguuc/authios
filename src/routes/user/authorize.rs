@@ -8,7 +8,7 @@ pub async fn controller(
     use crate::{
         use_cases::UsersUseCase,
         params::UserAuthorizeParamsBuilder as ParamsBuilder,
-        errors::UserAuthorizeError as Error
+        errors::use_case::UserAuthorizeError as Error
     };
     use actix_web::HttpResponse;
 

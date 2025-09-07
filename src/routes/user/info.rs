@@ -9,7 +9,7 @@ pub async fn controller(
     use crate::{
         use_cases::UsersUseCase,
         params::UserInfoParamsBuilder as ParamsBuilder,
-        errors::UserInfoError as Error
+        errors::use_case::UserInfoError as Error
     };
     
     let token = req.headers()

@@ -13,9 +13,9 @@ impl UsersUseCase {
     pub async fn info<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: crate::params::UserInfoParams,
         client: A
-    ) -> Result<crate::models::User, crate::errors::UserInfoError> {
+    ) -> Result<crate::models::User, crate::errors::use_case::UserInfoError> {
         use crate::repositories::UsersRepository; 
-        use crate::errors::UserInfoError as Error; 
+        use crate::errors::use_case::UserInfoError as Error; 
         
         let mut client = client.acquire()
             .await

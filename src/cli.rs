@@ -70,14 +70,17 @@ async fn run(args: Args) {
 async fn migrate(args: Args) {
     use clin::components::{header,success};
     use crate::config::Config;
-    use crate::utils::error::error_if_necessary;
+    use crate::utils::{
+        error::error_if_necessary,
+        migrations::migrate
+    };
     
     let config = error_if_necessary(Config::read(args.config.unwrap_or(String::from("./authios.json"))));
     let pool = error_if_necessary(create_pool(config.database.clone()).await);
      
     header("Migrating database");
     
-    error_if_necessary(crate::migrations::migrate(&pool).await);
+    error_if_necessary(migrate(&pool).await);
     success("Migrated");
 }
 

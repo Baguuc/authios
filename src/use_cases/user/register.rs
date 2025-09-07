@@ -13,16 +13,17 @@ impl UsersUseCase {
     pub async fn register<'c, C: sqlx::Acquire<'c, Database = sqlx::Postgres>>(
         params: crate::params::UserRegisterParams,
         client: C
-    ) -> Result<(), crate::errors::UserRegisterError> {
+    ) -> Result<(), crate::errors::use_case::UserRegisterError> {
+        use crate::utils::password_hash::hash_password;
         use crate::repositories::UsersRepository; 
-        use crate::errors::UserRegisterError as Error; 
+        use crate::errors::use_case::UserRegisterError as Error; 
         
         let mut client = client
             .acquire()
             .await
             .map_err(|_| Error::DatabaseConnection)?;
         
-        let password_hash = match crate::utils::hash_password(params.pwd.clone()) {
+        let password_hash = match hash_password(params.pwd.clone()) {
             Ok(h) => h,
             Err(_) => return Err(Error::CannotHashPassword)
         };

@@ -8,7 +8,7 @@ pub async fn controller(
     use crate::{
         use_cases::UsersUseCase,
         params::UserLoginParamsBuilder as ParamsBuilder,
-        errors::UserLoginError as Error
+        errors::use_case::UserLoginError as Error
     };
     
     let params = ParamsBuilder::new()

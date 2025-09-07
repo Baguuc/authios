@@ -13,9 +13,9 @@ impl GroupsUseCase {
     pub async fn create<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: crate::params::GroupCreateParams,
         client: A
-    ) -> Result<(), crate::errors::GroupCreateError> {
+    ) -> Result<(), crate::errors::use_case::GroupCreateError> {
         use crate::repositories::GroupsRepository; 
-        use crate::errors::GroupCreateError as Error; 
+        use crate::errors::use_case::GroupCreateError as Error; 
         
         let mut client = client.acquire()
             .await

@@ -15,13 +15,13 @@ impl GroupsUseCase {
     pub async fn revoke<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: crate::params::GroupRevokePermissionParams,
         client: A
-    ) -> Result<(), crate::errors::GroupRevokePermissionError> {
+    ) -> Result<(), crate::errors::use_case::GroupRevokePermissionError> {
         use crate::repositories::{
             PermissionsRepository,
             GroupsRepository,
             GroupPermissionsRepository
         };
-        use crate::errors::GroupRevokePermissionError as Error;
+        use crate::errors::use_case::GroupRevokePermissionError as Error;
 
         let mut client = client.acquire()
             .await

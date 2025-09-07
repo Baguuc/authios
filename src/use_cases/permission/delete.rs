@@ -13,9 +13,9 @@ impl PermissionsUseCase {
     pub async fn delete<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: crate::params::PermissionDeleteParams,
         client: A
-    ) -> Result<(), crate::errors::PermissionDeleteError> {
+    ) -> Result<(), crate::errors::use_case::PermissionDeleteError> {
         use crate::repositories::PermissionsRepository;
-        use crate::errors::PermissionDeleteError as Error;
+        use crate::errors::use_case::PermissionDeleteError as Error;
 
         let mut client = client.acquire()
             .await

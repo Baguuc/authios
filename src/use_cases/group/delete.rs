@@ -13,9 +13,9 @@ impl GroupsUseCase {
     pub async fn delete<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: crate::params::GroupDeleteParams,
         client: A
-    ) -> Result<(), crate::errors::GroupDeleteError> {
+    ) -> Result<(), crate::errors::use_case::GroupDeleteError> {
         use crate::repositories::GroupsRepository;
-        use crate::errors::GroupDeleteError as Error;
+        use crate::errors::use_case::GroupDeleteError as Error;
 
         let mut client = client.acquire()
             .await

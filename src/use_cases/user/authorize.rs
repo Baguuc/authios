@@ -14,13 +14,13 @@ impl UsersUseCase {
     pub async fn authorize<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: crate::params::UserAuthorizeParams,
         client: A
-    ) -> Result<bool, crate::errors::UserAuthorizeError> {
+    ) -> Result<bool, crate::errors::use_case::UserAuthorizeError> {
         use crate::repositories::{
             PermissionsRepository,
             GroupsRepository,
             UsersRepository
         };
-        use crate::errors::UserAuthorizeError as Error; 
+        use crate::errors::use_case::UserAuthorizeError as Error; 
         
         let mut client = client.acquire()
             .await

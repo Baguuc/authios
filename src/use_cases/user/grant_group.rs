@@ -15,13 +15,13 @@ impl UsersUseCase {
     pub async fn grant_group<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: crate::params::UserGrantGroupParams,
         client: A
-    ) -> Result<(), crate::errors::UserGrantGroupError> {
+    ) -> Result<(), crate::errors::use_case::UserGrantGroupError> {
         use crate::repositories::{
             GroupsRepository,
             UsersRepository,
             UserGroupsRepository
         };
-        use crate::errors::UserGrantGroupError as Error;
+        use crate::errors::use_case::UserGrantGroupError as Error;
         
         let mut client = client.acquire()
             .await

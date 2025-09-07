@@ -7,7 +7,6 @@ pub mod errors;
 // application
 pub mod repositories;
 pub mod use_cases;
-pub mod migrations;
 // presentation
 pub mod routes;
 pub mod config;

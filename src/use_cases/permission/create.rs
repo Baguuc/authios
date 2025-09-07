@@ -13,9 +13,9 @@ impl PermissionsUseCase {
     pub async fn create<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: crate::params::PermissionCreateParams,
         client: A
-    ) -> Result<(), crate::errors::PermissionCreateError> {
+    ) -> Result<(), crate::errors::use_case::PermissionCreateError> {
         use crate::repositories::PermissionsRepository; 
-        use crate::errors::PermissionCreateError as Error; 
+        use crate::errors::use_case::PermissionCreateError as Error; 
         
         let mut client = client.acquire()
             .await

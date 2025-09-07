@@ -14,13 +14,13 @@ impl UsersUseCase {
     pub async fn revoke_group<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: crate::params::UserRevokeGroupParams,
         client: A
-    ) -> Result<(), crate::errors::UserRevokeGroupError> {
+    ) -> Result<(), crate::errors::use_case::UserRevokeGroupError> {
         use crate::repositories::{
             GroupsRepository,
             UsersRepository,
             UserGroupsRepository
         };
-        use crate::errors::UserRevokeGroupError as Error;
+        use crate::errors::use_case::UserRevokeGroupError as Error;
 
         let mut client = client.acquire()
             .await

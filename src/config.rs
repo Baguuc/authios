@@ -26,7 +26,7 @@ pub struct RootConfig {
 }
 
 impl Config {
-    pub fn read(path: String) -> Result<Self, ConfigReadError> {
+    pub fn read(path: String) -> Result<Self, crate::errors::config::ConfigReadError> {
         use std::fs::read_to_string;
         use serde_json::from_str;
 
@@ -35,13 +35,4 @@ impl Config {
 
         return Ok(parsed);
     }
-}
-
-#[derive(thiserror::Error, Debug)]
-pub enum ConfigReadError {
-    #[error("Wrong config format (not JSON)")]
-    Serde(#[from] serde_json::error::Error),
-    
-    #[error("Cannot read the config")]
-    FS(#[from] std::io::Error),
 }

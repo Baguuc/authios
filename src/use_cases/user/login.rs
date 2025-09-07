@@ -14,11 +14,11 @@ impl UsersUseCase {
     pub async fn login<'c, C: sqlx::Acquire<'c, Database = sqlx::Postgres>>(
         params: crate::params::UserLoginParams,
         client: C
-    ) -> Result<String, crate::errors::UserLoginError> {
+    ) -> Result<String, crate::errors::use_case::UserLoginError> {
         use crate::repositories::UsersRepository; 
         use crate::utils::password_hash::verify_password;
         use crate::utils::jwt_token::generate;
-        use crate::errors::UserLoginError as Error; 
+        use crate::errors::use_case::UserLoginError as Error; 
         
         let mut client = client
             .acquire()
