@@ -12,7 +12,7 @@ impl UsersUseCase {
     /// + when database connection cannot be acquired;
     ///
     pub async fn revoke_group<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
-        params: crate::params::UserRevokeGroupParams,
+        params: crate::params::use_case::UserRevokeGroupParams,
         client: A
     ) -> Result<(), crate::errors::use_case::UserRevokeGroupError> {
         use crate::repositories::{
@@ -26,22 +26,52 @@ impl UsersUseCase {
             .await
             .map_err(|_| Error::DatabaseConnection)?;
         
-        let _ = GroupsRepository::retrieve(&params.group_name, &mut *client)
-            .await
-            .map_err(|_| Error::GroupNotExist)?;
-        
-        let user = UsersRepository::retrieve(&params.user_login, &mut *client)
-            .await
-            .map_err(|_| Error::UserNotExist)?;
+        // check if the group exists
+        {
+            use crate::params::repository::GroupRetrieveParamsBuilder as ParamsBuilder;
+            
+            let params = ParamsBuilder::new()
+                .set_name(params.group_name.clone())
+                .build()
+                .unwrap();
+
+            let _ = GroupsRepository::retrieve(params, &mut *client)
+                .await
+                .map_err(|_| Error::GroupNotExist)?;
+        }
+
+        // retrieve the user
+        let user = {    
+            use crate::params::repository::UserRetrieveParamsBuilder as ParamsBuilder;
+            
+            let params = ParamsBuilder::new()
+                .set_login(params.user_login.clone())
+                .build()
+                .unwrap();
+
+            UsersRepository::retrieve(params, &mut *client)
+                .await
+                .map_err(|_| Error::UserNotExist)?
+        };
         
         // not added yet
-        if !user.groups.contains(&params.group_name) {
+        if !user.groups.contains(&params.group_name.clone()) {
             return Err(Error::NotAddedYet);
         }
         
-        // this won't error so we can skip this result
-        let _ = UserGroupsRepository::delete(&params.user_login, &params.group_name, &mut *client)
-            .await;
+        // delete the group entry
+        {
+            use crate::params::repository::UserGroupDeleteParamsBuilder as ParamsBuilder;
+            
+            let params = ParamsBuilder::new()
+                .set_user_login(params.user_login)
+                .set_group_name(params.group_name)
+                .build()
+                .unwrap();
+
+            let _ = UserGroupsRepository::delete(params, &mut *client)
+                .await;
+        }
         
         return Ok(());
     }

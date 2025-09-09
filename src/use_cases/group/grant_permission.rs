@@ -13,7 +13,7 @@ impl GroupsUseCase {
     /// + when the user is not authorized for this operation;
     ///
     pub async fn grant_permission<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
-        params: crate::params::GroupGrantPermissionParams,
+        params: crate::params::use_case::GroupGrantPermissionParams,
         client: A
     ) -> Result<(), crate::errors::use_case::GroupGrantPermissionError> {
         use crate::repositories::{
@@ -22,24 +22,57 @@ impl GroupsUseCase {
             GroupPermissionsRepository
         };
         use crate::errors::use_case::GroupGrantPermissionError as Error;
+        use crate::params::repository::GroupPermissionInsertParamsBuilder as ParamsBuilder;
 
         let mut client = client.acquire()
             .await
             .map_err(|_| Error::DatabaseConnection)?;
+
+        // check if the permission exist
+        {
+            use crate::params::repository::PermissionRetrieveParamsBuilder as ParamsBuilder;
+            
+            let params = ParamsBuilder::new()
+                .set_name(params.permission_name.clone())
+                .build()
+                .unwrap();
+
+            let _ = PermissionsRepository::retrieve(params, &mut *client)
+                .await
+                .map_err(|_| Error::PermissionNotExist)?;
+        }
+
         
-        let _ = PermissionsRepository::retrieve(&params.permission_name, &mut *client)
-            .await
-            .map_err(|_| Error::PermissionNotExist)?;
-        
-        let _ = GroupsRepository::retrieve(&params.group_name, &mut *client)
-            .await
-            .map_err(|_| Error::GroupNotExist)?;
-        
-        GroupPermissionsRepository::insert(&params.group_name, &params.permission_name, &mut *client)
-            .await
-            // already added
-            .map_err(|_| Error::AlreadyAdded)?;
-        
+
+        // check if the group exist
+        {
+            use crate::params::repository::GroupRetrieveParamsBuilder as ParamsBuilder;
+            
+            let params = ParamsBuilder::new()
+                .set_name(params.group_name.clone())
+                .build()
+                .unwrap();
+
+            let _ = GroupsRepository::retrieve(params, &mut *client)
+                .await
+                .map_err(|_| Error::GroupNotExist)?;
+        }
+
+
+        // add the permission to the group
+        {
+            let params = ParamsBuilder::new()
+                .set_group_name(params.group_name)
+                .set_permission_name(params.permission_name)
+                .build()
+                .unwrap();
+            
+            GroupPermissionsRepository::insert(params, &mut *client)
+                .await
+                // already added
+                .map_err(|_| Error::AlreadyAdded)?;
+        }
+
         return Ok(());
     }
 }

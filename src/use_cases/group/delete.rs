@@ -11,23 +11,30 @@ impl GroupsUseCase {
     /// + when the user is not authorized for this operation;
     ///
     pub async fn delete<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
-        params: crate::params::GroupDeleteParams,
+        params: crate::params::use_case::GroupDeleteParams,
         client: A
     ) -> Result<(), crate::errors::use_case::GroupDeleteError> {
         use crate::repositories::GroupsRepository;
         use crate::errors::use_case::GroupDeleteError as Error;
+        use crate::params::repository::GroupDeleteParamsBuilder as ParamsBuilder;
 
         let mut client = client.acquire()
             .await
             .map_err(|_| Error::DatabaseConnection)?;
         
-        let _ = GroupsRepository::retrieve(&params.name, &mut *client)
-            .await
-            .map_err(|_| Error::NotExist)?;
-        
+        let params = ParamsBuilder::new()
+            .set_name(params.name)
+            .build()
+            .unwrap();
+
         // this won't error so we can skip this result
-        let _ = GroupsRepository::delete(&params.name, &mut *client)
-            .await;
+        let result = GroupsRepository::delete(params, &mut *client)
+            .await
+            .unwrap();
+
+        if result.rows_affected() == 0 {
+            return Err(Error::NotExist);
+        }
         
         return Ok(());
     }

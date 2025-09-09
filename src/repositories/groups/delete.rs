@@ -5,7 +5,10 @@ impl GroupsRepository {
     ///
     /// delete a group identified by name in the database
     ///
-    pub async fn delete<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(name: &String, client: A) -> Result<(), sqlx::Error> {
+    pub async fn delete<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
+        params: crate::params::repository::GroupDeleteParams,
+        client: A
+    ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
         use sqlx::query;
 
         let mut client = client
@@ -13,10 +16,10 @@ impl GroupsRepository {
             .await?;
 
         let sql = "DELETE FROM groups WHERE name = $1;";
-        let query = query(sql).bind(name);
+        let query = query(sql).bind(&params.name);
 
-        query.execute(&mut *client).await?;
+        let result = query.execute(&mut *client).await?;
         
-        return Ok(());
+        return Ok(result);
     }
 }

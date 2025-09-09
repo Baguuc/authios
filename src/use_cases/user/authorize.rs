@@ -12,7 +12,7 @@ impl UsersUseCase {
     /// + when database connection cannot be acquired;
     ///
     pub async fn authorize<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
-        params: crate::params::UserAuthorizeParams,
+        params: crate::params::use_case::UserAuthorizeParams,
         client: A
     ) -> Result<bool, crate::errors::use_case::UserAuthorizeError> {
         use crate::repositories::{
@@ -21,38 +21,67 @@ impl UsersUseCase {
             UsersRepository
         };
         use crate::errors::use_case::UserAuthorizeError as Error; 
-        
+        use crate::utils::jwt_token::get_claims;
+
         let mut client = client.acquire()
             .await
             .map_err(|_| Error::DatabaseConnection)?;
+
+        let user_login = get_claims(&params.token, &params.encryption_key)
+            .map_err(|_| Error::InvalidToken)?
+            .sub;
         
-        // will optimize all of this if necessary
-        let _ = PermissionsRepository::retrieve(&params.permission_name, &mut *client)
-            .await
-            .map_err(|_| Error::PermissionNotExist)?;
+        // check if permission exist
+        {
+            use crate::params::repository::PermissionRetrieveParamsBuilder as ParamsBuilder;
 
-
-        let claims = crate::utils::jwt_token::get_claims(&params.token, &params.encryption_key)
-            .map_err(|_| Error::InvalidToken)?;
-
-        let user = UsersRepository::retrieve(&claims.sub, &mut *client)
-            .await
-            .map_err(|_| Error::UserNotExist)?;
-        
-
-        let mut permissions = vec![];
-
-        for group_name in user.groups {
-            let group = GroupsRepository::retrieve(&group_name, &mut *client)
-                .await
-                // this won't error as we just fetched the permissions
+            let params = ParamsBuilder::new()
+                .set_name(params.permission_name.clone())
+                .build()
                 .unwrap();
 
-            permissions.extend(group.permissions);
+            let _ = PermissionsRepository::retrieve(params, &mut *client)
+                .await
+                .map_err(|_| Error::PermissionNotExist)?;
         }
 
-        let permissions = permissions;
-        
-        return Ok(permissions.contains(&params.permission_name));
+
+        // retrieve the user
+        let user = {
+            use crate::params::repository::UserRetrieveParamsBuilder as ParamsBuilder;
+
+            let params = ParamsBuilder::new()
+                .set_login(user_login)
+                .build()
+                .unwrap();
+
+            let user = UsersRepository::retrieve(params, &mut *client)
+                .await
+                .map_err(|_| Error::PermissionNotExist)?;
+
+            user
+        };
+
+
+        for group_name in user.groups {
+            use crate::params::repository::GroupRetrieveParamsBuilder as ParamsBuilder;
+
+            let rparams = ParamsBuilder::new()
+                .set_name(group_name)
+                .build()
+                .unwrap();
+
+            let group = GroupsRepository::retrieve(rparams, &mut *client)
+                .await
+                .unwrap();
+            
+            // user has the permission
+            if group.permissions.contains(&params.permission_name) {
+                return Ok(true);
+            }
+        }
+
+        // user don't have the permission
+        return Ok(false);
     }
 }

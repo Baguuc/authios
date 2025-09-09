@@ -12,22 +12,31 @@ impl UsersUseCase {
     /// + when database connection cannot be acquired;
     ///
     pub async fn login<'c, C: sqlx::Acquire<'c, Database = sqlx::Postgres>>(
-        params: crate::params::UserLoginParams,
+        params: crate::params::use_case::UserLoginParams,
         client: C
     ) -> Result<String, crate::errors::use_case::UserLoginError> {
         use crate::repositories::UsersRepository; 
         use crate::utils::password_hash::verify_password;
         use crate::utils::jwt_token::generate;
         use crate::errors::use_case::UserLoginError as Error; 
+        use crate::params::repository::UserRetrieveParamsBuilder as ParamsBuilder;
         
         let mut client = client
             .acquire()
             .await
             .map_err(|_| Error::DatabaseConnection)?;
         
-        let user = UsersRepository::retrieve(&params.login, &mut *client)
-            .await
-            .map_err(|_| Error::NotExist)?;
+        // retrieve the user
+        let user = {
+            let params = ParamsBuilder::new()
+                .set_login(params.login.clone())
+                .build()
+                .unwrap();
+
+            UsersRepository::retrieve(params, &mut *client)
+                .await
+                .map_err(|_| Error::NotExist)?
+        };
 
         if !verify_password(&params.pwd, &user.pwd) {
             return Err(Error::InvalidCredentials);

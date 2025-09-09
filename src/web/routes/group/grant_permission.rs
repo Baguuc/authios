@@ -7,7 +7,7 @@ pub async fn controller(
 ) -> impl actix_web::Responder {
     use crate::{
         use_cases::GroupsUseCase,
-        params::GroupGrantPermissionParamsBuilder as ParamsBuilder,
+        params::use_case::GroupGrantPermissionParamsBuilder as ParamsBuilder,
         errors::use_case::GroupGrantPermissionError as Error
     };
     use actix_web::HttpResponse;

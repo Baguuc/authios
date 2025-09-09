@@ -8,7 +8,7 @@ pub async fn controller(
     use serde_json::to_string;
     use crate::{
         use_cases::UsersUseCase,
-        params::UserInfoParamsBuilder as ParamsBuilder,
+        params::use_case::UserInfoParamsBuilder as ParamsBuilder,
         errors::use_case::UserInfoError as Error
     };
     

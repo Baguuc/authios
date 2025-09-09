@@ -13,7 +13,7 @@ impl UsersUseCase {
     /// + when database connection cannot be acquired;
     ///
     pub async fn grant_group<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
-        params: crate::params::UserGrantGroupParams,
+        params: crate::params::use_case::UserGrantGroupParams,
         client: A
     ) -> Result<(), crate::errors::use_case::UserGrantGroupError> {
         use crate::repositories::{
@@ -27,18 +27,49 @@ impl UsersUseCase {
             .await
             .map_err(|_| Error::DatabaseConnection)?;
         
-        let _ = GroupsRepository::retrieve(&params.group_name, &mut *client)
-            .await
-            .map_err(|_| Error::GroupNotExist)?;
+        // check if group exists
+        {
+            use crate::params::repository::GroupRetrieveParamsBuilder as ParamsBuilder;
+            
+            let params = ParamsBuilder::new()
+                .set_name(params.group_name.clone())
+                .build()
+                .unwrap();
+
+            let _ = GroupsRepository::retrieve(params, &mut *client)
+                .await
+                .map_err(|_| Error::GroupNotExist)?;
+        }
         
-        let _ = UsersRepository::retrieve(&params.user_login, &mut *client)
-            .await
-            .map_err(|_| Error::UserNotExist)?;
+        // check if permission exists
+        {
+            use crate::params::repository::UserRetrieveParamsBuilder as ParamsBuilder;
+
+            let params = ParamsBuilder::new()
+                .set_login(params.user_login.clone())
+                .build()
+                .unwrap();
+
+            let _ = UsersRepository::retrieve(params, &mut *client)
+                .await
+                .map_err(|_| Error::UserNotExist)?;
+        }
         
-        UserGroupsRepository::insert(&params.user_login, &params.group_name, &mut *client)
-            .await
-            // already added
-            .map_err(|_| Error::AlreadyAdded)?;
+        // insert the data
+        {
+            use crate::params::repository::UserGroupInsertParamsBuilder as ParamsBuilder;
+
+            let params = ParamsBuilder::new()
+                .set_group_name(params.group_name)
+                .set_user_login(params.user_login)
+                .build()
+                .unwrap();
+            
+            UserGroupsRepository::insert(params, &mut *client)
+                .await
+                // already added
+                .map_err(|_| Error::AlreadyAdded)?;
+        }
         
         return Ok(());
     }

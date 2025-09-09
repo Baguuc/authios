@@ -1,6 +1,5 @@
 pub mod insert;
 pub mod retrieve;
-pub mod list;
 pub mod delete;
 
 /// # GroupsRepository (struct)

@@ -5,7 +5,10 @@ impl UsersRepository {
     ///
     /// retrieve user identified by login from the database
     ///
-    pub async fn retrieve<'c, C: sqlx::Acquire<'c, Database = sqlx::Postgres>>(login: &String, client: C) -> Result<crate::models::User, sqlx::Error> {
+    pub async fn retrieve<'c, C: sqlx::Acquire<'c, Database = sqlx::Postgres>>(
+        params: crate::params::repository::UserRetrieveParams,
+        client: C
+    ) -> Result<crate::models::User, sqlx::Error> {
         use sqlx::query_as;
         
         let mut client = client
@@ -27,7 +30,7 @@ impl UsersRepository {
         GROUP BY
           u.login, u.pwd;
         ;";
-        let row = query_as(sql).bind(login).fetch_one(&mut *client).await?;
+        let row = query_as(sql).bind(&params.login).fetch_one(&mut *client).await?;
         
         return Ok(row);
     }

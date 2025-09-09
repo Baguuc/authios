@@ -5,7 +5,10 @@ impl PermissionsRepository {
     ///
     /// insert a permission into the database
     ///
-    pub async fn insert<'c, C: sqlx::Acquire<'c, Database = sqlx::Postgres>>(name: &String, client: C) -> Result<(), sqlx::Error> {
+    pub async fn insert<'c, C: sqlx::Acquire<'c, Database = sqlx::Postgres>>(
+        params: crate::params::repository::PermissionInsertParams,
+        client: C
+    ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
         use sqlx::query;
 
         let mut client = client
@@ -13,10 +16,10 @@ impl PermissionsRepository {
             .await?;
         
         let sql = "INSERT INTO permissions (name) VALUES ($1);";
-        let query = query(sql).bind(name);
+        let query = query(sql).bind(&params.name);
 
-        query.execute(&mut *client).await?;
+        let result = query.execute(&mut *client).await?;
 
-        return Ok(());
+        return Ok(result);
     }
 }

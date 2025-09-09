@@ -5,7 +5,10 @@ impl GroupPermissionsRepository {
     ///
     /// revoke group a permission, deleting it from group_permission table in the database
     ///
-    pub async fn delete<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(group_name: &String, permission_name: &String, client: A) -> Result<(), sqlx::Error> {
+    pub async fn delete<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
+        params: crate::params::repository::GroupPermissionDeleteParams,
+        client: A
+    ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
         use sqlx::query;
 
         let mut client = client
@@ -13,10 +16,10 @@ impl GroupPermissionsRepository {
             .await?;
         
         let sql = "DELETE FROM group_permissions WHERE group_name = $1 AND permission_name = $2;";
-        let query = query(sql).bind(group_name).bind(permission_name);
+        let query = query(sql).bind(&params.group_name).bind(&params.permission_name);
 
-        query.execute(&mut *client).await?;
+        let result = query.execute(&mut *client).await?;
 
-        return Ok(());
+        return Ok(result);
     }
 }

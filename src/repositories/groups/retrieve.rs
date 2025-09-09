@@ -5,7 +5,10 @@ impl GroupsRepository {
     ///
     /// retrieve a group identified by name from the database
     ///
-    pub async fn retrieve<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(name: &String, client: A) -> Result<crate::models::Group, sqlx::Error> {
+    pub async fn retrieve<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
+        params: crate::params::repository::GroupRetrieveParams,
+        client: A
+    ) -> Result<crate::models::Group, sqlx::Error> {
         use sqlx::query_as;
 
         let mut client = client
@@ -27,7 +30,7 @@ impl GroupsRepository {
         GROUP BY
           g.name;
         ";
-        let query = query_as(sql).bind(name);
+        let query = query_as(sql).bind(&params.name);
 
         let row = query.fetch_one(&mut *client).await?;
 

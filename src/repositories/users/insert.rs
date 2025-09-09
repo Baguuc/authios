@@ -5,7 +5,10 @@ impl UsersRepository {
     ///
     /// insert a user into database with UNHASHED PASSWORD!
     ///
-    pub async fn insert<'c, C: sqlx::Acquire<'c, Database = sqlx::Postgres>>(login: &String, pwd: &String, client: C) -> Result<(), sqlx::Error> {
+    pub async fn insert<'c, C: sqlx::Acquire<'c, Database = sqlx::Postgres>>(
+        params: crate::params::repository::UserInsertParams,
+        client: C
+    ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
         use sqlx::query;
         
         let mut client = client
@@ -13,12 +16,12 @@ impl UsersRepository {
             .await?;
 
         let sql = "INSERT INTO users (login, pwd) VALUES ($1, $2);";
-        query(sql)
-            .bind(login)
-            .bind(pwd)
+        let result = query(sql)
+            .bind(&params.login)
+            .bind(&params.pwd)
             .execute(&mut *client)
             .await?;
         
-        return Ok(());
+        return Ok(result);
     }
 }
