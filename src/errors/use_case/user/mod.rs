@@ -18,3 +18,6 @@ pub use grant_group::UserGrantGroupError;
 
 pub mod revoke_group;
 pub use revoke_group::UserRevokeGroupError;
+
+pub mod init_root;
+pub use init_root::UserInitRootError;

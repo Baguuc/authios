@@ -20,5 +20,6 @@ pub use user::{
     UserUpdatePwdError,
     UserRegisterError,
     UserGrantGroupError,
-    UserRevokeGroupError
+    UserRevokeGroupError,
+    UserInitRootError
 };

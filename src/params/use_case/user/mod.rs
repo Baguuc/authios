@@ -39,3 +39,9 @@ pub use authorize::{
     AuthorizeParams as UserAuthorizeParams,
     AuthorizeParamsBuilder as UserAuthorizeParamsBuilder
 };
+
+pub mod init_root;
+pub use init_root::{
+    InitRootParams as UserInitRootParams,
+    InitRootParamsBuilder as UserInitRootParamsBuilder
+};

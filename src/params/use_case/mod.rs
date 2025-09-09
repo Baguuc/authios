@@ -47,4 +47,7 @@ pub use user::{
     // revoke group params 
     UserRevokeGroupParams,
     UserRevokeGroupParamsBuilder,
+    // init root params 
+    UserInitRootParams,
+    UserInitRootParamsBuilder,
 };

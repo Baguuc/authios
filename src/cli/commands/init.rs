@@ -1,0 +1,24 @@
+pub async fn command(args: crate::cli::CliArgs) {
+    use clin::components::{success, header};
+    use crate::config::Config;
+    use crate::utils::{
+        database::create_pool,
+        error::error_if_necessary
+    };
+    use crate::use_cases::UsersUseCase;
+    use crate::params::use_case::UserInitRootParamsBuilder as ParamsBuilder;
+    
+    header("Parsing the config");
+    let config = error_if_necessary(Config::read(args.clone().config.unwrap_or(String::from("./authios.json"))));
+    let pool = error_if_necessary(create_pool(config.database).await);
+
+    header("Initializing the root account");
+    let params = ParamsBuilder::new()
+        .set_pwd(config.root.pwd)
+        .build()
+        .unwrap();
+    
+    error_if_necessary(UsersUseCase::init_root(params, &pool).await);
+
+    success("done");
+}
