@@ -1,0 +1,36 @@
+#[actix_web::get("/permissions")]
+pub async fn controller(
+    req: actix_web::HttpRequest,
+    client: actix_web::web::Data<sqlx::postgres::PgPool>,
+    config: actix_web::web::Data<crate::config::Config>,
+) -> impl actix_web::Responder {
+    use actix_web::{HttpResponse, http::header::ContentType};
+    use serde_json::to_string;
+    use crate::{
+        use_cases::UsersUseCase,
+        params::use_case::UserListPermissionsParamsBuilder as ParamsBuilder,
+        errors::use_case::UserListPermissionsError as Error
+    };
+    
+    let token = req.headers()
+        .get("authorization")
+        .unwrap()
+        .to_str()
+        .unwrap()
+        .to_string();
+    
+    let params = ParamsBuilder::new()
+        .set_token(token)
+        .set_encryption_key(config.jwt.encryption_key.clone())
+        .build()
+        .unwrap();
+
+    return match UsersUseCase::list_permissions(params, &*client.into_inner()).await {
+        Ok(user) => HttpResponse::Ok().content_type(ContentType::json()).body(to_string(&user).unwrap()),
+        Err(error) => match error {
+            Error::InvalidToken => HttpResponse::Unauthorized().body(error.to_string()),
+            Error::UserNotExist => HttpResponse::NotFound().body(error.to_string()),
+            Error::DatabaseConnection => HttpResponse::InternalServerError().body(error.to_string()),
+        }
+    };
+}

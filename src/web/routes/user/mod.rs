@@ -5,6 +5,7 @@ pub mod update_pwd;
 pub mod grant_group;
 pub mod revoke_group;
 pub mod register;
+pub mod list_permissions;
 
 pub fn scope() -> actix_web::Scope {
     actix_web::web::scope("")

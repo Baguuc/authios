@@ -45,3 +45,9 @@ pub use init_root::{
     InitRootParams as UserInitRootParams,
     InitRootParamsBuilder as UserInitRootParamsBuilder
 };
+
+pub mod list_permissions;
+pub use list_permissions::{
+    ListPermissionsParams as UserListPermissionsParams,
+    ListPermissionsParamsBuilder as UserListPermissionsParamsBuilder
+};

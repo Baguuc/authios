@@ -50,4 +50,7 @@ pub use user::{
     // init root params 
     UserInitRootParams,
     UserInitRootParamsBuilder,
+    // list permissions params
+    UserListPermissionsParams,
+    UserListPermissionsParamsBuilder
 };

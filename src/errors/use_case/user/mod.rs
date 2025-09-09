@@ -21,3 +21,6 @@ pub use revoke_group::UserRevokeGroupError;
 
 pub mod init_root;
 pub use init_root::UserInitRootError;
+
+pub mod list_permissions;
+pub use list_permissions::UserListPermissionsError;

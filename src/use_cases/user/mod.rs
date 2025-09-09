@@ -6,5 +6,6 @@ pub mod register;
 pub mod grant_group;
 pub mod revoke_group;
 pub mod init_root;
+pub mod list_permissions;
 
 pub struct UsersUseCase;

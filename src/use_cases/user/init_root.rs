@@ -21,7 +21,7 @@ impl UsersUseCase {
         let mut tx = client
             .begin()
             .await
-            .map_err(|_| Error::DatabaseConnection)?
+            .map_err(|_| Error::DatabaseConnection)?;
 
         // create the root permission 
         {
