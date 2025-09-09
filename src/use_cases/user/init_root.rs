@@ -73,7 +73,7 @@ impl UsersUseCase {
                 .map_err(|_| Error::GroupExists)?;
         }
 
-        tx.commit().await;
+        let _ = tx.commit().await;
 
         return Ok(());
     }

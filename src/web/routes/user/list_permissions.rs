@@ -26,7 +26,11 @@ pub async fn controller(
         .unwrap();
 
     return match UsersUseCase::list_permissions(params, &*client.into_inner()).await {
-        Ok(user) => HttpResponse::Ok().content_type(ContentType::json()).body(to_string(&user).unwrap()),
+        Ok(permissions) => HttpResponse::Ok()
+            .content_type(ContentType::json())
+            .body(
+                to_string(&permissions).unwrap()
+            ),
         Err(error) => match error {
             Error::InvalidToken => HttpResponse::Unauthorized().body(error.to_string()),
             Error::UserNotExist => HttpResponse::NotFound().body(error.to_string()),

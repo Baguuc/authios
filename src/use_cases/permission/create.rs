@@ -72,7 +72,7 @@ impl PermissionsUseCase {
             
         }
 
-        tx.commit().await;
+        let _ = tx.commit().await;
 
         return Ok(());
     }

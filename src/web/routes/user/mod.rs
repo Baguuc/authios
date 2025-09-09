@@ -19,6 +19,7 @@ pub fn scope() -> actix_web::Scope {
                 .service(info::controller)
                 .service(authorize::controller)
                 .service(update_pwd::controller)
+                .service(list_permissions::controller)
                 .service(grant_group::controller)
                 .service(revoke_group::controller)
         )
