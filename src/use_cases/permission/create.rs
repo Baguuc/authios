@@ -21,7 +21,7 @@ impl PermissionsUseCase {
         use crate::use_cases::UsersUseCase;
         use crate::errors::use_case::PermissionCreateError as Error;
         
-        let mut client = client.acquire()
+        let mut tx = client.begin()
             .await
             .map_err(|_| Error::DatabaseConnection)?;
         
@@ -36,7 +36,7 @@ impl PermissionsUseCase {
                 .build()
                 .unwrap();
             
-            match UsersUseCase::authorize(params, &mut *client).await {
+            match UsersUseCase::authorize(params, &mut *tx).await {
                 Ok(true) => (),
                 _ => return Err(Error::Unauthorized)
             };
@@ -51,7 +51,7 @@ impl PermissionsUseCase {
                 .build()
                 .unwrap();
                     
-            PermissionsRepository::insert(params, &mut *client)
+            PermissionsRepository::insert(params, &mut *tx)
                 .await
                 .map_err(|_| Error::AlreadyExist)?; 
         }
@@ -66,11 +66,13 @@ impl PermissionsUseCase {
                 .build()
                 .unwrap();
                     
-            GroupPermissionsRepository::insert(params, &mut *client)
+            GroupPermissionsRepository::insert(params, &mut *tx)
                 .await
                 .map_err(|_| Error::AlreadyExist)?; 
             
         }
+
+        tx.commit().await;
 
         return Ok(());
     }

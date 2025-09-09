@@ -18,10 +18,10 @@ impl UsersUseCase {
     ) -> Result<(), crate::errors::use_case::UserInitRootError> { 
         use crate::errors::use_case::UserInitRootError as Error;
 
-        let mut client = client
-            .acquire()
+        let mut tx = client
+            .begin()
             .await
-            .map_err(|_| Error::DatabaseConnection)?;
+            .map_err(|_| Error::DatabaseConnection)?
 
         // create the root permission 
         {
@@ -33,7 +33,7 @@ impl UsersUseCase {
                 .build()
                 .unwrap();
 
-            let _ = PermissionsRepository::insert(params, &mut *client)
+            let _ = PermissionsRepository::insert(params, &mut *tx)
                 .await
                 .map_err(|_| Error::PermissionExists)?;
         }
@@ -48,7 +48,7 @@ impl UsersUseCase {
                 .build()
                 .unwrap();
 
-            let _ = GroupsRepository::insert(params, &mut *client)
+            let _ = GroupsRepository::insert(params, &mut *tx)
                 .await
                 .map_err(|_| Error::GroupExists)?;
         }
@@ -68,10 +68,12 @@ impl UsersUseCase {
                 .build()
                 .unwrap();
 
-            let _ = UsersRepository::insert(params, &mut *client)
+            let _ = UsersRepository::insert(params, &mut *tx)
                 .await
                 .map_err(|_| Error::GroupExists)?;
         }
+
+        tx.commit().await;
 
         return Ok(());
     }
