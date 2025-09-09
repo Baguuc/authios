@@ -3,7 +3,7 @@ use crate::use_cases::PermissionsUseCase;
 impl PermissionsUseCase {
     /// # PermissionsUseCase::create
     ///
-    /// create a permission, checking for possible errors
+    /// create a permission and add it to the root group, checking for possible errors
     ///
     /// Errors:
     /// + when a permission with provided name already exist;
@@ -14,7 +14,10 @@ impl PermissionsUseCase {
         params: crate::params::use_case::PermissionCreateParams,
         client: A
     ) -> Result<(), crate::errors::use_case::PermissionCreateError> {
-        use crate::repositories::PermissionsRepository; 
+        use crate::repositories::{
+            PermissionsRepository,
+            GroupPermissionsRepository
+        }; 
         use crate::use_cases::UsersUseCase;
         use crate::errors::use_case::PermissionCreateError as Error;
         
@@ -44,13 +47,29 @@ impl PermissionsUseCase {
             use crate::params::repository::PermissionInsertParamsBuilder as ParamsBuilder;
             
             let params = ParamsBuilder::new()
-                .set_name(params.name)
+                .set_name(params.name.clone())
                 .build()
                 .unwrap();
                     
             PermissionsRepository::insert(params, &mut *client)
                 .await
                 .map_err(|_| Error::AlreadyExist)?; 
+        }
+        
+        // grant the root group
+        {
+            use crate::params::repository::GroupPermissionInsertParamsBuilder as ParamsBuilder;
+            
+            let params = ParamsBuilder::new()
+                .set_group_name(String::from("root"))
+                .set_permission_name(params.name)
+                .build()
+                .unwrap();
+                    
+            GroupPermissionsRepository::insert(params, &mut *client)
+                .await
+                .map_err(|_| Error::AlreadyExist)?; 
+            
         }
 
         return Ok(());

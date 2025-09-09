@@ -30,6 +30,7 @@ pub async fn controller(
         Ok(_) => HttpResponse::Ok().into(),
         Err(error) => match error {
             Error::AlreadyExist => HttpResponse::Conflict().body(error.to_string()),
+            Error::RootGroupNotExist => HttpResponse::Conflict().body(error.to_string()),
             Error::Unauthorized => HttpResponse::Unauthorized().body(error.to_string()),
             Error::DatabaseConnection => HttpResponse::InternalServerError().body(error.to_string())
         }
