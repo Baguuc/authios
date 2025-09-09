@@ -6,6 +6,8 @@ pub enum UserRevokeGroupError {
     UserNotExist,
     #[error("NOT_ADDED_YET")]
     NotAddedYet,
+    #[error("UNAUTHORIZED")]
+    Unauthorized,
     #[error("DATABASE_CONNECTION")]
     DatabaseConnection
 }

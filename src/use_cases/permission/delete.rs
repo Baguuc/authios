@@ -15,26 +15,47 @@ impl PermissionsUseCase {
         client: A
     ) -> Result<(), crate::errors::use_case::PermissionDeleteError> {
         use crate::repositories::PermissionsRepository;
+        use crate::use_cases::UsersUseCase;
         use crate::errors::use_case::PermissionDeleteError as Error;
-        use crate::params::repository::PermissionDeleteParamsBuilder as ParamsBuilder;
 
         let mut client = client.acquire()
             .await
             .map_err(|_| Error::DatabaseConnection)?;
         
-        let params = ParamsBuilder::new()
-            .set_name(params.name)
-            .build()
-            .unwrap();
-        
-        let result = PermissionsRepository::delete(params, &mut *client)
-            .await
-            .unwrap();
+        // authorize
+        {
+            use crate::params::use_case::UserAuthorizeParamsBuilder as ParamsBuilder;
 
-        if result.rows_affected() == 0 {
-            return Err(Error::NotExist);
+            let params = ParamsBuilder::new()
+                .set_token(params.token)
+                .set_encryption_key(params.encryption_key)
+                .set_permission_name(String::from("authios:all"))
+                .build()
+                .unwrap();
+            
+            match UsersUseCase::authorize(params, &mut *client).await {
+                Ok(true) => (),
+                _ => return Err(Error::Unauthorized)
+            };
         }
         
+        // delete permission
+        {
+            use crate::params::repository::PermissionDeleteParamsBuilder as ParamsBuilder;
+            
+            let params = ParamsBuilder::new()
+                .set_name(params.name)
+                .build()
+                .unwrap();
+            
+            let result = PermissionsRepository::delete(params, &mut *client)
+                .await
+                .unwrap();
+
+            if result.rows_affected() == 0 {
+                return Err(Error::NotExist);
+            }
+        } 
         return Ok(());
     }
 }

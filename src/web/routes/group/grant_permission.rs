@@ -12,20 +12,18 @@ pub async fn controller(
     };
     use actix_web::HttpResponse;
 
-    let pwd = req.headers()
+    let token = req.headers()
         .get("authorization")
         .unwrap()
         .to_str()
         .unwrap()
         .to_string();
-    
-    if pwd != config.root.pwd {
-        return HttpResponse::Unauthorized().body("UNAUTHORIZED");
-    }
 
     let params = ParamsBuilder::new()
         .set_permission_name(body.permission_name.clone())
         .set_group_name(body.name.clone())
+        .set_token(token)
+        .set_encryption_key(config.jwt.encryption_key.clone())
         .build()
         .unwrap();
 
@@ -33,6 +31,7 @@ pub async fn controller(
         Ok(_) => HttpResponse::Ok().into(),
         Err(error) => match error {
             Error::AlreadyAdded | Error::GroupNotExist | Error::PermissionNotExist => HttpResponse::Conflict().body(error.to_string()),
+            Error::Unauthorized => HttpResponse::Unauthorized().body(error.to_string()),
             Error::DatabaseConnection => HttpResponse::InternalServerError().body(error.to_string())
         }
     };

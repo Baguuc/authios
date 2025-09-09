@@ -15,22 +15,44 @@ impl PermissionsUseCase {
         client: A
     ) -> Result<(), crate::errors::use_case::PermissionCreateError> {
         use crate::repositories::PermissionsRepository; 
+        use crate::use_cases::UsersUseCase;
         use crate::errors::use_case::PermissionCreateError as Error;
-        use crate::params::repository::PermissionInsertParamsBuilder as ParamsBuilder;
         
         let mut client = client.acquire()
             .await
             .map_err(|_| Error::DatabaseConnection)?;
-
-        let params = ParamsBuilder::new()
-            .set_name(params.name)
-            .build()
-            .unwrap();
-                
-        PermissionsRepository::insert(params, &mut *client)
-            .await
-            .map_err(|_| Error::AlreadyExist)?; 
         
+        // authorize
+        {
+            use crate::params::use_case::UserAuthorizeParamsBuilder as ParamsBuilder;
+
+            let params = ParamsBuilder::new()
+                .set_token(params.token)
+                .set_encryption_key(params.encryption_key)
+                .set_permission_name(String::from("authios:all"))
+                .build()
+                .unwrap();
+            
+            match UsersUseCase::authorize(params, &mut *client).await {
+                Ok(true) => (),
+                _ => return Err(Error::Unauthorized)
+            };
+        }
+
+        // create permission
+        {
+            use crate::params::repository::PermissionInsertParamsBuilder as ParamsBuilder;
+            
+            let params = ParamsBuilder::new()
+                .set_name(params.name)
+                .build()
+                .unwrap();
+                    
+            PermissionsRepository::insert(params, &mut *client)
+                .await
+                .map_err(|_| Error::AlreadyExist)?; 
+        }
+
         return Ok(());
     }
 }

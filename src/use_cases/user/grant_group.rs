@@ -21,11 +21,29 @@ impl UsersUseCase {
             UsersRepository,
             UserGroupsRepository
         };
+        use crate::use_cases::UsersUseCase;
         use crate::errors::use_case::UserGrantGroupError as Error;
         
         let mut client = client.acquire()
             .await
             .map_err(|_| Error::DatabaseConnection)?;
+        
+        // authorize
+        {
+            use crate::params::use_case::UserAuthorizeParamsBuilder as ParamsBuilder;
+
+            let params = ParamsBuilder::new()
+                .set_token(params.token)
+                .set_encryption_key(params.encryption_key)
+                .set_permission_name(String::from("authios:all"))
+                .build()
+                .unwrap();
+            
+            match UsersUseCase::authorize(params, &mut *client).await {
+                Ok(true) => (),
+                _ => return Err(Error::Unauthorized)
+            };
+        }
         
         // check if group exists
         {

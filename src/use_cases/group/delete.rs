@@ -8,6 +8,7 @@ impl GroupsUseCase {
     /// Errors:
     /// + when a group with provided name do not exist;
     /// + when database connection cannot be acquired;
+    /// + when the user is not authorized to do this operation;
     /// + when the user is not authorized for this operation;
     ///
     pub async fn delete<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
@@ -15,26 +16,49 @@ impl GroupsUseCase {
         client: A
     ) -> Result<(), crate::errors::use_case::GroupDeleteError> {
         use crate::repositories::GroupsRepository;
+        use crate::use_cases::UsersUseCase;
         use crate::errors::use_case::GroupDeleteError as Error;
-        use crate::params::repository::GroupDeleteParamsBuilder as ParamsBuilder;
 
         let mut client = client.acquire()
             .await
             .map_err(|_| Error::DatabaseConnection)?;
         
-        let params = ParamsBuilder::new()
-            .set_name(params.name)
-            .build()
-            .unwrap();
+        // authorize
+        {
+            use crate::params::use_case::UserAuthorizeParamsBuilder as ParamsBuilder;
 
-        // this won't error so we can skip this result
-        let result = GroupsRepository::delete(params, &mut *client)
-            .await
-            .unwrap();
-
-        if result.rows_affected() == 0 {
-            return Err(Error::NotExist);
+            let params = ParamsBuilder::new()
+                .set_token(params.token)
+                .set_encryption_key(params.encryption_key)
+                .set_permission_name(String::from("authios:all"))
+                .build()
+                .unwrap();
+            
+            match UsersUseCase::authorize(params, &mut *client).await {
+                Ok(true) => (),
+                _ => return Err(Error::Unauthorized)
+            };
         }
+        
+        // delete
+        {
+            use crate::params::repository::GroupDeleteParamsBuilder as ParamsBuilder;
+            
+            let params = ParamsBuilder::new()
+                .set_name(params.name)
+                .build()
+                .unwrap();
+
+            // this won't error so we can skip this result
+            let result = GroupsRepository::delete(params, &mut *client)
+                .await
+                .unwrap();
+
+            if result.rows_affected() == 0 {
+                return Err(Error::NotExist);
+            }
+        }
+        
         
         return Ok(());
     }

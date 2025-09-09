@@ -6,6 +6,8 @@ pub enum GroupRevokePermissionError {
     GroupNotExist,
     #[error("NOT_ADDED_YET")]
     NotAddedYet,
+    #[error("UNAUTHORIZED")]
+    Unauthorized,
     #[error("DATABASE_CONNECTION")]
     DatabaseConnection
 }

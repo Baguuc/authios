@@ -6,6 +6,8 @@ pub enum UserGrantGroupError {
     UserNotExist,
     #[error("ALREADY_ADDED")]
     AlreadyAdded,
+    #[error("UNAUTHORIZED")]
+    Unauthorized,
     #[error("DATABASE_CONNECTION")]
     DatabaseConnection
 }
