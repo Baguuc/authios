@@ -57,7 +57,7 @@ impl GroupsUseCase {
 
             let _ = PermissionsRepository::retrieve(params, &mut *client)
                 .await
-                .map_err(|_| Error::PermissionNotExist)?;
+                .map_err(|_| Error::PermissionNotFound)?;
         }
 
         
@@ -73,7 +73,7 @@ impl GroupsUseCase {
 
             let group = GroupsRepository::retrieve(params, &mut *client)
                 .await
-                .map_err(|_| Error::GroupNotExist)?;
+                .map_err(|_| Error::GroupNotFound)?;
 
             group
         };

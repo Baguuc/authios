@@ -43,8 +43,9 @@ impl UsersUseCase {
             .unwrap();
 
         if result.rows_affected() == 0 {
-            // no effect so user not found
-            return Err(Error::NotExist);
+            // no effect so user not found so the token is invalid as it points to non-existent
+            // user
+            return Err(Error::InvalidToken);
         }
         
         return Ok(());

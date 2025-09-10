@@ -55,7 +55,7 @@ impl GroupsUseCase {
                 .unwrap();
 
             if result.rows_affected() == 0 {
-                return Err(Error::NotExist);
+                return Err(Error::NotFound);
             }
         }
         

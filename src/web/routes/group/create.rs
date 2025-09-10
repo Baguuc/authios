@@ -28,9 +28,9 @@ pub async fn controller( req: actix_web::HttpRequest,
     return match GroupsUseCase::create(params, &*client.into_inner()).await {
         Ok(_) => HttpResponse::Ok().into(),
         Err(error) => match error {
-            Error::AlreadyExist => HttpResponse::Conflict().body(error.to_string()),
-            Error::Unauthorized => HttpResponse::Unauthorized().body(error.to_string()),
-            Error::DatabaseConnection => HttpResponse::InternalServerError().body(error.to_string())
+            Error::AlreadyExist => HttpResponse::Conflict().body("ALREADY_EXIST"),
+            Error::Unauthorized => HttpResponse::Unauthorized().body("UNAUTHORIZED"),
+            Error::DatabaseConnection => HttpResponse::InternalServerError().body("DATABASE_CONNECTION")
         }
     };
 }

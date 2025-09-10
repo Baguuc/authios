@@ -55,7 +55,7 @@ impl UsersUseCase {
 
             let _ = GroupsRepository::retrieve(params, &mut *client)
                 .await
-                .map_err(|_| Error::GroupNotExist)?;
+                .map_err(|_| Error::GroupNotFound)?;
         }
 
         // retrieve the user
@@ -69,7 +69,7 @@ impl UsersUseCase {
 
             UsersRepository::retrieve(params, &mut *client)
                 .await
-                .map_err(|_| Error::UserNotExist)?
+                .map_err(|_| Error::UserNotFound)?
         };
         
         // not added yet

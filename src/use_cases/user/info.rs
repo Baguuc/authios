@@ -35,9 +35,10 @@ impl UsersUseCase {
                 .build()
                 .unwrap();
 
+            // invalid token points to non-existent user
             UsersRepository::retrieve(params, &mut *client)
                 .await
-                .map_err(|_| Error::NotExist)?
+                .map_err(|_| Error::InvalidToken)?
         };
         
         return Ok(data);

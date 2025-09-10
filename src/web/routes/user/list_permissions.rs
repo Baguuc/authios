@@ -32,9 +32,8 @@ pub async fn controller(
                 to_string(&permissions).unwrap()
             ),
         Err(error) => match error {
-            Error::InvalidToken => HttpResponse::Unauthorized().body(error.to_string()),
-            Error::UserNotExist => HttpResponse::NotFound().body(error.to_string()),
-            Error::DatabaseConnection => HttpResponse::InternalServerError().body(error.to_string()),
+            Error::InvalidToken => HttpResponse::Unauthorized().body("INVALID_TOKEN"),
+            Error::DatabaseConnection => HttpResponse::InternalServerError().body("DATABASE_CONNECTION"),
         }
     };
 }

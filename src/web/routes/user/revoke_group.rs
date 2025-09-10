@@ -30,9 +30,11 @@ pub async fn controller(
     return match UsersUseCase::revoke_group(params, &*client.into_inner()).await {
         Ok(_) => HttpResponse::Ok().into(),
         Err(error) => match error {
-            Error::NotAddedYet | Error::UserNotExist | Error::GroupNotExist => HttpResponse::Conflict().body(error.to_string()),
-            Error::Unauthorized => HttpResponse::Unauthorized().body(error.to_string()),
-            Error::DatabaseConnection => HttpResponse::InternalServerError().body(error.to_string())
+            Error::UserNotFound => HttpResponse::Conflict().body("USER_NOT_FOUND"),
+            Error::GroupNotFound => HttpResponse::Conflict().body("GROUP_NOT_FOUND"),
+            Error::NotAddedYet => HttpResponse::Conflict().body("NOT_ADDED_YET"),
+            Error::Unauthorized => HttpResponse::Unauthorized().body("UNAUTHORIZED"),
+            Error::DatabaseConnection => HttpResponse::InternalServerError().body("DATABASE_CONNECTION")
         }
     };
 }

@@ -41,7 +41,7 @@ impl UsersUseCase {
 
             UsersRepository::retrieve(params, &mut *client)
                 .await
-                .map_err(|_| Error::UserNotExist)?
+                .map_err(|_| Error::InvalidToken)?
         };
 
         let mut permissions = HashSet::new();

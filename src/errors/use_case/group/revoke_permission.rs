@@ -1,9 +1,9 @@
 #[derive(thiserror::Error, Debug)]
 pub enum GroupRevokePermissionError {
-    #[error("PERMISSION_NOT_EXIST")]
-    PermissionNotExist,
-    #[error("GROUP_NOT_EXIST")]
-    GroupNotExist,
+    #[error("PERMISSION_NOT_FOUND")]
+    PermissionNotFound,
+    #[error("GROUP_NOT_FOUND")]
+    GroupNotFound,
     #[error("NOT_ADDED_YET")]
     NotAddedYet,
     #[error("UNAUTHORIZED")]

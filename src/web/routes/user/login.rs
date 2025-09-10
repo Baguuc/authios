@@ -21,10 +21,10 @@ pub async fn controller(
     return match UsersUseCase::login(params, &*client.into_inner()).await {
         Ok(token) => HttpResponse::Ok().body(token),
         Err(error) => match error {
-            Error::InvalidCredentials => HttpResponse::Unauthorized().body(error.to_string()),
-            Error::NotExist => HttpResponse::Unauthorized().body(error.to_string()),
-            Error::CannotGenerateToken => HttpResponse::InternalServerError().body(error.to_string()),
-            Error::DatabaseConnection => HttpResponse::InternalServerError().body(error.to_string()),
+            Error::UserNotFound => HttpResponse::Conflict().body("USER_NOT_FOUND"),
+            Error::WrongPassword => HttpResponse::Unauthorized().body("WRONG_PASSWORD"),
+            Error::CannotGenerateToken => HttpResponse::InternalServerError().body("CANNOT_GENERATE_TOKEN"),
+            Error::DatabaseConnection => HttpResponse::InternalServerError().body("DATABASE_CONNECTION"),
         } 
     };
 }

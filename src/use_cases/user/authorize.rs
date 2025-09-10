@@ -42,7 +42,7 @@ impl UsersUseCase {
 
             let _ = PermissionsRepository::retrieve(params, &mut *client)
                 .await
-                .map_err(|_| Error::PermissionNotExist)?;
+                .map_err(|_| Error::PermissionNotFound)?;
         }
 
 
@@ -54,10 +54,11 @@ impl UsersUseCase {
                 .set_login(user_login)
                 .build()
                 .unwrap();
-
+            
+            // invalid token points to non-existent user
             let user = UsersRepository::retrieve(params, &mut *client)
                 .await
-                .map_err(|_| Error::PermissionNotExist)?;
+                .map_err(|_| Error::InvalidToken)?;
 
             user
         };

@@ -29,10 +29,9 @@ pub async fn controller(
     return match UsersUseCase::update_pwd(params, &*client.into_inner()).await {
         Ok(_) => HttpResponse::Ok().into(),
         Err(error) => match error {
-            Error::InvalidToken => HttpResponse::Unauthorized().body(error.to_string()),
-            Error::NotExist => HttpResponse::NotFound().body(error.to_string()),
-            Error::CannotHash => HttpResponse::InternalServerError().body(error.to_string()),
-            Error::DatabaseConnection => HttpResponse::InternalServerError().body(error.to_string()),
+            Error::InvalidToken => HttpResponse::Unauthorized().body("INVALID_TOKEN"),
+            Error::CannotHash => HttpResponse::InternalServerError().body("CANNOT_HASH_PWD"),
+            Error::DatabaseConnection => HttpResponse::InternalServerError().body("DATABASE_CONNECTION"),
         } 
     }
 }

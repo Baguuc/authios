@@ -35,11 +35,11 @@ impl UsersUseCase {
 
             UsersRepository::retrieve(params, &mut *client)
                 .await
-                .map_err(|_| Error::NotExist)?
+                .map_err(|_| Error::UserNotFound)?
         };
 
         if !verify_password(&params.pwd, &user.pwd) {
-            return Err(Error::InvalidCredentials);
+            return Err(Error::WrongPassword);
         };
         
         let token = generate(

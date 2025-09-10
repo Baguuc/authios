@@ -29,10 +29,10 @@ pub async fn controller(
     return match PermissionsUseCase::create(params, &*client.into_inner()).await {
         Ok(_) => HttpResponse::Ok().into(),
         Err(error) => match error {
-            Error::AlreadyExist => HttpResponse::Conflict().body(error.to_string()),
-            Error::RootGroupNotExist => HttpResponse::Conflict().body(error.to_string()),
-            Error::Unauthorized => HttpResponse::Unauthorized().body(error.to_string()),
-            Error::DatabaseConnection => HttpResponse::InternalServerError().body(error.to_string())
+            Error::AlreadyExist => HttpResponse::Conflict().body("ALREADY_EXIST"),
+            Error::RootGroupNotFound => HttpResponse::Conflict().body("ROOT_GROUP_NOT_FOUND"),
+            Error::Unauthorized => HttpResponse::Unauthorized().body("UNAUTHORIZED"),
+            Error::DatabaseConnection => HttpResponse::InternalServerError().body("DATABASE_CONNECTION")
         }
     };
 }

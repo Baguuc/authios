@@ -2,10 +2,8 @@
 pub enum UserAuthorizeError {
     #[error("INVALID_TOKEN")]
     InvalidToken,
-    #[error("USER_NOT_EXIST")]
-    UserNotExist,
-    #[error("PERMISSION_NOT_EXIST")]
-    PermissionNotExist,
+    #[error("PERMISSION_NOT_FOUND")]
+    PermissionNotFound,
     #[error("DATABASE_CONNECTION")]
     DatabaseConnection
 }
