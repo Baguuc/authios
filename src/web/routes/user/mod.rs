@@ -20,11 +20,15 @@ pub fn scope() -> actix_web::Scope {
                 .service(authorize::controller)
                 .service(update_pwd::controller)
                 .service(list_permissions::controller)
-                .service(grant_group::controller)
-                .service(revoke_group::controller)
         )
         .service(
             actix_web::web::scope("/users")
                 .service(register::controller)
+        )
+        .service(
+            actix_web::web::scope("/users")
+                .guard(actix_web::guard::fn_guard(|ctx| ctx.head().headers().get("authorization").is_some()))
+                .service(grant_group::controller)
+                .service(revoke_group::controller)
         )
 }
