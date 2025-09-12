@@ -7,7 +7,7 @@ pub async fn controller(
 ) -> impl actix_web::Responder {
     use crate::{
         use_cases::UsersUseCase,
-        params::use_case::UserAuthorizeParamsBuilder as ParamsBuilder,
+        params::use_case::UserAuthorizeParams as Params,
         errors::use_case::UserAuthorizeError as Error
     };
     use actix_web::HttpResponse;
@@ -19,12 +19,11 @@ pub async fn controller(
         .unwrap()
         .to_string();
 
-    let params = ParamsBuilder::new()
-        .set_token(token)
-        .set_encryption_key(config.jwt.encryption_key.clone())
-        .set_permission_name(path.permission_name.clone())
-        .build()
-        .unwrap();
+    let params = Params {
+        encryption_key: config.jwt.encryption_key.clone(),
+        permission_name: path.permission_name.clone(),
+        token
+    };
 
     return match UsersUseCase::authorize(params, &*client.into_inner()).await {
         Ok(true) => HttpResponse::Ok().into(),

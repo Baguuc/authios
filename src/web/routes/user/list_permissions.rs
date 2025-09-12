@@ -8,7 +8,7 @@ pub async fn controller(
     use serde_json::to_string;
     use crate::{
         use_cases::UsersUseCase,
-        params::use_case::UserListPermissionsParamsBuilder as ParamsBuilder,
+        params::use_case::UserListPermissionsParams as Params,
         errors::use_case::UserListPermissionsError as Error
     };
     
@@ -18,14 +18,8 @@ pub async fn controller(
         .to_str()
         .unwrap()
         .to_string();
-    
-    let params = ParamsBuilder::new()
-        .set_token(token)
-        .set_encryption_key(config.jwt.encryption_key.clone())
-        .build()
-        .unwrap();
 
-    return match UsersUseCase::list_permissions(params, &*client.into_inner()).await {
+    return match UsersUseCase::list_permissions(Params { token, encryption_key: config.jwt.encryption_key.clone() }, &*client.into_inner()).await {
         Ok(permissions) => HttpResponse::Ok()
             .content_type(ContentType::json())
             .body(

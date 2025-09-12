@@ -8,7 +8,7 @@ pub async fn controller(
     use actix_web::HttpResponse;
     use crate::{
         use_cases::UsersUseCase,
-        params::use_case::UserUpdatePwdParamsBuilder as ParamsBuilder,
+        params::use_case::UserUpdatePwdParams as Params,
         errors::use_case::UserUpdatePwdError as Error
     };
     
@@ -19,14 +19,7 @@ pub async fn controller(
         .unwrap()
         .to_string();
 
-    let params = ParamsBuilder::new()
-        .set_token(token)
-        .set_new_pwd(body.pwd.clone())
-        .set_encryption_key(config.jwt.encryption_key.clone())
-        .build()
-        .unwrap();
-
-    return match UsersUseCase::update_pwd(params, &*client.into_inner()).await {
+    return match UsersUseCase::update_pwd(Params { token, new_pwd: body.pwd.clone(), encryption_key: config.jwt.encryption_key.clone() }, &*client.into_inner()).await {
         Ok(_) => HttpResponse::Ok().into(),
         Err(error) => match error {
             Error::InvalidToken => HttpResponse::Unauthorized().body("INVALID_TOKEN"),

@@ -1,17 +1,8 @@
 pub mod insert;
-pub use insert::{
-    PermissionInsertParams,
-    InsertParamsBuilder as PermissionInsertParamsBuilder
-};
+pub use insert::PermissionInsertParams;
 
 pub mod delete;
-pub use delete::{
-    PermissionDeleteParams,
-    DeleteParamsBuilder as PermissionDeleteParamsBuilder
-};
+pub use delete::PermissionDeleteParams;
 
 pub mod retrieve;
-pub use retrieve::{
-    PermissionRetrieveParams,
-    RetrieveParamsBuilder as PermissionRetrieveParamsBuilder
-};
+pub use retrieve::PermissionRetrieveParams;

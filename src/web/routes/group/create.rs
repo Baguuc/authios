@@ -6,7 +6,7 @@ pub async fn controller( req: actix_web::HttpRequest,
 ) -> impl actix_web::Responder {
     use crate::{
         use_cases::GroupsUseCase,
-        params::use_case::GroupCreateParamsBuilder as ParamsBuilder,
+        params::use_case::GroupCreateParams as Params,
         errors::use_case::GroupCreateError as Error
     };
     use actix_web::HttpResponse;
@@ -17,15 +17,8 @@ pub async fn controller( req: actix_web::HttpRequest,
         .to_str()
         .unwrap()
         .to_string();
-    
-    let params = ParamsBuilder::new()
-        .set_name(body.name.clone())
-        .set_token(token)
-        .set_encryption_key(config.jwt.encryption_key.clone())
-        .build()
-        .unwrap();
 
-    return match GroupsUseCase::create(params, &*client.into_inner()).await {
+    return match GroupsUseCase::create(Params { name: body.name.clone(), encryption_key: config.jwt.encryption_key.clone(), token }, &*client.into_inner()).await {
         Ok(_) => HttpResponse::Ok().into(),
         Err(error) => match error {
             Error::AlreadyExist => HttpResponse::Conflict().body("ALREADY_EXIST"),

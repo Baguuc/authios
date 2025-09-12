@@ -20,7 +20,7 @@ impl UsersUseCase {
         use crate::utils::password_hash::verify_password;
         use crate::utils::jwt_token::generate;
         use crate::errors::use_case::UserLoginError as Error; 
-        use crate::params::repository::UserRetrieveParamsBuilder as ParamsBuilder;
+        use crate::params::repository::UserRetrieveParams as Params;
         
         let mut client = client
             .acquire()
@@ -29,12 +29,7 @@ impl UsersUseCase {
         
         // retrieve the user
         let user = {
-            let params = ParamsBuilder::new()
-                .set_login(params.login.clone())
-                .build()
-                .unwrap();
-
-            UsersRepository::retrieve(params, &mut *client)
+            UsersRepository::retrieve(Params { login: params.login }, &mut *client)
                 .await
                 .map_err(|_| Error::UserNotFound)?
         };

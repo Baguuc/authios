@@ -26,16 +26,9 @@ impl GroupsUseCase {
         
         // authorize
         {
-            use crate::params::use_case::UserAuthorizeParamsBuilder as ParamsBuilder;
-
-            let params = ParamsBuilder::new()
-                .set_token(params.token)
-                .set_encryption_key(params.encryption_key)
-                .set_permission_name(String::from("authios:all"))
-                .build()
-                .unwrap();
+            use crate::params::use_case::UserAuthorizeParams as Params;
             
-            match UsersUseCase::authorize(params, &mut *client).await {
+            match UsersUseCase::authorize(Params { token: params.token, encryption_key: params.encryption_key, permission_name: String::from("authios:all") }, &mut *client).await {
                 Ok(true) => (),
                 _ => return Err(Error::Unauthorized)
             };
@@ -43,14 +36,9 @@ impl GroupsUseCase {
 
         // insert group
         {
-            use crate::params::repository::GroupInsertParamsBuilder as ParamsBuilder; 
-            
-            let params = ParamsBuilder::new()
-                .set_name(params.name)
-                .build()
-                .unwrap();
+            use crate::params::repository::GroupInsertParams as Params; 
 
-            GroupsRepository::insert(params, &mut *client)
+            GroupsRepository::insert(Params { name: params.name }, &mut *client)
                 .await
                 .map_err(|_| Error::AlreadyExist)?;
         }

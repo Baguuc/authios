@@ -1,23 +1,11 @@
 pub mod insert;
-pub use insert::{
-    UserInsertParams,
-    InsertParamsBuilder as UserInsertParamsBuilder
-};
+pub use insert::UserInsertParams;
 
 pub mod retrieve;
-pub use retrieve::{
-    UserRetrieveParams,
-    RetrieveParamsBuilder as UserRetrieveParamsBuilder
-};
+pub use retrieve::UserRetrieveParams;
 
 pub mod update;
-pub use update::{
-    UserUpdateParams,
-    UpdateParamsBuilder as UserUpdateParamsBuilder
-};
+pub use update::UserUpdateParams;
 
 pub mod delete;
-pub use delete::{
-    UserDeleteParams,
-    DeleteParamsBuilder as UserDeleteParamsBuilder
-};
+pub use delete::UserDeleteParams;

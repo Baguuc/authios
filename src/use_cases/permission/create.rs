@@ -29,14 +29,13 @@ impl PermissionsUseCase {
         
         // authorize
         {
-            use crate::params::use_case::UserAuthorizeParamsBuilder as ParamsBuilder;
+            use crate::params::use_case::UserAuthorizeParams as Params;
 
-            let params = ParamsBuilder::new()
-                .set_token(params.token)
-                .set_encryption_key(params.encryption_key)
-                .set_permission_name(String::from("authios:all"))
-                .build()
-                .unwrap();
+            let params = Params {
+                encryption_key: params.encryption_key,
+                permission_name: String::from("authios:all"),
+                token: params.token,
+            };
             
             match UsersUseCase::authorize(params, &mut *tx).await {
                 Ok(true) => (),
@@ -46,29 +45,18 @@ impl PermissionsUseCase {
 
         // create permission
         {
-            use crate::params::repository::PermissionInsertParamsBuilder as ParamsBuilder;
-            
-            let params = ParamsBuilder::new()
-                .set_name(params.name.clone())
-                .build()
-                .unwrap();
+            use crate::params::repository::PermissionInsertParams as Params;
                     
-            PermissionsRepository::insert(params, &mut *tx)
+            PermissionsRepository::insert(Params { name: params.name.clone() }, &mut *tx)
                 .await
                 .map_err(|_| Error::AlreadyExist)?; 
         }
         
-        // grant the root group
+        // grant to the root group
         {
-            use crate::params::repository::GroupPermissionInsertParamsBuilder as ParamsBuilder;
-            
-            let params = ParamsBuilder::new()
-                .set_group_name(String::from("root"))
-                .set_permission_name(params.name)
-                .build()
-                .unwrap();
+            use crate::params::repository::GroupPermissionInsertParams as Params;
                     
-            GroupPermissionsRepository::insert(params, &mut *tx)
+            GroupPermissionsRepository::insert(Params { group_name: String::from("root"), permission_name: params.name }, &mut *tx)
                 .await
                 .map_err(|_| Error::AlreadyExist)?; 
             

@@ -1,11 +1,5 @@
 pub mod insert;
-pub use insert::{
-    UserGroupInsertParams,
-    InsertParamsBuilder as UserGroupInsertParamsBuilder
-};
+pub use insert::UserGroupInsertParams;
 
 pub mod delete;
-pub use delete::{
-    UserGroupDeleteParams,
-    DeleteParamsBuilder as UserGroupDeleteParamsBuilder
-};
+pub use delete::UserGroupDeleteParams;

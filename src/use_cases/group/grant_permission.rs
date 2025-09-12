@@ -23,7 +23,6 @@ impl GroupsUseCase {
         };
         use crate::use_cases::UsersUseCase;
         use crate::errors::use_case::GroupGrantPermissionError as Error;
-        use crate::params::repository::GroupPermissionInsertParamsBuilder as ParamsBuilder;
 
         let mut client = client.acquire()
             .await
@@ -31,14 +30,13 @@ impl GroupsUseCase {
         
         // authorize
         {
-            use crate::params::use_case::UserAuthorizeParamsBuilder as ParamsBuilder;
+            use crate::params::use_case::UserAuthorizeParams as Params;
 
-            let params = ParamsBuilder::new()
-                .set_token(params.token)
-                .set_encryption_key(params.encryption_key)
-                .set_permission_name(String::from("authios:all"))
-                .build()
-                .unwrap();
+            let params = Params {
+                encryption_key: params.encryption_key,
+                permission_name: String::from("authios:all"),
+                token: params.token
+            };
             
             match UsersUseCase::authorize(params, &mut *client).await {
                 Ok(true) => (),
@@ -48,14 +46,9 @@ impl GroupsUseCase {
 
         // check if the permission exist
         {
-            use crate::params::repository::PermissionRetrieveParamsBuilder as ParamsBuilder;
-            
-            let params = ParamsBuilder::new()
-                .set_name(params.permission_name.clone())
-                .build()
-                .unwrap();
+            use crate::params::repository::PermissionRetrieveParams as Params;
 
-            let _ = PermissionsRepository::retrieve(params, &mut *client)
+            let _ = PermissionsRepository::retrieve(Params { name: params.permission_name.clone() }, &mut *client)
                 .await
                 .map_err(|_| Error::PermissionNotFound)?;
         }
@@ -64,14 +57,9 @@ impl GroupsUseCase {
 
         // check if the group exist
         {
-            use crate::params::repository::GroupRetrieveParamsBuilder as ParamsBuilder;
-            
-            let params = ParamsBuilder::new()
-                .set_name(params.group_name.clone())
-                .build()
-                .unwrap();
+            use crate::params::repository::GroupRetrieveParams as Params;
 
-            let _ = GroupsRepository::retrieve(params, &mut *client)
+            let _ = GroupsRepository::retrieve(Params { name: params.group_name.clone() }, &mut *client)
                 .await
                 .map_err(|_| Error::GroupNotFound)?;
         }
@@ -79,13 +67,9 @@ impl GroupsUseCase {
 
         // add the permission to the group
         {
-            let params = ParamsBuilder::new()
-                .set_group_name(params.group_name)
-                .set_permission_name(params.permission_name)
-                .build()
-                .unwrap();
+            use crate::params::repository::GroupPermissionInsertParams as Params;
             
-            GroupPermissionsRepository::insert(params, &mut *client)
+            GroupPermissionsRepository::insert(Params { group_name: params.group_name, permission_name: params.permission_name }, &mut *client)
                 .await
                 // already added
                 .map_err(|_| Error::AlreadyAdded)?;

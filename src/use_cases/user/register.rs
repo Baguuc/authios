@@ -19,7 +19,7 @@ impl UsersUseCase {
         use crate::utils::password_hash::hash_password;
         use crate::repositories::UsersRepository; 
         use crate::errors::use_case::UserRegisterError as Error; 
-        use crate::params::repository::UserInsertParamsBuilder as ParamsBuilder;
+        use crate::params::repository::UserInsertParams as Params;
         
         let mut client = client
             .acquire()
@@ -33,13 +33,7 @@ impl UsersUseCase {
 
         // insert the user
         {
-            let params = ParamsBuilder::new()
-                .set_login(params.login)
-                .set_pwd(password_hash)
-                .build()
-                .unwrap();
-
-            let _ = UsersRepository::insert(params, &mut *client).await
+            let _ = UsersRepository::insert(Params { login: params.login, pwd: password_hash }, &mut *client).await
                 .map_err(|_| Error::AlreadyExist)?;
         }
 

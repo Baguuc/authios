@@ -30,15 +30,10 @@ impl UsersUseCase {
 
         // get the data
         let data = {
-            use crate::params::repository::UserRetrieveParamsBuilder as ParamsBuilder;
-            
-            let params = ParamsBuilder::new()
-                .set_login(user_login)
-                .build()
-                .unwrap();
+            use crate::params::repository::UserRetrieveParams as Params;
 
             // invalid token points to non-existent user
-            UsersRepository::retrieve(params, &mut *client)
+            UsersRepository::retrieve(Params { login: user_login }, &mut *client)
                 .await
                 .map_err(|_| Error::InvalidToken)?
         };

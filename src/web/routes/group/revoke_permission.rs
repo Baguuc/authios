@@ -7,7 +7,7 @@ pub async fn controller(
 ) -> impl actix_web::Responder {
     use crate::{
         use_cases::GroupsUseCase,
-        params::use_case::GroupRevokePermissionParamsBuilder as ParamsBuilder,
+        params::use_case::GroupRevokePermissionParams as Params,
         errors::use_case::GroupRevokePermissionError as Error
     };
     use actix_web::HttpResponse;
@@ -19,13 +19,12 @@ pub async fn controller(
         .unwrap()
         .to_string();
     
-    let params = ParamsBuilder::new()
-        .set_permission_name(body.permission_name.clone())
-        .set_group_name(body.name.clone())
-        .set_token(token)
-        .set_encryption_key(config.jwt.encryption_key.clone())
-        .build()
-        .unwrap();
+    let params = Params {
+        permission_name: body.permission_name.clone(),
+        group_name: body.name.clone(),
+        encryption_key: config.jwt.encryption_key.clone(),
+        token
+    };
 
     return match GroupsUseCase::revoke_permission(params, &*client.into_inner()).await {
         Ok(_) => HttpResponse::Ok().into(),

@@ -7,7 +7,7 @@ pub async fn controller(
 ) -> impl actix_web::Responder {
     use crate::{
         use_cases::UsersUseCase,
-        params::use_case::UserGrantGroupParamsBuilder as ParamsBuilder,
+        params::use_case::UserGrantGroupParams as Params,
         errors::use_case::UserGrantGroupError as Error
     };
     use actix_web::HttpResponse;
@@ -19,13 +19,12 @@ pub async fn controller(
         .unwrap()
         .to_string();
 
-    let params = ParamsBuilder::new()
-        .set_group_name(body.group_name.clone())
-        .set_user_login(body.login.clone())
-        .set_token(token)
-        .set_encryption_key(config.jwt.encryption_key.clone())
-        .build()
-        .unwrap();
+    let params = Params {
+        group_name: body.group_name.clone(), 
+        user_login: body.login.clone(),
+        encryption_key: config.jwt.encryption_key.clone(),
+        token
+    };
 
     return match UsersUseCase::grant_group(params, &*client.into_inner()).await {
         Ok(_) => HttpResponse::Ok().into(),

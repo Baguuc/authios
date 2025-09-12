@@ -34,14 +34,9 @@ impl UsersUseCase {
         
         // check if permission exist
         {
-            use crate::params::repository::PermissionRetrieveParamsBuilder as ParamsBuilder;
+            use crate::params::repository::PermissionRetrieveParams as Params;
 
-            let params = ParamsBuilder::new()
-                .set_name(params.permission_name.clone())
-                .build()
-                .unwrap();
-
-            let _ = PermissionsRepository::retrieve(params, &mut *client)
+            let _ = PermissionsRepository::retrieve(Params { name: params.permission_name.clone() }, &mut *client)
                 .await
                 .map_err(|_| Error::PermissionNotFound)?;
         }
@@ -49,15 +44,10 @@ impl UsersUseCase {
 
         // retrieve the user
         let user = {
-            use crate::params::repository::UserRetrieveParamsBuilder as ParamsBuilder;
+            use crate::params::repository::UserRetrieveParams as Params;
 
-            let params = ParamsBuilder::new()
-                .set_login(user_login)
-                .build()
-                .unwrap();
-            
             // invalid token points to non-existent user
-            let user = UsersRepository::retrieve(params, &mut *client)
+            let user = UsersRepository::retrieve(Params { login: user_login }, &mut *client)
                 .await
                 .map_err(|_| Error::InvalidToken)?;
 
@@ -66,14 +56,9 @@ impl UsersUseCase {
 
 
         for group_name in user.groups {
-            use crate::params::repository::GroupRetrieveParamsBuilder as ParamsBuilder;
+            use crate::params::repository::GroupRetrieveParams as Params;
 
-            let rparams = ParamsBuilder::new()
-                .set_name(group_name)
-                .build()
-                .unwrap();
-
-            let group = GroupsRepository::retrieve(rparams, &mut *client)
+            let group = GroupsRepository::retrieve(Params { name: group_name }, &mut *client)
                 .await
                 .unwrap();
             

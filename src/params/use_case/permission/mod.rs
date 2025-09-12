@@ -1,11 +1,5 @@
 pub mod create;
-pub use create::{
-    PermissionCreateParams,
-    PermissionCreateParamsBuilder
-};
+pub use create::PermissionCreateParams;
 
 pub mod delete;
-pub use delete::{
-    PermissionDeleteParams,
-    PermissionDeleteParamsBuilder
-};
+pub use delete::PermissionDeleteParams;

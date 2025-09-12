@@ -25,48 +25,32 @@ impl UsersUseCase {
 
         // create the root permission 
         {
-            use crate::params::repository::PermissionInsertParamsBuilder as ParamsBuilder;
+            use crate::params::repository::PermissionInsertParams as Params;
             use crate::repositories::PermissionsRepository;
-
-            let params = ParamsBuilder::new()
-                .set_name(String::from("authios:all"))
-                .build()
-                .unwrap();
-
-            let _ = PermissionsRepository::insert(params, &mut *tx)
+            
+            let _ = PermissionsRepository::insert(Params { name: String::from("authios:all") }, &mut *tx)
                 .await;
         }
         
         // create the root group 
         {
-            use crate::params::repository::GroupInsertParamsBuilder as ParamsBuilder;
+            use crate::params::repository::GroupInsertParams as Params;
             use crate::repositories::GroupsRepository;
 
-            let params = ParamsBuilder::new()
-                .set_name(String::from("root"))
-                .build()
-                .unwrap();
-
-            let _ = GroupsRepository::insert(params, &mut *tx)
+            let _ = GroupsRepository::insert(Params { name: String::from("root") }, &mut *tx)
                 .await;
         }
         
         // create the root user 
         {
-            use crate::params::repository::UserInsertParamsBuilder as ParamsBuilder;
+            use crate::params::repository::UserInsertParams as Params;
             use crate::repositories::UsersRepository;
             use crate::utils::password_hash::hash_password;
 
             let pwd = hash_password(params.pwd)
                 .map_err(|_| Error::CannotHashPassword)?;
 
-            let params = ParamsBuilder::new()
-                .set_login(String::from("root"))
-                .set_pwd(pwd)
-                .build()
-                .unwrap();
-
-            let _ = UsersRepository::insert(params, &mut *tx)
+            let _ = UsersRepository::insert(Params { login: String::from("root"), pwd }, &mut *tx)
                 .await;
         }
 

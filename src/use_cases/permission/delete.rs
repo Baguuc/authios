@@ -26,16 +26,9 @@ impl PermissionsUseCase {
         
         // authorize
         {
-            use crate::params::use_case::UserAuthorizeParamsBuilder as ParamsBuilder;
-
-            let params = ParamsBuilder::new()
-                .set_token(params.token)
-                .set_encryption_key(params.encryption_key)
-                .set_permission_name(String::from("authios:all"))
-                .build()
-                .unwrap();
+            use crate::params::use_case::UserAuthorizeParams as Params;
             
-            match UsersUseCase::authorize(params, &mut *client).await {
+            match UsersUseCase::authorize(Params { token: params.token, encryption_key: params.encryption_key, permission_name: String::from("authios:all") }, &mut *client).await {
                 Ok(true) => (),
                 _ => return Err(Error::Unauthorized)
             };
@@ -43,14 +36,9 @@ impl PermissionsUseCase {
         
         // delete permission
         {
-            use crate::params::repository::PermissionDeleteParamsBuilder as ParamsBuilder;
+            use crate::params::repository::PermissionDeleteParams as Params;
             
-            let params = ParamsBuilder::new()
-                .set_name(params.name)
-                .build()
-                .unwrap();
-            
-            let result = PermissionsRepository::delete(params, &mut *client)
+            let result = PermissionsRepository::delete(Params { name: params.name }, &mut *client)
                 .await
                 .unwrap();
 

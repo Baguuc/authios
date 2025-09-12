@@ -1,53 +1,26 @@
 pub mod grant_group;
-pub use grant_group::{
-    UserGrantGroupParams,
-    UserGrantGroupParamsBuilder
-};
+pub use grant_group::UserGrantGroupParams;
 
 pub mod revoke_group;
-pub use revoke_group::{
-    UserRevokeGroupParams,
-    UserRevokeGroupParamsBuilder
-};
+pub use revoke_group::UserRevokeGroupParams;
 
 pub mod login;
-pub use login::{
-    UserLoginParams,
-    UserLoginParamsBuilder
-};
+pub use login::UserLoginParams;
 
 pub mod register;
-pub use register::{
-    UserRegisterParams,
-    UserRegisterParamsBuilder
-};
+pub use register::UserRegisterParams;
 
 pub mod info;
-pub use info::{
-    UserInfoParams,
-    UserInfoParamsBuilder
-};
+pub use info::UserInfoParams;
 
 pub mod update_pwd;
-pub use update_pwd::{
-    UserUpdatePwdParams,
-    UserUpdatePwdParamsBuilder
-};
+pub use update_pwd::UserUpdatePwdParams;
 
 pub mod authorize;
-pub use authorize::{
-    UserAuthorizeParams,
-    UserAuthorizeParamsBuilder
-};
+pub use authorize::UserAuthorizeParams;
 
 pub mod init_root;
-pub use init_root::{
-    UserInitRootParams,
-    UserInitRootParamsBuilder
-};
+pub use init_root::UserInitRootParams;
 
 pub mod list_permissions;
-pub use list_permissions::{
-    UserListPermissionsParams,
-    UserListPermissionsParamsBuilder
-};
+pub use list_permissions::UserListPermissionsParams;

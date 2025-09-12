@@ -1,17 +1,8 @@
 pub mod insert;
-pub use insert::{
-    GroupInsertParams,
-    InsertParamsBuilder as GroupInsertParamsBuilder
-};
+pub use insert::GroupInsertParams;
 
 pub mod delete;
-pub use delete::{
-    GroupDeleteParams,
-    DeleteParamsBuilder as GroupDeleteParamsBuilder
-};
+pub use delete::GroupDeleteParams;
 
 pub mod retrieve;
-pub use retrieve::{
-    GroupRetrieveParams as GroupRetrieveParams,
-    RetrieveParamsBuilder as GroupRetrieveParamsBuilder
-};
+pub use retrieve::GroupRetrieveParams;

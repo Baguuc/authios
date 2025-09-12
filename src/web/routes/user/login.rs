@@ -7,18 +7,11 @@ pub async fn controller(
     use actix_web::HttpResponse;
     use crate::{
         use_cases::UsersUseCase,
-        params::use_case::UserLoginParamsBuilder as ParamsBuilder,
+        params::use_case::UserLoginParams as Params,
         errors::use_case::UserLoginError as Error
     };
     
-    let params = ParamsBuilder::new()
-        .set_login(body.login.clone())
-        .set_pwd(body.pwd.clone())
-        .set_encryption_key(config.jwt.encryption_key.clone())
-        .build()
-        .unwrap();
-    
-    return match UsersUseCase::login(params, &*client.into_inner()).await {
+    return match UsersUseCase::login(Params { login: body.login.clone(), pwd: body.pwd.clone(), encryption_key: config.jwt.encryption_key.clone() }, &*client.into_inner()).await {
         Ok(token) => HttpResponse::Ok().body(token),
         Err(error) => match error {
             Error::UserNotFound => HttpResponse::Conflict().body("USER_NOT_FOUND"),

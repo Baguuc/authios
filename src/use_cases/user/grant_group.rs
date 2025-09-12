@@ -30,16 +30,9 @@ impl UsersUseCase {
         
         // authorize
         {
-            use crate::params::use_case::UserAuthorizeParamsBuilder as ParamsBuilder;
-
-            let params = ParamsBuilder::new()
-                .set_token(params.token)
-                .set_encryption_key(params.encryption_key)
-                .set_permission_name(String::from("authios:all"))
-                .build()
-                .unwrap();
+            use crate::params::use_case::UserAuthorizeParams as Params;
             
-            match UsersUseCase::authorize(params, &mut *client).await {
+            match UsersUseCase::authorize(Params { token: params.token, encryption_key: params.encryption_key, permission_name: String::from("authios:all") }, &mut *client).await {
                 Ok(true) => (),
                 _ => return Err(Error::Unauthorized)
             };
@@ -47,43 +40,27 @@ impl UsersUseCase {
         
         // check if group exists
         {
-            use crate::params::repository::GroupRetrieveParamsBuilder as ParamsBuilder;
-            
-            let params = ParamsBuilder::new()
-                .set_name(params.group_name.clone())
-                .build()
-                .unwrap();
+            use crate::params::repository::GroupRetrieveParams as Params;
 
-            let _ = GroupsRepository::retrieve(params, &mut *client)
+            let _ = GroupsRepository::retrieve(Params { name: params.group_name.clone() }, &mut *client)
                 .await
                 .map_err(|_| Error::GroupNotFound)?;
         }
         
         // check if permission exists
         {
-            use crate::params::repository::UserRetrieveParamsBuilder as ParamsBuilder;
+            use crate::params::repository::UserRetrieveParams as Params;
 
-            let params = ParamsBuilder::new()
-                .set_login(params.user_login.clone())
-                .build()
-                .unwrap();
-
-            let _ = UsersRepository::retrieve(params, &mut *client)
+            let _ = UsersRepository::retrieve(Params { login: params.user_login.clone() }, &mut *client)
                 .await
                 .map_err(|_| Error::UserNotFound)?;
         }
         
         // insert the data
         {
-            use crate::params::repository::UserGroupInsertParamsBuilder as ParamsBuilder;
-
-            let params = ParamsBuilder::new()
-                .set_group_name(params.group_name)
-                .set_user_login(params.user_login)
-                .build()
-                .unwrap();
+            use crate::params::repository::UserGroupInsertParams as Params;
             
-            UserGroupsRepository::insert(params, &mut *client)
+            UserGroupsRepository::insert(Params { group_name: params.group_name, user_login: params.user_login }, &mut *client)
                 .await
                 // already added
                 .map_err(|_| Error::AlreadyAdded)?;

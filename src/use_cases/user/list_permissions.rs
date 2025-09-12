@@ -34,14 +34,9 @@ impl UsersUseCase {
 
         // get the user's data
         let user = {
-            use crate::params::repository::UserRetrieveParamsBuilder as ParamsBuilder;
-            
-            let params = ParamsBuilder::new()
-                .set_login(user_login)
-                .build()
-                .unwrap();
+            use crate::params::repository::UserRetrieveParams as Params;
 
-            UsersRepository::retrieve(params, &mut *client)
+            UsersRepository::retrieve(Params { login: user_login }, &mut *client)
                 .await
                 .map_err(|_| Error::InvalidToken)?
         };
@@ -50,15 +45,10 @@ impl UsersUseCase {
         
         // fetch all the groups and extend the permissions set
         {
-            use crate::params::repository::GroupRetrieveParamsBuilder as ParamsBuilder;
+            use crate::params::repository::GroupRetrieveParams as Params;
             
             for group_name in user.groups {
-                let params = ParamsBuilder::new()
-                    .set_name(group_name)
-                    .build()
-                    .unwrap();
-
-                let group = GroupsRepository::retrieve(params, &mut *client)
+                let group = GroupsRepository::retrieve(Params { name: group_name }, &mut *client)
                     .await
                     .unwrap();
 

@@ -1,11 +1,5 @@
 pub mod insert;
-pub use insert::{
-    GroupPermissionInsertParams,
-    InsertParamsBuilder as GroupPermissionInsertParamsBuilder
-};
+pub use insert::GroupPermissionInsertParams;
 
 pub mod delete;
-pub use delete::{
-    GroupPermissionDeleteParams,
-    DeleteParamsBuilder as GroupPermissionDeleteParamsBuilder
-};
+pub use delete::GroupPermissionDeleteParams;
