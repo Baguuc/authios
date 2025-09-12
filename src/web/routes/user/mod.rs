@@ -10,11 +10,11 @@ pub mod list_permissions;
 pub fn scope() -> actix_web::Scope {
     actix_web::web::scope("")
         .service(
-            actix_web::web::scope("/user")
+            actix_web::web::scope("/users/me")
                 .service(login::controller)
         )
         .service(
-            actix_web::web::scope("/user")
+            actix_web::web::scope("/users/me")
                 .guard(actix_web::guard::fn_guard(|ctx| ctx.head().headers().get("authorization").is_some()))
                 .service(info::controller)
                 .service(authorize::controller)
