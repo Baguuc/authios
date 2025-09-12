@@ -1,16 +1,27 @@
-pub struct AuthorizeParams {
+/// # UserAuthorizeParams
+///
+/// Represent parameters for using the
+/// [crate::use_cases::user::UsersUseCase::authorize] method.
+///
+pub struct UserAuthorizeParams {
+    /// token of the user that want to perform the operation
+    ///
     pub token: String,
+    /// system's JWT encryption key
+    ///
     pub encryption_key: String,
+    /// name of the permission to check for
+    ///
     pub permission_name: String
 }
 
-pub struct AuthorizeParamsBuilder {
+pub struct UserAuthorizeParamsBuilder {
     token: Option<String>,
     encryption_key: Option<String>,
     permission_name: Option<String>
 }
 
-impl AuthorizeParamsBuilder {
+impl UserAuthorizeParamsBuilder {
     pub fn new() -> Self {
         return Self {
             token: None,
@@ -40,7 +51,7 @@ impl AuthorizeParamsBuilder {
         };
     }
     
-    pub fn build(self) -> Option<AuthorizeParams> {
+    pub fn build(self) -> Option<UserAuthorizeParams> {
         if self.token.is_none() {
             return None;
         }
@@ -53,7 +64,7 @@ impl AuthorizeParamsBuilder {
             return None;
         }
 
-        let params = AuthorizeParams {
+        let params = UserAuthorizeParams {
             token: self.token.unwrap(),
             encryption_key: self.encryption_key.unwrap(),
             permission_name: self.permission_name.unwrap()

@@ -1,4 +1,10 @@
-pub async fn command(args: crate::cli::CliArgs) {
+/// # migrate::command
+///
+/// definition of the 'migrate' cli command, that is migrating the database to the state necessary for the program
+/// to function.
+/// Uses [crate::utils::database::migrate] function.
+///
+pub async fn command(args: crate::cli::CliFlags) {
     use clin::components::{header,success};
     use crate::config::Config;
     use crate::utils::{

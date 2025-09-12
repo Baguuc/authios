@@ -3,8 +3,12 @@ use crate::repositories::PermissionsRepository;
 impl PermissionsRepository {
     /// # PermissionsRepository::insert
     ///
-    /// insert a permission into the database
+    /// Insert a permission into the database
     ///
+    /// ### Arguments:
+    /// + params: [crate::params::repository::permissions::PermissionInsertParams] - the parameters of the query
+    /// + client: [sqlx::Acquire] - sqlx postgres client
+    /// 
     pub async fn insert<'c, C: sqlx::Acquire<'c, Database = sqlx::Postgres>>(
         params: crate::params::repository::PermissionInsertParams,
         client: C

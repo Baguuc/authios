@@ -3,7 +3,11 @@ use crate::repositories::GroupsRepository;
 impl GroupsRepository {
     /// # GroupsRepository::insert
     ///
-    /// insert a group into the database
+    /// Insert a group into the database
+    ///
+    /// ### Arguments:
+    /// + params: [crate::params::repository::groups::GroupInsertParams] - the parameters of the query
+    /// + client: [sqlx::Acquire] - sqlx postgres client
     ///
     pub async fn insert<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: crate::params::repository::GroupInsertParams,

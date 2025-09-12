@@ -3,8 +3,12 @@ use crate::repositories::PermissionsRepository;
 impl PermissionsRepository {
     /// # PermissionsRepository::retrieve
     ///
-    /// retrieve a permission identified by name from the database
+    /// Retrieve a permission identified by name from the database
     ///
+    /// ### Arguments:
+    /// + params: [crate::params::repository::permissions::PermissionRetrieveParams] - the parameters of the query
+    /// + client: [sqlx::Acquire] - sqlx postgres client
+    /// 
     pub async fn retrieve<'c, C: sqlx::Acquire<'c, Database = sqlx::Postgres>>(
         params: crate::params::repository::PermissionRetrieveParams,
         client: C

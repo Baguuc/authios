@@ -3,14 +3,14 @@ use crate::use_cases::UsersUseCase;
 impl UsersUseCase {
     /// # UsersUseCase::init_root
     ///
-    /// init the root account and all of related data checking for errors
+    /// Init the root account and all of related data checking for errors
     ///
-    /// Errors:
-    /// + when a permission named "authios:all" already exists;
-    /// + when a group named "root" already exists;
-    /// + when a user named "root" already exists;
-    /// + when provided password cannot be hashed;
-    /// + when database connection cannot be acquired;
+    /// ### Arguments:
+    /// + params: [crate::params::use_case::user::init_root::UserInitRootParams] - the parameters of the query
+    /// + client: [sqlx::Acquire] - sqlx postgres client
+    /// 
+    /// ### Errors:
+    /// Errors described in [crate::errors::use_case::user::init_root::UserInitRootError]
     ///
     pub async fn init_root<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: crate::params::use_case::UserInitRootParams,
@@ -34,8 +34,7 @@ impl UsersUseCase {
                 .unwrap();
 
             let _ = PermissionsRepository::insert(params, &mut *tx)
-                .await
-                .map_err(|_| Error::PermissionExists)?;
+                .await;
         }
         
         // create the root group 
@@ -49,8 +48,7 @@ impl UsersUseCase {
                 .unwrap();
 
             let _ = GroupsRepository::insert(params, &mut *tx)
-                .await
-                .map_err(|_| Error::GroupExists)?;
+                .await;
         }
         
         // create the root user 
@@ -69,8 +67,7 @@ impl UsersUseCase {
                 .unwrap();
 
             let _ = UsersRepository::insert(params, &mut *tx)
-                .await
-                .map_err(|_| Error::GroupExists)?;
+                .await;
         }
 
         let _ = tx.commit().await;

@@ -1,9 +1,13 @@
 use crate::repositories::PermissionsRepository;
 
 impl PermissionsRepository {
-    /// # PermissionsRepository::retrieve
+    /// # PermissionsRepository::delete
     ///
-    /// delete a permission identified by name in the database
+    /// Delete a permission identified by name in the database
+    ///
+    /// ### Arguments:
+    /// + params: [crate::params::repository::permissions::PermissionDeleteParams] - the parameters of the query
+    /// + client: [sqlx::Acquire] - sqlx postgres client
     ///
     pub async fn delete<'c, C: sqlx::Acquire<'c, Database = sqlx::Postgres>>(
         params: crate::params::repository::PermissionDeleteParams,

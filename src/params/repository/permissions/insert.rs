@@ -1,4 +1,11 @@
-pub struct InsertParams {
+/// # PermissionInsertParams
+///
+/// Represent parameters for using the
+/// [crate::repositories::permissions::PermissionsRepository::insert] method.
+///
+pub struct PermissionInsertParams {
+    /// the name of the permission to insert
+    ///
     pub name: String
 }
 
@@ -20,12 +27,12 @@ impl InsertParamsBuilder {
         };
     }
     
-    pub fn build(self) -> Option<InsertParams> {
+    pub fn build(self) -> Option<PermissionInsertParams> {
         if self.name.is_none() {
             return None;
         }
 
-        let params = InsertParams {
+        let params = PermissionInsertParams {
             name: self.name.unwrap()
         };
 

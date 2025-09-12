@@ -3,13 +3,14 @@ use crate::use_cases::UsersUseCase;
 impl UsersUseCase {
     /// # UsersUseCase::update_pwd
     ///
-    /// update user's password, hashing password and checking for possible errors
+    /// Update user's password, hashing password and checking for possible errors
     ///
-    /// Errors:
-    /// + when provided token is invalid;
-    /// + when a user with provided token do not exist;
-    /// + when the provided password cannot be hashed;
-    /// + when database connection cannot be acquired;
+    /// ### Arguments:
+    /// + params: [crate::params::use_case::user::update_pwd::UserUpdatePwdParams] - the parameters of the query
+    /// + client: [sqlx::Acquire] - sqlx postgres client
+    /// 
+    /// ### Errors:
+    /// Errors described in [crate::errors::use_case::user::update_pwd::UserUpdatePwdError]
     ///
     pub async fn update_pwd<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: crate::params::use_case::UserUpdatePwdParams,

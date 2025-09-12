@@ -1,16 +1,27 @@
-pub struct LoginParams {
+/// # UserLoginParams
+///
+/// Represent parameters for using the
+/// [crate::use_cases::user::UsersUseCase::login] method.
+///
+pub struct UserLoginParams {
+    /// login of the user to log in as
+    ///
     pub login: String,
+    /// password of the user to login
+    ///
     pub pwd: String,
+    /// system's JWT encryption key
+    ///
     pub encryption_key: String
 }
 
-pub struct LoginParamsBuilder {
+pub struct UserLoginParamsBuilder {
     login: Option<String>,
     pwd: Option<String>,
     encryption_key: Option<String>
 }
 
-impl LoginParamsBuilder {
+impl UserLoginParamsBuilder {
     pub fn new() -> Self {
         return Self {
             login: None,
@@ -40,7 +51,7 @@ impl LoginParamsBuilder {
         };
     }
     
-    pub fn build(self) -> Option<LoginParams> {
+    pub fn build(self) -> Option<UserLoginParams> {
         if self.login.is_none() {
             return None;
         }
@@ -53,7 +64,7 @@ impl LoginParamsBuilder {
             return None;
         }
 
-        let params = LoginParams {
+        let params = UserLoginParams {
             login: self.login.unwrap(),
             pwd: self.pwd.unwrap(),
             encryption_key: self.encryption_key.unwrap()

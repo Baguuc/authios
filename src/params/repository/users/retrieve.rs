@@ -1,4 +1,11 @@
-pub struct RetrieveParams {
+/// # UserRetrieveParams
+///
+/// Represent parameters for using the
+/// [crate::repositories::users::UsersRepository::retrieve] method.
+///
+pub struct UserRetrieveParams {
+    /// login of the user to retrieve
+    ///
     pub login: String
 }
 
@@ -20,12 +27,12 @@ impl RetrieveParamsBuilder {
         };
     }
     
-    pub fn build(self) -> Option<RetrieveParams> {
+    pub fn build(self) -> Option<UserRetrieveParams> {
         if self.login.is_none() {
             return None;
         }
 
-        let params = RetrieveParams {
+        let params = UserRetrieveParams {
             login: self.login.unwrap()
         };
 

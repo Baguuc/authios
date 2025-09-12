@@ -1,14 +1,23 @@
-pub struct InfoParams {
+/// # UserInfoParams
+///
+/// Represent parameters for using the
+/// [crate::use_cases::user::UsersUseCase::info] method.
+///
+pub struct UserInfoParams {
+    /// token of the user that want to perform the operation
+    ///
     pub token: String,
+    /// system's JWT encryption key
+    ///
     pub encryption_key: String
 }
 
-pub struct InfoParamsBuilder {
+pub struct UserInfoParamsBuilder {
     token: Option<String>,
     encryption_key: Option<String>
 }
 
-impl InfoParamsBuilder {
+impl UserInfoParamsBuilder {
     pub fn new() -> Self {
         return Self {
             token: None,
@@ -30,7 +39,7 @@ impl InfoParamsBuilder {
         };
     }
     
-    pub fn build(self) -> Option<InfoParams> {
+    pub fn build(self) -> Option<UserInfoParams> {
         if self.token.is_none() {
             return None;
         }
@@ -39,7 +48,7 @@ impl InfoParamsBuilder {
             return None;
         }
 
-        let params = InfoParams {
+        let params = UserInfoParams {
             token: self.token.unwrap(),
             encryption_key: self.encryption_key.unwrap()
         };

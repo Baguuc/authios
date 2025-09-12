@@ -1,18 +1,31 @@
-pub struct RevokeParams {
+/// # UserRevokeGroupParams
+///
+/// Represent parameters for using the
+/// [crate::use_cases::user::UsersUseCase::revoke_group] method.
+///
+pub struct UserRevokeGroupParams {
+    /// name of the group to revoke
+    ///
     pub group_name: String,
+    /// login of the user to revoke the group from
+    ///
     pub user_login: String,
+    /// token of the user that want to perform the operation
+    ///
     pub token: String,
+    /// system's JWT encryption key
+    ///
     pub encryption_key: String
 }
 
-pub struct RevokeParamsBuilder {
+pub struct UserRevokeGroupParamsBuilder {
     group_name: Option<String>,
     user_login: Option<String>,
     token: Option<String>,
     encryption_key: Option<String>
 }
 
-impl RevokeParamsBuilder {
+impl UserRevokeGroupParamsBuilder {
     pub fn new() -> Self {
         return Self {
             group_name: None,
@@ -50,7 +63,7 @@ impl RevokeParamsBuilder {
         };
     }
     
-    pub fn build(self) -> Option<RevokeParams> {
+    pub fn build(self) -> Option<UserRevokeGroupParams> {
         if self.group_name.is_none() {
             return None;
         }
@@ -67,7 +80,7 @@ impl RevokeParamsBuilder {
             return None;
         }
 
-        let params = RevokeParams {
+        let params = UserRevokeGroupParams {
             group_name: self.group_name.unwrap(),
             user_login: self.user_login.unwrap(),
             token: self.token.unwrap(),

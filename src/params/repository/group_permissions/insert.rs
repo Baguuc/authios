@@ -1,5 +1,14 @@
-pub struct InsertParams {
+/// # GroupPermissionInsertParams
+///
+/// Represent parameters for using the
+/// [crate::repositories::group_permissions::GroupPermissionsRepository::insert] method.
+///
+pub struct GroupPermissionInsertParams {
+    /// the name of the permission to revoke
+    ///
     pub permission_name: String,
+    /// the name of the group to revoke the permission from
+    ///
     pub group_name: String,
 }
 
@@ -30,12 +39,12 @@ impl InsertParamsBuilder {
         };
     }
     
-    pub fn build(self) -> Option<InsertParams> {
+    pub fn build(self) -> Option<GroupPermissionInsertParams> {
         if self.permission_name.is_none() {
             return None;
         }
 
-        let params = InsertParams {
+        let params = GroupPermissionInsertParams {
             permission_name: self.permission_name.unwrap(),
             group_name: self.group_name.unwrap()
         };

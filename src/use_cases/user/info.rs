@@ -3,12 +3,14 @@ use crate::use_cases::UsersUseCase;
 impl UsersUseCase {
     /// # UsersUseCase::info
     ///
-    /// retrieve a user from JWT token, checking for possible errors
+    /// Retrieve a user from JWT token, checking for possible errors
     ///
-    /// Errors:
-    /// + when the provided token is invalid;
-    /// + when a user login specified in the token not exist;
-    /// + when database connection cannot be acquired;
+    /// ### Arguments:
+    /// + params: [crate::params::use_case::user::info::UserInfoParams] - the parameters of the query
+    /// + client: [sqlx::Acquire] - sqlx postgres client
+    /// 
+    /// ### Errors:
+    /// Errors described in [crate::errors::use_case::user::info::UserInfoError]
     ///
     pub async fn info<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: crate::params::use_case::UserInfoParams,

@@ -3,7 +3,11 @@ use crate::repositories::UsersRepository;
 impl UsersRepository {
     /// # UsersRepository::delete
     ///
-    /// delete a user identified by login
+    /// Delete a user identified by login
+    ///
+    /// ### Arguments:
+    /// + params: [crate::params::repository::users::UserDeleteParams] - the parameters of the query
+    /// + client: [sqlx::Acquire] - sqlx postgres client
     ///
     pub async fn delete<'c, C: sqlx::Acquire<'c, Database = sqlx::Postgres>>(
         params: crate::params::repository::UserDeleteParams,

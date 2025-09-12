@@ -1,4 +1,11 @@
-pub struct DeleteParams {
+/// # PermissionDeleteParams
+///
+/// Represent parameters for using the
+/// [crate::repositories::permissions::PermissionsRepository::delete] method.
+///
+pub struct PermissionDeleteParams {
+    /// the name of the permission to delete
+    ///
     pub name: String
 }
 
@@ -20,12 +27,12 @@ impl DeleteParamsBuilder {
         };
     }
     
-    pub fn build(self) -> Option<DeleteParams> {
+    pub fn build(self) -> Option<PermissionDeleteParams> {
         if self.name.is_none() {
             return None;
         }
 
-        let params = DeleteParams {
+        let params = PermissionDeleteParams {
             name: self.name.unwrap()
         };
 

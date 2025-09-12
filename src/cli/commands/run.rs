@@ -1,4 +1,9 @@
-pub async fn command(args: crate::cli::CliArgs) {
+/// # run::command
+///
+/// definition of the 'run' cli command, that is running the API's HTTP server.
+/// Uses [crate::utils::database::migrate] function.
+///
+pub async fn command(args: crate::cli::CliFlags) {
     use colored::Colorize;
     use clin::components::{success, error, header};
     use crate::config::Config;

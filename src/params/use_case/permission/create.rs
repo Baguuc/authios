@@ -1,16 +1,27 @@
-pub struct CreateParams {
+/// # PermissionCreateParams
+///
+/// Represent parameters for using the
+/// [crate::use_cases::permission::PermissionsUseCase::create] method.
+///
+pub struct PermissionCreateParams {
+    /// name of the permission to create
+    ///
     pub name: String,
+    /// token of the user that want to perform the operation
+    ///
     pub token: String,
+    /// system's JWT encryption key
+    ///
     pub encryption_key: String
 }
 
-pub struct CreateParamsBuilder {
+pub struct PermissionCreateParamsBuilder {
     name: Option<String>,
     token: Option<String>,
     encryption_key: Option<String>
 }
 
-impl CreateParamsBuilder {
+impl PermissionCreateParamsBuilder {
     pub fn new() -> Self {
         return Self {
             name: None,
@@ -40,7 +51,7 @@ impl CreateParamsBuilder {
         };
     }
     
-    pub fn build(self) -> Option<CreateParams> {
+    pub fn build(self) -> Option<PermissionCreateParams> {
         if self.name.is_none() {
             return None;
         }
@@ -53,7 +64,7 @@ impl CreateParamsBuilder {
             return None;
         }
 
-        let params = CreateParams {
+        let params = PermissionCreateParams {
             name: self.name.unwrap(),
             token: self.token.unwrap(),
             encryption_key: self.encryption_key.unwrap()

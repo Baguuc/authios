@@ -1,5 +1,14 @@
-pub struct InsertParams {
+/// # UserInsertParams
+///
+/// Represent parameters for using the
+/// [crate::repositories::users::UsersRepository::insert] method.
+///
+pub struct UserInsertParams {
+    /// login of the user to insert
+    ///
     pub login: String,
+    /// hashed password of the user to insert
+    ///
     pub pwd: String
 }
 
@@ -30,7 +39,7 @@ impl InsertParamsBuilder {
         };
     }
     
-    pub fn build(self) -> Option<InsertParams> {
+    pub fn build(self) -> Option<UserInsertParams> {
         if self.login.is_none() {
             return None;
         }
@@ -39,7 +48,7 @@ impl InsertParamsBuilder {
             return None;
         }
 
-        let params = InsertParams {
+        let params = UserInsertParams {
             login: self.login.unwrap(),
             pwd: self.pwd.unwrap()
         };

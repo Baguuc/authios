@@ -1,6 +1,15 @@
-pub struct InsertParams {
-    pub user_login: String,
+/// # UserGroupInsertParams
+///
+/// Represent parameters for using the
+/// [crate::repositories::user_groups::UserGroupsRepository::insert] method.
+///
+pub struct UserGroupInsertParams {
+    /// the name of the group to grant
+    ///
     pub group_name: String,
+    /// the name of the user to grant the group to
+    ///
+    pub user_login: String,
 }
 
 pub struct InsertParamsBuilder {
@@ -30,12 +39,12 @@ impl InsertParamsBuilder {
         };
     }
     
-    pub fn build(self) -> Option<InsertParams> {
+    pub fn build(self) -> Option<UserGroupInsertParams> {
         if self.user_login.is_none() {
             return None;
         }
 
-        let params = InsertParams {
+        let params = UserGroupInsertParams {
             user_login: self.user_login.unwrap(),
             group_name: self.group_name.unwrap()
         };

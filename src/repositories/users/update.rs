@@ -3,7 +3,11 @@ use crate::repositories::UsersRepository;
 impl UsersRepository {
     /// # UsersRepository::update
     ///
-    /// update user's password data apart from login (PASSWORD UNHASHED!)
+    /// Update user's data apart from login (PASSWORD UNHASHED!)
+    ///
+    /// ### Arguments:
+    /// + params: [crate::params::repository::users::UserUpdateParams] - the parameters of the query
+    /// + client: [sqlx::Acquire] - sqlx postgres client
     ///
     pub async fn update<'c, C: sqlx::Acquire<'c, Database = sqlx::Postgres>>(
         params: crate::params::repository::UserUpdateParams,

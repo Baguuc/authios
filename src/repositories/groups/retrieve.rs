@@ -3,7 +3,11 @@ use crate::repositories::GroupsRepository;
 impl GroupsRepository {
     /// # GroupsRepository::retrieve
     ///
-    /// retrieve a group identified by name from the database
+    /// Retrieve a group identified by name from the database
+    /// 
+    /// ### Arguments:
+    /// + params: [crate::params::repository::groups::GroupRetrieveParams] - the parameters of the query
+    /// + client: [sqlx::Acquire] - sqlx postgres client
     ///
     pub async fn retrieve<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: crate::params::repository::GroupRetrieveParams,

@@ -1,4 +1,11 @@
-pub struct RetrieveParams {
+/// # PermissionRetrieveParams
+///
+/// Represent parameters for using the
+/// [crate::repositories::permissions::PermissionsRepository::retrieve] method.
+///
+pub struct PermissionRetrieveParams {
+    /// the name of the permission to retrieve
+    ///
     pub name: String
 }
 
@@ -20,12 +27,12 @@ impl RetrieveParamsBuilder {
         };
     }
     
-    pub fn build(self) -> Option<RetrieveParams> {
+    pub fn build(self) -> Option<PermissionRetrieveParams> {
         if self.name.is_none() {
             return None;
         }
 
-        let params = RetrieveParams {
+        let params = PermissionRetrieveParams {
             name: self.name.unwrap()
         };
 

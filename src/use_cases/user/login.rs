@@ -3,13 +3,14 @@ use crate::use_cases::UsersUseCase;
 impl UsersUseCase {
     /// # UsersUseCase::login
     ///
-    /// log user in and return the session token, checking for possible errors
+    /// Log user in and return the session token, checking for possible errors
     ///
-    /// Errors:
-    /// + when a user with provided login do not exist;
-    /// + when provided password is invalid;
-    /// + when the token cannot be generated;
-    /// + when database connection cannot be acquired;
+    /// ### Arguments:
+    /// + params: [crate::params::use_case::user::login::UserLoginParams] - the parameters of the query
+    /// + client: [sqlx::Acquire] - sqlx postgres client
+    /// 
+    /// ### Errors:
+    /// Errors described in [crate::errors::use_case::user::login::UserLoginError]
     ///
     pub async fn login<'c, C: sqlx::Acquire<'c, Database = sqlx::Postgres>>(
         params: crate::params::use_case::UserLoginParams,

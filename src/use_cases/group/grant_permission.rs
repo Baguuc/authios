@@ -3,14 +3,14 @@ use crate::use_cases::GroupsUseCase;
 impl GroupsUseCase {
     /// # GroupsUseCase::grant_permission
     ///
-    /// grant a permission to a group, checking for possible errors
+    /// Grant a permission to a group, checking for possible errors
     ///
-    /// Errors:
-    /// + when a permission with provided name do not exist;
-    /// + when a group with provided name do not exist;
-    /// + when a group with provided name already has provided permission;
-    /// + when database connection cannot be acquired;
-    /// + when the user is not authorized for this operation;
+    /// ### Arguments:
+    /// + params: [crate::params::use_case::group::grant_permission::GroupGrantPermissionParams] - the parameters of the query
+    /// + client: [sqlx::Acquire] - sqlx postgres client
+    /// 
+    /// ### Errors:
+    /// Errors described in [crate::errors::use_case::group::GroupGrantPermissionError]
     ///
     pub async fn grant_permission<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: crate::params::use_case::GroupGrantPermissionParams,

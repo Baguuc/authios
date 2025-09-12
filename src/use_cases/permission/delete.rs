@@ -3,12 +3,14 @@ use crate::use_cases::PermissionsUseCase;
 impl PermissionsUseCase {
     /// # PermissionsUseCase::delete
     ///
-    /// delete a permission, checking for possible errors
+    /// Delete a permission, checking for possible errors
     ///
-    /// Errors:
-    /// + when a permission with provided name do not exist;
-    /// + when database connection cannot be acquired;
-    /// + when the user is not authorized for this operation;
+    /// ### Arguments:
+    /// + params: [crate::params::use_case::permission::PermissionDeleteParams] - the parameters of the query
+    /// + client: [sqlx::Acquire] - sqlx postgres client
+    /// 
+    /// ### Errors:
+    /// Errors described in [crate::errors::use_case::permission::PermissionDeleteError]
     ///
     pub async fn delete<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: crate::params::use_case::PermissionDeleteParams,

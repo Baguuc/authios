@@ -3,13 +3,14 @@ use crate::use_cases::UsersUseCase;
 impl UsersUseCase {
     /// # UsersUseCase::authorize
     ///
-    /// check if user has patricular permission
+    /// Check if user has patricular permission
     ///
-    /// Errors:
-    /// + when provided token is invalid;
-    /// + when a user with token login do not exist;
-    /// + when a permission with provided name do not exist;
-    /// + when database connection cannot be acquired;
+    /// ### Arguments:
+    /// + params: [crate::params::use_case::user::authorize::UserAuthorizeParams] - the parameters of the query
+    /// + client: [sqlx::Acquire] - sqlx postgres client
+    /// 
+    /// ### Errors:
+    /// Errors described in [crate::errors::use_case::user::authorize::UserAuthorizeError]
     ///
     pub async fn authorize<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: crate::params::use_case::UserAuthorizeParams,

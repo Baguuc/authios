@@ -1,4 +1,11 @@
-pub struct DeleteParams {
+/// # UserDeleteParams
+///
+/// Represent parameters for using the
+/// [crate::repositories::users::UsersRepository::delete] method.
+///
+pub struct UserDeleteParams {
+    /// login of the user to delete
+    ///
     pub login: String
 }
 
@@ -20,12 +27,12 @@ impl DeleteParamsBuilder {
         };
     }
     
-    pub fn build(self) -> Option<DeleteParams> {
+    pub fn build(self) -> Option<UserDeleteParams> {
         if self.login.is_none() {
             return None;
         }
 
-        let params = DeleteParams {
+        let params = UserDeleteParams {
             login: self.login.unwrap()
         };
 

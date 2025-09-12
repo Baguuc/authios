@@ -1,16 +1,27 @@
-pub struct DeleteParams {
+/// # PermissionDeleteParams
+///
+/// Represent parameters for using the
+/// [crate::use_cases::permission::PermissionsUseCase::delete] method.
+///
+pub struct PermissionDeleteParams {
+    /// name of the permission to delete
+    ///
     pub name: String,
+    /// token of the user that want to perform the operation
+    ///
     pub token: String,
+    /// system's JWT encryption key
+    ///
     pub encryption_key: String
 }
 
-pub struct DeleteParamsBuilder {
+pub struct PermissionDeleteParamsBuilder {
     name: Option<String>,
     token: Option<String>,
     encryption_key: Option<String>
 }
 
-impl DeleteParamsBuilder {
+impl PermissionDeleteParamsBuilder {
     pub fn new() -> Self {
         return Self {
             name: None,
@@ -40,7 +51,7 @@ impl DeleteParamsBuilder {
         };
     }
     
-    pub fn build(self) -> Option<DeleteParams> {
+    pub fn build(self) -> Option<PermissionDeleteParams> {
         if self.name.is_none() {
             return None;
         }
@@ -53,7 +64,7 @@ impl DeleteParamsBuilder {
             return None;
         }
 
-        let params = DeleteParams {
+        let params = PermissionDeleteParams {
             name: self.name.unwrap(),
             token: self.token.unwrap(),
             encryption_key: self.encryption_key.unwrap()

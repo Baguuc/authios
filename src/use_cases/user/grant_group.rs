@@ -3,14 +3,14 @@ use crate::use_cases::UsersUseCase;
 impl UsersUseCase {
     /// # UsersUseCase::grant_group
     ///
-    /// grant a group to a user, checking for possible errors
+    /// Grant a group to a user, checking for possible errors
     ///
-    /// Errors:
-    /// + when the group with provided name do not exist;
-    /// + when the user with provided name do not exist;
-    /// + when the user with provided login already has provided group;
-    /// + when the user is not authorized for this operation;
-    /// + when database connection cannot be acquired;
+    /// ### Arguments:
+    /// + params: [crate::params::use_case::user::grant_group::UserGrantGroupParams] - the parameters of the query
+    /// + client: [sqlx::Acquire] - sqlx postgres client
+    /// 
+    /// ### Errors:
+    /// Errors described in [crate::errors::use_case::user::grant_group::UserGrantGroupError]
     ///
     pub async fn grant_group<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: crate::params::use_case::UserGrantGroupParams,

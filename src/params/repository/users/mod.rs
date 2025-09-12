@@ -1,23 +1,23 @@
 pub mod insert;
 pub use insert::{
-    InsertParams as UserInsertParams,
+    UserInsertParams,
     InsertParamsBuilder as UserInsertParamsBuilder
 };
 
 pub mod retrieve;
 pub use retrieve::{
-    RetrieveParams as UserRetrieveParams,
+    UserRetrieveParams,
     RetrieveParamsBuilder as UserRetrieveParamsBuilder
 };
 
 pub mod update;
 pub use update::{
-    UpdateParams as UserUpdateParams,
+    UserUpdateParams,
     UpdateParamsBuilder as UserUpdateParamsBuilder
 };
 
 pub mod delete;
 pub use delete::{
-    DeleteParams as UserDeleteParams,
+    UserDeleteParams,
     DeleteParamsBuilder as UserDeleteParamsBuilder
 };

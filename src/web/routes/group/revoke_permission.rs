@@ -27,7 +27,7 @@ pub async fn controller(
         .build()
         .unwrap();
 
-    return match GroupsUseCase::revoke(params, &*client.into_inner()).await {
+    return match GroupsUseCase::revoke_permission(params, &*client.into_inner()).await {
         Ok(_) => HttpResponse::Ok().into(),
         Err(error) => match error {
             Error::NotAddedYet => HttpResponse::Conflict().body("NOT_ADDED_YET"),

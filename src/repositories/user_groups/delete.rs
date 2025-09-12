@@ -3,8 +3,12 @@ use crate::repositories::UserGroupsRepository;
 impl UserGroupsRepository {
     /// # UserGroupsRepository::delete
     ///
-    /// revoke user a group, deleting it from user_groups table in the database
+    /// Revoke user a group, deleting it from user_groups table in the database
     ///
+    /// ### Arguments:
+    /// + params: [crate::params::repository::user_groups::UserGroupDeleteParams] - the parameters of the query
+    /// + client: [sqlx::Acquire] - sqlx postgres client
+    /// 
     pub async fn delete<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: crate::params::repository::UserGroupDeleteParams,
         client: A

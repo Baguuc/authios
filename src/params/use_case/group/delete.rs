@@ -1,16 +1,27 @@
-pub struct DeleteParams {
+/// # GroupDeleteParams
+///
+/// Represent parameters for using the
+/// [crate::use_cases::group::GroupsUseCase::delete] method.
+///
+pub struct GroupDeleteParams {
+    /// name of the group to delete
+    ///
     pub name: String,
+    /// token of the user that want to perform the operation
+    ///
     pub token: String,
+    /// system's JWT encryption key
+    ///
     pub encryption_key: String
 }
 
-pub struct DeleteParamsBuilder {
+pub struct GroupDeleteParamsBuilder {
     name: Option<String>,
     token: Option<String>,
     encryption_key: Option<String>
 }
 
-impl DeleteParamsBuilder {
+impl GroupDeleteParamsBuilder {
     pub fn new() -> Self {
         return Self {
             name: None,
@@ -40,7 +51,7 @@ impl DeleteParamsBuilder {
         };
     }
     
-    pub fn build(self) -> Option<DeleteParams> {
+    pub fn build(self) -> Option<GroupDeleteParams> {
         if self.name.is_none() {
             return None;
         }
@@ -53,7 +64,7 @@ impl DeleteParamsBuilder {
             return None;
         }
 
-        let params = DeleteParams {
+        let params = GroupDeleteParams {
             name: self.name.unwrap(),
             token: self.token.unwrap(),
             encryption_key: self.encryption_key.unwrap()

@@ -36,6 +36,13 @@ const MIGRATIONS: [&str; 10] = [
 "ALTER TABLE user_groups ADD CONSTRAINT user_groups_pair_unique UNIQUE (user_login, group_name);"
 ];
 
+/// # migrate
+///
+/// Migrate the database to the state necessary for the program to function properly.
+///
+/// ### Arguments:
+/// + client: [sqlx::postgres::PgPool]
+///
 pub async fn migrate(client: &sqlx::postgres::PgPool) -> Result<(), sqlx::Error> {
     use sqlx::query;
     use clin::components::{progress_bar, error};
@@ -67,6 +74,10 @@ pub async fn migrate(client: &sqlx::postgres::PgPool) -> Result<(), sqlx::Error>
     return Ok(());
 }
 
+/// # create_pool
+///
+/// creates a database pool from database credentials wrapped in [crate::config::DatabaseConfig]
+/// struct.
 pub async fn create_pool(config: crate::config::DatabaseConfig) -> Result<sqlx::postgres::PgPool, sqlx::Error> {
     use sqlx::postgres::PgPool;
 

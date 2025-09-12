@@ -1,5 +1,14 @@
-pub struct DeleteParams {
+/// # GroupPermissionDeleteParams
+///
+/// Represent parameters for using the
+/// [crate::repositories::group_permissions::GroupPermissionsRepository::delete] method.
+///
+pub struct GroupPermissionDeleteParams {
+    /// the name of the permission to grant
+    ///
     pub permission_name: String,
+    /// the name of the group to grant the permission to
+    ///
     pub group_name: String,
 }
 
@@ -30,12 +39,12 @@ impl DeleteParamsBuilder {
         };
     }
     
-    pub fn build(self) -> Option<DeleteParams> {
+    pub fn build(self) -> Option<GroupPermissionDeleteParams> {
         if self.permission_name.is_none() {
             return None;
         }
 
-        let params = DeleteParams {
+        let params = GroupPermissionDeleteParams {
             permission_name: self.permission_name.unwrap(),
             group_name: self.group_name.unwrap()
         };

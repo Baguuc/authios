@@ -1,4 +1,11 @@
-pub struct InsertParams {
+/// # GroupInsertParams
+///
+/// Represent parameters for using the
+/// [crate::repositories::groups::GroupsRepository::insert] method.
+///
+pub struct GroupInsertParams {
+    /// the name of the group to insert
+    ///
     pub name: String
 }
 
@@ -20,12 +27,12 @@ impl InsertParamsBuilder {
         };
     }
     
-    pub fn build(self) -> Option<InsertParams> {
+    pub fn build(self) -> Option<GroupInsertParams> {
         if self.name.is_none() {
             return None;
         }
 
-        let params = InsertParams {
+        let params = GroupInsertParams {
             name: self.name.unwrap()
         };
 

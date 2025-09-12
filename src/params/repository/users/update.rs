@@ -1,5 +1,14 @@
-pub struct UpdateParams {
+/// # UserUpdateParams
+///
+/// Represent parameters for using the
+/// [crate::repositories::users::UsersRepository::update] method.
+///
+pub struct UserUpdateParams {
+    /// login of the user to update the data of
+    ///
     pub user_login: String,
+    /// new password hash to replace existing with
+    ///
     pub new_pwd: String
 }
 
@@ -30,7 +39,7 @@ impl UpdateParamsBuilder {
         };
     }
     
-    pub fn build(self) -> Option<UpdateParams> {
+    pub fn build(self) -> Option<UserUpdateParams> {
         if self.user_login.is_none() {
             return None;
         }
@@ -39,7 +48,7 @@ impl UpdateParamsBuilder {
             return None;
         }
 
-        let params = UpdateParams {
+        let params = UserUpdateParams {
             user_login: self.user_login.unwrap(),
             new_pwd: self.new_pwd.unwrap()
         };

@@ -1,12 +1,19 @@
-pub struct InitRootParams {
+/// # UserInitRootParams
+///
+/// Represent parameters for using the
+/// [crate::use_cases::user::UsersUseCase::init_root] method.
+///
+pub struct UserInitRootParams {
+    /// pwd of the root user
+    ///
     pub pwd: String
 }
 
-pub struct InitRootParamsBuilder {
+pub struct UserInitRootParamsBuilder {
     pwd: Option<String>
 }
 
-impl InitRootParamsBuilder {
+impl UserInitRootParamsBuilder {
     pub fn new() -> Self {
         return Self {
             pwd: None
@@ -20,12 +27,12 @@ impl InitRootParamsBuilder {
         };
     }
     
-    pub fn build(self) -> Option<InitRootParams> {
+    pub fn build(self) -> Option<UserInitRootParams> {
         if self.pwd.is_none() {
             return None;
         }
 
-        let params = InitRootParams {
+        let params = UserInitRootParams {
             pwd: self.pwd.unwrap()
         };
 

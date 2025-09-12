@@ -1,14 +1,23 @@
-pub struct ListPermissionsParams {
+/// # UserListPermissionsParams
+///
+/// Represent parameters for using the
+/// [crate::use_cases::user::UsersUseCase::list_permissions] method.
+///
+pub struct UserListPermissionsParams {
+    /// token of the user that want to perform the operation
+    ///
     pub token: String,
+    /// system's JWT encryption key
+    ///
     pub encryption_key: String
 }
 
-pub struct ListPermissionsParamsBuilder {
+pub struct UserListPermissionsParamsBuilder {
     token: Option<String>,
     encryption_key: Option<String>
 }
 
-impl ListPermissionsParamsBuilder {
+impl UserListPermissionsParamsBuilder {
     pub fn new() -> Self {
         return Self {
             token: None,
@@ -30,7 +39,7 @@ impl ListPermissionsParamsBuilder {
         };
     }
     
-    pub fn build(self) -> Option<ListPermissionsParams> {
+    pub fn build(self) -> Option<UserListPermissionsParams> {
         if self.token.is_none() {
             return None;
         }
@@ -39,7 +48,7 @@ impl ListPermissionsParamsBuilder {
             return None;
         }
 
-        let params = ListPermissionsParams {
+        let params = UserListPermissionsParams {
             token: self.token.unwrap(),
             encryption_key: self.encryption_key.unwrap()
         };

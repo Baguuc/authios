@@ -3,7 +3,11 @@ use crate::repositories::GroupPermissionsRepository;
 impl GroupPermissionsRepository {
     /// # GroupPermissionsRepository::delete
     ///
-    /// revoke group a permission, deleting it from group_permission table in the database
+    /// Revoke group a permission, deleting it from group_permission table in the database.
+    ///
+    /// ### Arguments:
+    /// + params: [crate::params::repository::group_permissions::GroupPermissionDeleteParams] - the parameters of the query
+    /// + client: [sqlx::Acquire] - sqlx postgres client
     ///
     pub async fn delete<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: crate::params::repository::GroupPermissionDeleteParams,

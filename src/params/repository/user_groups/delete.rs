@@ -1,5 +1,14 @@
-pub struct DeleteParams {
+/// # UserGroupDeleteParams
+///
+/// Represent parameters for using the
+/// [crate::repositories::user_groups::UserGroupsRepository::delete] method.
+///
+pub struct UserGroupDeleteParams {
+    /// the name of the group to revoke
+    ///
     pub group_name: String,
+    /// the name of the user to revoke the group from
+    ///
     pub user_login: String,
 }
 
@@ -30,12 +39,12 @@ impl DeleteParamsBuilder {
         };
     }
     
-    pub fn build(self) -> Option<DeleteParams> {
+    pub fn build(self) -> Option<UserGroupDeleteParams> {
         if self.group_name.is_none() {
             return None;
         }
 
-        let params = DeleteParams {
+        let params = UserGroupDeleteParams {
             group_name: self.group_name.unwrap(),
             user_login: self.user_login.unwrap()
         };

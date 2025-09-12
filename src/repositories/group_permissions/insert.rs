@@ -3,7 +3,11 @@ use crate::repositories::GroupPermissionsRepository;
 impl GroupPermissionsRepository {
     /// # GroupPermissionsRepository::insert
     ///
-    /// grant group a permission, inserting it into group_permission table in the database
+    /// Grant group a permission, inserting it into group_permission table in the database
+    /// 
+    /// ### Arguments:
+    /// + params: [crate::params::repository::group_permissions::GroupPermissionInsertParams] - the parameters of the query
+    /// + client: [sqlx::Acquire] - sqlx postgres client
     ///
     pub async fn insert<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: crate::params::repository::GroupPermissionInsertParams,

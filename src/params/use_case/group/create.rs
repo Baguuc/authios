@@ -1,6 +1,17 @@
-pub struct CreateParams {
+/// # GroupCreateParams
+///
+/// Represent parameters for using the
+/// [crate::use_cases::group::GroupsUseCase::create] method.
+///
+pub struct GroupCreateParams {
+    /// name of the group to create
+    ///
     pub name: String,
+    /// token of the user that want to perform the operation
+    ///
     pub token: String,
+    /// system's JWT encryption key
+    ///
     pub encryption_key: String
 }
 
@@ -40,7 +51,7 @@ impl CreateParamsBuilder {
         };
     }
     
-    pub fn build(self) -> Option<CreateParams> {
+    pub fn build(self) -> Option<GroupCreateParams> {
         if self.name.is_none() {
             return None;
         }
@@ -53,7 +64,7 @@ impl CreateParamsBuilder {
             return None;
         }
 
-        let params = CreateParams {
+        let params = GroupCreateParams {
             name: self.name.unwrap(),
             token: self.token.unwrap(),
             encryption_key: self.encryption_key.unwrap()

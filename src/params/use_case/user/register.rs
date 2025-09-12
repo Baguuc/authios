@@ -1,14 +1,23 @@
-pub struct RegisterParams {
+/// # UserRegisterParams
+///
+/// Represent parameters for using the
+/// [crate::use_cases::user::UsersUseCase::register] method.
+///
+pub struct UserRegisterParams {
+    /// login of the user to register
+    ///
     pub login: String,
+    /// password of the user to register
+    ///
     pub pwd: String
 }
 
-pub struct RegisterParamsBuilder {
+pub struct UserRegisterParamsBuilder {
     login: Option<String>,
     pwd: Option<String>
 }
 
-impl RegisterParamsBuilder {
+impl UserRegisterParamsBuilder {
     pub fn new() -> Self {
         return Self {
             login: None,
@@ -30,7 +39,7 @@ impl RegisterParamsBuilder {
         };
     }
     
-    pub fn build(self) -> Option<RegisterParams> {
+    pub fn build(self) -> Option<UserRegisterParams> {
         if self.login.is_none() {
             return None;
         }
@@ -39,7 +48,7 @@ impl RegisterParamsBuilder {
             return None;
         }
 
-        let params = RegisterParams {
+        let params = UserRegisterParams {
             login: self.login.unwrap(),
             pwd: self.pwd.unwrap()
         };

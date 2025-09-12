@@ -1,18 +1,31 @@
-pub struct RevokeParams {
+/// # GroupRevokePermissionParams
+///
+/// Represent parameters for using the
+/// [crate::use_cases::group::GroupsUseCase::revoke_permission] method.
+///
+pub struct GroupRevokePermissionParams {
+    /// name of the group to grant the permission to
+    ///
     pub permission_name: String,
+    /// name of the group to revoke the permission from
+    ///
     pub group_name: String,
+    /// token of the user that want to perform the operation
+    ///
     pub token: String,
+    /// system's JWT encryption key
+    ///
     pub encryption_key: String
 }
 
-pub struct RevokeParamsBuilder {
+pub struct GroupRevokePermissionParamsBuilder {
     permission_name: Option<String>,
     group_name: Option<String>,
     token: Option<String>,
     encryption_key: Option<String>
 }
 
-impl RevokeParamsBuilder {
+impl GroupRevokePermissionParamsBuilder {
     pub fn new() -> Self {
         return Self {
             permission_name: None,
@@ -50,7 +63,7 @@ impl RevokeParamsBuilder {
         };
     }
     
-    pub fn build(self) -> Option<RevokeParams> {
+    pub fn build(self) -> Option<GroupRevokePermissionParams> {
         if self.permission_name.is_none() {
             return None;
         }
@@ -67,7 +80,7 @@ impl RevokeParamsBuilder {
             return None;
         }
 
-        let params = RevokeParams {
+        let params = GroupRevokePermissionParams {
             permission_name: self.permission_name.unwrap(),
             group_name: self.group_name.unwrap(),
             token: self.token.unwrap(),

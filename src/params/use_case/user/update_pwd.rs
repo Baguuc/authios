@@ -1,16 +1,27 @@
-pub struct UpdatePwdParams {
+/// # UserUpdatePwdParams
+///
+/// Represent parameters for using the
+/// [crate::use_cases::user::UsersUseCase::update_pwd] method.
+///
+pub struct UserUpdatePwdParams {
+    /// token of the user that want to perform the operation
+    ///
     pub token: String,
+    /// system's JWT encryption key
+    ///
     pub encryption_key: String,
+    /// new password of the user
+    ///
     pub new_pwd: String
 }
 
-pub struct UpdatePwdParamsBuilder {
+pub struct UserUpdatePwdParamsBuilder {
     token: Option<String>,
     encryption_key: Option<String>,
     new_pwd: Option<String>
 }
 
-impl UpdatePwdParamsBuilder {
+impl UserUpdatePwdParamsBuilder {
     pub fn new() -> Self {
         return Self {
             token: None,
@@ -40,7 +51,7 @@ impl UpdatePwdParamsBuilder {
         };
     }
     
-    pub fn build(self) -> Option<UpdatePwdParams> {
+    pub fn build(self) -> Option<UserUpdatePwdParams> {
         if self.token.is_none() {
             return None;
         }
@@ -53,7 +64,7 @@ impl UpdatePwdParamsBuilder {
             return None;
         }
 
-        let params = UpdatePwdParams {
+        let params = UserUpdatePwdParams {
             token: self.token.unwrap(),
             encryption_key: self.encryption_key.unwrap(),
             new_pwd: self.new_pwd.unwrap()

@@ -1,4 +1,11 @@
-pub struct DeleteParams {
+/// # GroupDeleteParams
+///
+/// Represent parameters for using the
+/// [crate::repositories::groups::GroupsRepository::delete] method.
+///
+pub struct GroupDeleteParams {
+    /// the name of the group to delete
+    ///
     pub name: String
 }
 
@@ -20,12 +27,12 @@ impl DeleteParamsBuilder {
         };
     }
     
-    pub fn build(self) -> Option<DeleteParams> {
+    pub fn build(self) -> Option<GroupDeleteParams> {
         if self.name.is_none() {
             return None;
         }
 
-        let params = DeleteParams {
+        let params = GroupDeleteParams {
             name: self.name.unwrap()
         };
 

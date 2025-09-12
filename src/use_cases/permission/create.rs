@@ -5,10 +5,12 @@ impl PermissionsUseCase {
     ///
     /// create a permission and add it to the root group, checking for possible errors
     ///
-    /// Errors:
-    /// + when a permission with provided name already exist;
-    /// + when database connection cannot be acquired;
-    /// + when the user is not authorized for this operation;
+    /// ### Arguments:
+    /// + params: [crate::params::use_case::permission::PermissionCreateParams] - the parameters of the query
+    /// + client: [sqlx::Acquire] - sqlx postgres client
+    /// 
+    /// ### Errors:
+    /// Errors described in [crate::errors::use_case::permission::PermissionCreateError]
     ///
     pub async fn create<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: crate::params::use_case::PermissionCreateParams,

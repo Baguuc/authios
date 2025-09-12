@@ -1,4 +1,11 @@
-pub struct RetrieveParams {
+/// # GroupRetrieveParams
+///
+/// Represent parameters for using the
+/// [crate::repositories::groups::GroupsRepository::retrieve] method.
+///
+pub struct GroupRetrieveParams {
+    /// the name of the group to retrieve
+    ///
     pub name: String
 }
 
@@ -20,12 +27,12 @@ impl RetrieveParamsBuilder {
         };
     }
     
-    pub fn build(self) -> Option<RetrieveParams> {
+    pub fn build(self) -> Option<GroupRetrieveParams> {
         if self.name.is_none() {
             return None;
         }
 
-        let params = RetrieveParams {
+        let params = GroupRetrieveParams {
             name: self.name.unwrap()
         };
 

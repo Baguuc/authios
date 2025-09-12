@@ -5,6 +5,10 @@ impl UsersRepository {
     ///
     /// insert a user into database with UNHASHED PASSWORD!
     ///
+    /// ### Arguments:
+    /// + params: [crate::params::repository::users::UserInsertParams] - the parameters of the query
+    /// + client: [sqlx::Acquire] - sqlx postgres client
+    ///
     pub async fn insert<'c, C: sqlx::Acquire<'c, Database = sqlx::Postgres>>(
         params: crate::params::repository::UserInsertParams,
         client: C

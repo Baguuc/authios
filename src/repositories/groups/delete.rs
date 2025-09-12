@@ -1,9 +1,13 @@
 use crate::repositories::GroupsRepository;
 
 impl GroupsRepository {
-    /// # GroupsRepository::retrieve
+    /// # GroupsRepository::delete
     ///
-    /// delete a group identified by name in the database
+    /// Delete a group identified by name in the database
+    ///
+    /// ### Arguments:
+    /// + params: [crate::params::repository::groups::GroupDeleteParams] - the parameters of the query
+    /// + client: [sqlx::Acquire] - sqlx postgres client
     ///
     pub async fn delete<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: crate::params::repository::GroupDeleteParams,

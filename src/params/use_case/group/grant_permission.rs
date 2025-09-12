@@ -1,18 +1,31 @@
-pub struct GrantParams {
+/// # GroupGrantPermissionParams
+///
+/// Represent parameters for using the
+/// [crate::use_cases::group::GroupsUseCase::grant_permission] method.
+///
+pub struct GroupGrantPermissionParams {
+    /// name of the permission to grant
+    ///
     pub permission_name: String,
+    /// name of the group to grant the permission to
+    ///
     pub group_name: String,
+    /// token of the user that want to perform the operation
+    ///
     pub token: String,
+    /// system's JWT encryption key
+    ///
     pub encryption_key: String
 }
 
-pub struct GrantParamsBuilder {
+pub struct GroupGrantPermissionParamsBuilder {
     permission_name: Option<String>,
     group_name: Option<String>,
     token: Option<String>,
     encryption_key: Option<String>
 }
 
-impl GrantParamsBuilder {
+impl GroupGrantPermissionParamsBuilder {
     pub fn new() -> Self {
         return Self {
             permission_name: None,
@@ -50,7 +63,7 @@ impl GrantParamsBuilder {
         };
     }
     
-    pub fn build(self) -> Option<GrantParams> {
+    pub fn build(self) -> Option<GroupGrantPermissionParams> {
         if self.permission_name.is_none() {
             return None;
         }
@@ -67,7 +80,7 @@ impl GrantParamsBuilder {
             return None;
         }
 
-        let params = GrantParams {
+        let params = GroupGrantPermissionParams {
             permission_name: self.permission_name.unwrap(),
             group_name: self.group_name.unwrap(),
             token: self.token.unwrap(),

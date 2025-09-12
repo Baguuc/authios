@@ -3,7 +3,11 @@ use crate::repositories::UsersRepository;
 impl UsersRepository {
     /// # UsersRepository::retrieve
     ///
-    /// retrieve user identified by login from the database
+    /// Retrieve user identified by login from the database
+    ///
+    /// ### Arguments:
+    /// + params: [crate::params::repository::users::UserRetrieveParams] - the parameters of the query
+    /// + client: [sqlx::Acquire] - sqlx postgres client
     ///
     pub async fn retrieve<'c, C: sqlx::Acquire<'c, Database = sqlx::Postgres>>(
         params: crate::params::repository::UserRetrieveParams,

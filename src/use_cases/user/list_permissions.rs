@@ -3,12 +3,14 @@ use crate::use_cases::UsersUseCase;
 impl UsersUseCase {
     /// # UsersUseCase::list_permissions
     ///
-    /// list all user's permissions
+    /// List all user's permissions
     ///
-    /// Errors:
-    /// + when the provided token is invalid;
-    /// + when a user login specified in the token not exist;
-    /// + when database connection cannot be acquired;
+    /// ### Arguments:
+    /// + params: [crate::params::use_case::user::list_permissions::UserListPermissionsParams] - the parameters of the query
+    /// + client: [sqlx::Acquire] - sqlx postgres client
+    /// 
+    /// ### Errors:
+    /// Errors described in [crate::errors::use_case::user::list_permissions::UserListPermissionsError]
     ///
     pub async fn list_permissions<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: crate::params::use_case::UserListPermissionsParams,

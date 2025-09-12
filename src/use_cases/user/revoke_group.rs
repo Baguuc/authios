@@ -3,13 +3,14 @@ use crate::use_cases::UsersUseCase;
 impl UsersUseCase {
     /// # UsersUseCase::revoke
     ///
-    /// revoke a group from a group, checking for possible errors
+    /// Revoke a group from a group, checking for possible errors
     ///
-    /// Errors:
-    /// + when the group with provided name do not exist;
-    /// + when the user with provided name do not exist;
-    /// + when the user with provided login didn't had provided group;
-    /// + when database connection cannot be acquired;
+    /// ### Arguments:
+    /// + params: [crate::params::use_case::user::revoke_group::UserRevokeGroupParams] - the parameters of the query
+    /// + client: [sqlx::Acquire] - sqlx postgres client
+    /// 
+    /// ### Errors:
+    /// Errors described in [crate::errors::use_case::user::revoke_group::UserRevokeGroupError]
     ///
     pub async fn revoke_group<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: crate::params::use_case::UserRevokeGroupParams,

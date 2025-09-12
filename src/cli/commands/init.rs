@@ -1,4 +1,10 @@
-pub async fn command(args: crate::cli::CliArgs) {
+/// # init::command
+///
+/// definition of the 'init' cli command, that is initializing all necessary data for the program
+/// to function.
+/// Uses [crate::use_cases::UsersUseCase::init_root] method.
+///
+pub async fn command(args: crate::cli::CliFlags) {
     use clin::components::{success, header};
     use crate::config::Config;
     use crate::utils::{
