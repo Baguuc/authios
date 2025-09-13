@@ -1,4 +1,4 @@
-#[actix_web::get("")]
+#[actix_web::get("/me")]
 pub async fn controller(
     req: actix_web::HttpRequest,
     client: actix_web::web::Data<sqlx::postgres::PgPool>,

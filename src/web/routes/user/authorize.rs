@@ -1,4 +1,4 @@
-#[actix_web::get("/permissions/{permission_name}")]
+#[actix_web::get("/me/permissions/{permission_name}")]
 pub async fn controller(
     req: actix_web::HttpRequest,
     path: actix_web::web::Path<RequestPath>,

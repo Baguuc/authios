@@ -1,4 +1,4 @@
-#[actix_web::patch("/pwd")]
+#[actix_web::patch("/me/pwd")]
 pub async fn controller(
     req: actix_web::HttpRequest,
     body: actix_web::web::Json<RequestBody>,

@@ -1,4 +1,4 @@
-#[actix_web::post("")]
+#[actix_web::post("/me")]
 pub async fn controller(
     body: actix_web::web::Json<RequestBody>,
     client: actix_web::web::Data<sqlx::postgres::PgPool>,
