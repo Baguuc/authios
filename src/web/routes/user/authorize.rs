@@ -26,7 +26,7 @@ pub async fn controller(
 
     return match UsersUseCase::authorize(params, &*client.into_inner()).await {
         Ok(true) => HttpResponse::Ok().into(),
-        Ok(false) => HttpResponse::Unauthorized().into(),
+        Ok(false) => HttpResponse::Unauthorized().body("UNAUTHORIZED"),
         Err(error) => match error {
             Error::InvalidToken => HttpResponse::Unauthorized().body("INVALID_TOKEN"),
             Error::PermissionNotFound => HttpResponse::NotFound().body("PERMISSION_NOT_FOUND"),
