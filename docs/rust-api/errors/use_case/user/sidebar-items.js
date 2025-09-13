@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["authorize","grant_group","info","init_root","list_permissions","login","register","revoke_group","update_pwd"]};

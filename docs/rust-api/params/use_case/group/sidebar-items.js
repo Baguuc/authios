@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["create","delete","grant_permission","revoke_permission"]};
