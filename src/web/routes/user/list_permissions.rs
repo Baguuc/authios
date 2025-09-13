@@ -9,15 +9,14 @@ pub async fn controller(
     use crate::{
         use_cases::UsersUseCase,
         params::use_case::UserListPermissionsParams as Params,
-        errors::use_case::UserListPermissionsError as Error
+        errors::use_case::UserListPermissionsError as Error,
+        utils::web::retrieve_token_from_request
     };
     
-    let token = req.headers()
-        .get("authorization")
-        .unwrap()
-        .to_str()
-        .unwrap()
-        .to_string();
+    let token = match retrieve_token_from_request(req) {
+        Some(token) => token,
+        None => return HttpResponse::Unauthorized().body("INVALID_TOKEN")
+    };
 
     return match UsersUseCase::list_permissions(Params { token, encryption_key: config.jwt.encryption_key.clone() }, &*client.into_inner()).await {
         Ok(permissions) => HttpResponse::Ok()

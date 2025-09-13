@@ -8,16 +8,15 @@ pub async fn controller(
     use crate::{
         use_cases::PermissionsUseCase,
         params::use_case::PermissionDeleteParams as Params,
-        errors::use_case::PermissionDeleteError as Error
+        errors::use_case::PermissionDeleteError as Error,
+        utils::web::retrieve_token_from_request
     };
     use actix_web::HttpResponse;
-
-    let token = req.headers()
-        .get("authorization")
-        .unwrap()
-        .to_str()
-        .unwrap()
-        .to_string();
+    
+    let token = match retrieve_token_from_request(req) {
+        Some(token) => token,
+        None => return HttpResponse::Unauthorized().body("INVALID_TOKEN")
+    };
 
     let params = Params {
         name: body.name.clone(),
