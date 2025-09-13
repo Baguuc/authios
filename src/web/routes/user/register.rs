@@ -14,7 +14,7 @@ pub async fn controller(
         Ok(_) => HttpResponse::Created().into(),
         Err(error) => match error {
             Error::AlreadyExist => HttpResponse::Conflict().body("ALREADY_EXIST"),
-            Error::CannotHashPassword => HttpResponse::BadRequest().body("CANNOT_HASH_PASSWORD"),
+            Error::CannotHashPassword => HttpResponse::ServiceUnavailable().body("CANNOT_HASH_PASSWORD"),
             Error::DatabaseConnection => HttpResponse::ServiceUnavailable().body("DATABASE_CONNECTION"),
         } 
     };

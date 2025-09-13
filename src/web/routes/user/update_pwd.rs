@@ -22,7 +22,7 @@ pub async fn controller(
         Ok(_) => HttpResponse::NoContent().into(),
         Err(error) => match error {
             Error::InvalidToken => HttpResponse::Unauthorized().body("INVALID_TOKEN"),
-            Error::CannotHash => HttpResponse::InternalServerError().body("CANNOT_HASH_PWD"),
+            Error::CannotHash => HttpResponse::ServiceUnavailable().body("CANNOT_HASH_PWD"),
             Error::DatabaseConnection => HttpResponse::ServiceUnavailable().body("DATABASE_CONNECTION"),
         } 
     }
