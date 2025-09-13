@@ -18,11 +18,11 @@ pub async fn controller( req: actix_web::HttpRequest,
     };
 
     return match GroupsUseCase::create(Params { name: body.name.clone(), encryption_key: config.jwt.encryption_key.clone(), token }, &*client.into_inner()).await {
-        Ok(_) => HttpResponse::Ok().into(),
+        Ok(_) => HttpResponse::Created().into(),
         Err(error) => match error {
             Error::AlreadyExist => HttpResponse::Conflict().body("ALREADY_EXIST"),
             Error::Unauthorized => HttpResponse::Unauthorized().body("UNAUTHORIZED"),
-            Error::DatabaseConnection => HttpResponse::InternalServerError().body("DATABASE_CONNECTION")
+            Error::DatabaseConnection => HttpResponse::ServiceUnavailable().body("DATABASE_CONNECTION")
         }
     };
 }

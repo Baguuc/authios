@@ -26,13 +26,13 @@ pub async fn controller(
     };
 
     return match UsersUseCase::grant_group(params, &*client.into_inner()).await {
-        Ok(_) => HttpResponse::Ok().into(),
+        Ok(_) => HttpResponse::Created().into(),
         Err(error) => match error {
-            Error::UserNotFound => HttpResponse::Conflict().body("USER_NOT_FOUND"),
-            Error::GroupNotFound => HttpResponse::Conflict().body("GROUP_NOT_FOUND"),
+            Error::UserNotFound => HttpResponse::NotFound().body("USER_NOT_FOUND"),
+            Error::GroupNotFound => HttpResponse::NotFound().body("GROUP_NOT_FOUND"),
             Error::AlreadyAdded => HttpResponse::Conflict().body("ALREADY_ADDED"),
             Error::Unauthorized => HttpResponse::Unauthorized().body("UNAUTHORIZED"),
-            Error::DatabaseConnection => HttpResponse::InternalServerError().body("DATABASE_CONNECTION")
+            Error::DatabaseConnection => HttpResponse::ServiceUnavailable().body("DATABASE_CONNECTION")
         }
     };
 }

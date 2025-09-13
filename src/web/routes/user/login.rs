@@ -14,10 +14,10 @@ pub async fn controller(
     return match UsersUseCase::login(Params { login: body.login.clone(), pwd: body.pwd.clone(), encryption_key: config.jwt.encryption_key.clone() }, &*client.into_inner()).await {
         Ok(token) => HttpResponse::Ok().body(token),
         Err(error) => match error {
-            Error::UserNotFound => HttpResponse::Conflict().body("USER_NOT_FOUND"),
+            Error::UserNotFound => HttpResponse::NotFound().body("USER_NOT_FOUND"),
             Error::WrongPassword => HttpResponse::Unauthorized().body("WRONG_PASSWORD"),
-            Error::CannotGenerateToken => HttpResponse::InternalServerError().body("CANNOT_GENERATE_TOKEN"),
-            Error::DatabaseConnection => HttpResponse::InternalServerError().body("DATABASE_CONNECTION"),
+            Error::CannotGenerateToken => HttpResponse::ServiceUnavailable().body("CANNOT_GENERATE_TOKEN"),
+            Error::DatabaseConnection => HttpResponse::ServiceUnavailable().body("DATABASE_CONNECTION"),
         } 
     };
 }

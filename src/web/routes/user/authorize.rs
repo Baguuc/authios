@@ -29,8 +29,8 @@ pub async fn controller(
         Ok(false) => HttpResponse::Unauthorized().into(),
         Err(error) => match error {
             Error::InvalidToken => HttpResponse::Unauthorized().body("INVALID_TOKEN"),
-            Error::PermissionNotFound => HttpResponse::Conflict().body("PERMISSION_NOT_FOUND"),
-            Error::DatabaseConnection => HttpResponse::InternalServerError().body("DATABASE_CONNECTION")
+            Error::PermissionNotFound => HttpResponse::NotFound().body("PERMISSION_NOT_FOUND"),
+            Error::DatabaseConnection => HttpResponse::ServiceUnavailable().body("DATABASE_CONNECTION")
         }
     };
 }

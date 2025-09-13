@@ -26,7 +26,7 @@ pub async fn controller(
             ),
         Err(error) => match error {
             Error::InvalidToken => HttpResponse::Unauthorized().body("INVALID_TOKEN"),
-            Error::DatabaseConnection => HttpResponse::InternalServerError().body("DATABASE_CONNECTION"),
+            Error::DatabaseConnection => HttpResponse::ServiceUnavailable().body("DATABASE_CONNECTION"),
         }
     };
 }

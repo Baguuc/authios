@@ -11,11 +11,11 @@ pub async fn controller(
     };
     
     return match UsersUseCase::register(Params { login: body.login.clone(), pwd: body.pwd.clone() }, &*client.into_inner()).await {
-        Ok(token) => HttpResponse::Ok().body(token),
+        Ok(_) => HttpResponse::Created().into(),
         Err(error) => match error {
             Error::AlreadyExist => HttpResponse::Conflict().body("ALREADY_EXIST"),
             Error::CannotHashPassword => HttpResponse::BadRequest().body("CANNOT_HASH_PASSWORD"),
-            Error::DatabaseConnection => HttpResponse::InternalServerError().body("DATABASE_CONNECTION"),
+            Error::DatabaseConnection => HttpResponse::ServiceUnavailable().body("DATABASE_CONNECTION"),
         } 
     };
 }

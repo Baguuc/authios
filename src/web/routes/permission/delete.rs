@@ -25,11 +25,11 @@ pub async fn controller(
     };
 
     return match PermissionsUseCase::delete(params, &*client.into_inner()).await {
-        Ok(_) => HttpResponse::Ok().into(),
+        Ok(_) => HttpResponse::NoContent().into(),
         Err(error) => match error {
-            Error::NotFound => HttpResponse::Conflict().body("NOT_FOUND"),
+            Error::NotFound => HttpResponse::NotFound().body("NOT_FOUND"),
             Error::Unauthorized => HttpResponse::Unauthorized().body("UNAUTHORIZED"),
-            Error::DatabaseConnection => HttpResponse::InternalServerError().body("DATABASE_CONNECTION")
+            Error::DatabaseConnection => HttpResponse::ServiceUnavailable().body("DATABASE_CONNECTION")
         }
     };
 }

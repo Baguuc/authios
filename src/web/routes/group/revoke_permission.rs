@@ -26,13 +26,13 @@ pub async fn controller(
     };
 
     return match GroupsUseCase::revoke_permission(params, &*client.into_inner()).await {
-        Ok(_) => HttpResponse::Ok().into(),
+        Ok(_) => HttpResponse::NoContent().into(),
         Err(error) => match error {
             Error::NotAddedYet => HttpResponse::Conflict().body("NOT_ADDED_YET"),
             Error::GroupNotFound => HttpResponse::Conflict().body("GROUP_NOT_FOUND"),
             Error::PermissionNotFound => HttpResponse::Conflict().body("PERMISSION_NOT_FOUND"),
             Error::Unauthorized => HttpResponse::Unauthorized().body("UNAUTHORIZED"),
-            Error::DatabaseConnection => HttpResponse::InternalServerError().body("DATABASE_CONNECTION")
+            Error::DatabaseConnection => HttpResponse::ServiceUnavailable().body("DATABASE_CONNECTION")
         }
     };
 }

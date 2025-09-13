@@ -19,11 +19,11 @@ pub async fn controller(
     };
 
     return match UsersUseCase::update_pwd(Params { token, new_pwd: body.pwd.clone(), encryption_key: config.jwt.encryption_key.clone() }, &*client.into_inner()).await {
-        Ok(_) => HttpResponse::Ok().into(),
+        Ok(_) => HttpResponse::NoContent().into(),
         Err(error) => match error {
             Error::InvalidToken => HttpResponse::Unauthorized().body("INVALID_TOKEN"),
             Error::CannotHash => HttpResponse::InternalServerError().body("CANNOT_HASH_PWD"),
-            Error::DatabaseConnection => HttpResponse::InternalServerError().body("DATABASE_CONNECTION"),
+            Error::DatabaseConnection => HttpResponse::ServiceUnavailable().body("DATABASE_CONNECTION"),
         } 
     }
 }
