@@ -26,7 +26,7 @@ paths:
               example: null
               examples:
                 - null
-          description: The request was successful, and a new resource was created.
+          description: Successfuly created the group.
         "401":
           $ref: "#/components/responses/Unauthorized"
         "409":
@@ -140,8 +140,7 @@ paths:
               schema:
                 type: "null"
                 title: DeleteAGroupNoContent
-          description: The request was successful, but there is no content to return in
-            the response.
+          description: Successfuly deleted the group.
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -154,9 +153,11 @@ paths:
                 default: NOT_FOUND
                 examples:
                   - NOT_FOUND
-                description: A group with provided name cannot be found.
-          description: The server cannot find the requested resource. The endpoint may be
-            invalid or the resource may no longer exist.
+          description: >-
+            ### Message: NOT_FOUND
+
+            A group with provided name do not exist in the database, so it
+            cannot be deleted.
         "503":
           $ref: "#/components/responses/Service Unavailable"
       parameters:
@@ -189,19 +190,18 @@ paths:
           description: The permission was successfully deleted
         "401":
           $ref: "#/components/responses/Unauthorized"
-        "409":
+        "404":
           content:
             text/plain:
               schema:
                 enum:
-                  - NOT_EXIST_YET
+                  - NOT_FOUND
                 type: string
-                default: NOT_EXIST_YET
+                default: NOT_FOUND
                 examples:
-                  - NOT_EXIST_YET
-                description: Permission with provided name do not exist
-          description: >-
-            ### Message: NOT_EXIST_YET
+                  - NOT_FOUND
+          description: |-
+            ### Message: NOT_FOUND
 
             A permission with provided name do not exist in the database, so it
             cannot be deleted.
@@ -643,8 +643,7 @@ paths:
       summary: List current user's permisions
       responses:
         "200":
-          description: The request was successful, and the server has returned the
-            requested resource in the response body.
+          description: Responds with a list of permission names
           content:
             application/json:
               schema:
@@ -692,6 +691,19 @@ paths:
                 - login
                 - pwd
       responses:
+        "201":
+          description: Successfuly registered the user
+          content:
+            text/plain:
+              schema:
+                type: "null"
+                example: null
+                examples:
+                  - null
+                title: CreateAGroupCreated
+              example: null
+              examples:
+                - null
         "409":
           description: >-
             ### Message: ALREADY_EXIST
