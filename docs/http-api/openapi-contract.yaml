@@ -340,6 +340,8 @@ paths:
                 type: "null"
                 title: GrantUserAGroupCreated
           description: The group was successfuly granted
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "404":
           content:
             text/plain:
