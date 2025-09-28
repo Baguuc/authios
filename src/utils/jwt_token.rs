@@ -4,17 +4,15 @@
 /// 
 /// ### Arguments:
 /// + login: [std::string::String]
-/// + expires: [std::usize] (date when expires),
 /// + key: [std::string::String] (system's JWT encryption key)
 ///
 /// Returns eighter the generated token as a [std::string::String] or error.
 ///
-pub fn generate(login: String, expires: usize, key: String) -> Result<String, jsonwebtoken::errors::Error> {
+pub fn generate(user_id: i32, key: String) -> Result<String, jsonwebtoken::errors::Error> {
     use jsonwebtoken::{encode, Header, EncodingKey};
 
     let claims = crate::models::Claims {
-        sub: login,
-        exp: expires,
+        sub: user_id
     };
 
     let encoded = encode(

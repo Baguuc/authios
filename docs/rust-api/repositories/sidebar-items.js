@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":["group_permissions","groups","permissions","user_groups","users"]};

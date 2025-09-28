@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["scope"],"mod":["authorize","grant_group","info","list_permissions","login","register","revoke_group","update_pwd"]};

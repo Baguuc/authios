@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":["database","error","jwt_token","password_hash","web"]};

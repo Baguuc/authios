@@ -1,9 +1,10 @@
-/// Represents a single user.
+/// Represents a single resource permission.
 /// This struct do not have any method associated to it, it just models the data.
 ///
 #[derive(serde::Serialize, serde::Deserialize, sqlx::FromRow, Debug, Clone)]
-pub struct User {
+pub struct ResourcePermission {
     pub id: i32,
-    pub login: String,
-    pub password_hash: String
+    pub service_id: String,
+    pub resource_type: String,
+    pub permission_name: String
 }

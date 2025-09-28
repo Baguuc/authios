@@ -10,11 +10,7 @@ pub mod commands;
 #[command(about = "A simple API for managing users and permissions in closed systems", long_about = None)]
 pub enum MainCli {
     #[command(about = "Run the HTTP server", long_about = None)]
-    Run(CliFlags),
-    #[command(about = "Run migrations on the database")]
-    Migrate(CliFlags),
-    #[command(about = "Init the root user and all mandatory data needed to run the API.")]
-    Init(CliFlags)
+    Run(CliFlags)
 }
 
 /// # CliFlags
@@ -45,9 +41,7 @@ impl MainCli {
     ///
     pub async fn execute(self) {
         match self {
-            Self::Run(args) => { commands::run(args).await; },
-            Self::Migrate(args) => { commands::migrate(args).await; },
-            Self::Init(args) => { commands::init(args).await; }
+            Self::Run(args) => { commands::run(args).await; }
         };
     }
 }

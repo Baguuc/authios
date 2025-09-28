@@ -1,7 +1,9 @@
 pub mod user;
-pub mod permission;
-pub mod group;
+pub mod claims;
+pub mod resource_permission;
+pub mod user_resource_permission;
 
-pub use user::{User, Claims};
-pub use permission::Permission;
-pub use group::Group;
+pub use user::User;
+pub use claims::Claims;
+pub use resource_permission::ResourcePermission;
+pub use user_resource_permission::UserResourcePermission;
