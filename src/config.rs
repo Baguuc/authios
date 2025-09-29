@@ -22,7 +22,7 @@ pub struct JWTConfig {
 
 #[derive(serde::Serialize, serde::Deserialize, Clone)]
 pub struct RootConfig {
-    pub pwd: String
+    pub password: String
 }
 
 impl Config {

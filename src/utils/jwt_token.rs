@@ -8,11 +8,12 @@
 ///
 /// Returns eighter the generated token as a [std::string::String] or error.
 ///
-pub fn generate(user_id: i32, key: String) -> Result<String, jsonwebtoken::errors::Error> {
+pub fn generate(user_id: i32, key: &String) -> Result<String, jsonwebtoken::errors::Error> {
     use jsonwebtoken::{encode, Header, EncodingKey};
 
     let claims = crate::models::Claims {
-        sub: user_id
+        sub: user_id,
+        exp: (chrono::Utc::now() + chrono::Duration::days(7)).timestamp() as usize 
     };
 
     let encoded = encode(

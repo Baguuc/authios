@@ -8,7 +8,7 @@
 /// Returns eighter the password hash as a [std::string::String] or the error that occured
 /// while hashing.
 ///
-pub fn hash_password(password: String) -> Result<String, argon2::password_hash::Error> {
+pub fn hash_password(password: &String) -> Result<String, argon2::password_hash::Error> {
     use argon2::{
         Argon2,
         PasswordHasher,

@@ -6,6 +6,14 @@ pub struct UserRetrieveParams<'p> {
     pub id: &'p i32
 }
 
+/// params needed to retrieve a user from the database
+///
+pub struct UserRetrieveByLoginParams<'p> {
+    /// id of the user to retrieve
+    ///
+    pub login: &'p String
+}
+
 /// params needed to insert user to the database
 ///
 pub struct UserInsertParams<'p> {

@@ -5,5 +5,6 @@
 ///
 #[derive(serde::Serialize, serde::Deserialize, Debug)]
 pub struct Claims {
-    pub sub: i32
+    pub sub: i32,
+    pub exp: usize
 }

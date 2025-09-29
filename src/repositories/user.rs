@@ -31,6 +31,35 @@ impl UserRepository {
     }   
     
     /// ### Description
+    /// Retrieve a single user from the database searching by login
+    ///
+    /// ### Arguments
+    /// 1. params: [crate::params::repository::UserRetrieveByLoginParams] - params for the
+    ///    operation
+    /// 2. database_client: [sqlx::Acquire] - the sqlx client connected to
+    ///    postgres database
+    /// 
+    /// ### Return type
+    /// Returns Options where None means the user is not found
+    ///
+    pub async fn retrieve_by_login<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
+        params: crate::params::repository::UserRetrieveByLoginParams<'a>,
+        database_client: A
+    ) -> Option<crate::models::User> {
+        let mut database_client = database_client.acquire()
+            .await
+            .ok()?;
+
+        let result = sqlx::query_as("SELECT id, login, password_hash FROM users WHERE login = $1;")
+            .bind(params.login)
+            .fetch_one(&mut *database_client)
+            .await
+            .ok();
+
+        result
+    }   
+    
+    /// ### Description
     /// Insert a single user into the database
     ///
     /// ### Arguments
