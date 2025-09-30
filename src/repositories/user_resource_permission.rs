@@ -85,15 +85,13 @@ impl UserResourcePermissionRepository {
             urp.resource_permission_id = rp.id
         WHERE 
             urp.user_id = $1 AND
-            rp.service_id = $2 AND
-            rp.resource_type = $3 AND
-            urp.resource_id = $4
+            urp.resource_permission_id = $2 AND
+            urp.resource_id = $3
         GROUP BY rp.service_id, rp.resource_type, urp.resource_id
         ;";
         let result = sqlx::query_as(sql)
             .bind(params.user_id)
-            .bind(params.service_id)
-            .bind(params.resource_type)
+            .bind(params.permission_id)
             .bind(params.resource_id)
             .fetch_one(&mut *database_client)
             .await

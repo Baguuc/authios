@@ -18,12 +18,9 @@ pub struct UserResourcePermissionRetrieveParams<'p> {
     /// id of the user
     ///
     pub user_id: &'p i32,
-    /// id of the service
+    /// id of the resource permission
     ///
-    pub service_id: &'p String,
-    /// type of the resource
-    ///
-    pub resource_type: &'p String,
+    pub permission_id: &'p i32,
     /// id of the resource
     ///
     pub resource_id: &'p i32,

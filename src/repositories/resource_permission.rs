@@ -21,7 +21,7 @@ impl ResourcePermissionRepository {
             .await
             .ok()?;
 
-        let result = sqlx::query_as("SELECT id, service_id, resource_type, permission_name FROM resource_permissions WHEREE service_id = $1 AND resource_type = $2 AND permission_name = $3;")
+        let result = sqlx::query_as("SELECT id, service_id, resource_type, permission_name FROM resource_permissions WHERE service_id = $1 AND resource_type = $2 AND permission_name = $3;")
             .bind(params.service_id)
             .bind(params.resource_type)
             .bind(params.permission_name)

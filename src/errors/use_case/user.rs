@@ -40,8 +40,8 @@ pub enum UserDeleteAsAdminError {
     NotFound,
     /// the password do not match the one in the config
     ///
-    #[error("WRONG_PASSWORD")]
-    WrongPassword
+    #[error("UNAUTHORIZED")]
+    Unauthorized
 }
 
 /// Represents any of the errors that can happen during deleting a user as himself
@@ -62,4 +62,73 @@ pub enum UserUpdateError {
     ///
     #[error("INVALID_TOKEN")]
     InvalidToken
+}
+
+/// Represents any of the errors that can happen during listing user's resource permissions
+/// 
+#[derive(thiserror::Error, Debug)]
+pub enum UserListResourcePermissionsError {
+    /// the token is invalid, meaning is in a wrong format or pointing to null user
+    ///
+    #[error("INVALID_TOKEN")]
+    InvalidToken
+}
+
+/// Represents any of the errors that can happen during checking if user is permitted to operation
+/// on resource permissions
+/// 
+#[derive(thiserror::Error, Debug)]
+pub enum UserCheckResourcePermissionError {
+    /// the token is invalid, meaning is in a wrong format or pointing to null user
+    ///
+    #[error("INVALID_TOKEN")]
+    InvalidToken,
+    /// the token is invalid, meaning is in a wrong format or pointing to null user
+    ///
+    #[error("PERMISSION_NOT_FOUND")]
+    PermissionNotFound
+}
+
+/// Represents any of the errors that can happen during granting user a resource permission
+/// 
+#[derive(thiserror::Error, Debug)]
+pub enum UserGrantResourcePermissionError {
+    /// the token is invalid, meaning is in a wrong format or pointing to null user
+    ///
+    #[error("PERMISSION_NOT_FOUND")]
+    PermissionNotFound,
+    /// the root password is invalid
+    ///
+    #[error("UNAUTHORIZED")]
+    Unauthorized,
+    /// user with specified id is not found in the database
+    ///
+    #[error("NOT_ADDED_YET")]
+    UserNotFound,
+    /// user already has that permission for specified resource
+    ///
+    #[error("ALREADY_ADDED")]
+    AlreadyAdded
+}
+
+/// Represents any of the errors that can happen during revoking user a resource permission
+/// 
+#[derive(thiserror::Error, Debug)]
+pub enum UserRevokeResourcePermissionError {
+    /// the token is invalid, meaning is in a wrong format or pointing to null user
+    ///
+    #[error("PERMISSION_NOT_FOUND")]
+    PermissionNotFound,
+    /// the root password is invalid
+    ///
+    #[error("UNAUTHORIZED")]
+    Unauthorized,
+    /// user with specified id is not found in the database
+    ///
+    #[error("NOT_ADDED_YET")]
+    UserNotFound,
+    /// user already has that permission for specified resource
+    ///
+    #[error("NOT_ADDED_YET")]
+    NotAddedYet
 }

@@ -14,8 +14,8 @@ CREATE TABLE resource_permissions (
 );
 
 CREATE TABLE user_resource_permissions (
-  resource_permission_id INTEGER NOT NULL REFERENCES resource_permissions(id),
+  resource_permission_id INTEGER NOT NULL REFERENCES resource_permissions(id) ON DELETE CASCADE,
   resource_id INTEGER NOT NULL, 
-  user_id INTEGER NOT NULL REFERENCES users(id),
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   UNIQUE (resource_permission_id, resource_id, user_id)
 );

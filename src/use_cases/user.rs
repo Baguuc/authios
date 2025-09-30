@@ -136,7 +136,7 @@ impl UserUseCase {
             .unwrap();
 
         if params.password != params.root_password {
-            return Err(Error::WrongPassword);
+            return Err(Error::Unauthorized);
         }
         
         UserRepository::delete(
@@ -161,7 +161,7 @@ impl UserUseCase {
     ///
     /// ### Return type
     /// Returns result with either a unit type value ("()") or error of type
-    /// [crate::errors::use_case::UserAsSelfError] inside.
+    /// [crate::errors::use_case::UserDeleteAsSelfError] inside.
     /// 
     pub async fn delete_as_self<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: crate::params::use_case::UserDeleteAsSelfParams<'a>,
@@ -195,7 +195,16 @@ impl UserUseCase {
     /// ### Description
     /// update user's data
     ///
+    /// ### Arguments
+    /// 1. params: [crate::params::use_case::UserUpdateParams] - params needed for the
+    ///    operation
+    /// 2. database_client: [sqlx::Acquire] - the sqlx client connected to
+    ///    postgres database
     ///
+    /// ### Return type
+    /// Returns result with either the updated user data or error of type
+    /// [crate::errors::use_case::UserUpdateError] inside.
+    /// 
     pub async fn update<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: crate::params::use_case::UserUpdateParams<'a>,
         database_client: A
@@ -243,5 +252,246 @@ impl UserUseCase {
         };
 
         Ok(new_data)
+    }
+
+    /// ### Description
+    /// list user's resource permissions attached to specified service and resource type.
+    ///
+    /// ### Arguments
+    /// 1. params: [crate::params::use_case::UserListResourcePermissionsParams] - params needed for the
+    ///    operation
+    /// 2. database_client: [sqlx::Acquire] - the sqlx client connected to
+    ///    postgres database
+    ///
+    /// ### Return type
+    /// Returns result with either the list of fetched permissions or error of type
+    /// [crate::errors::use_case::UserListResourcePermissionsError] inside.
+    /// 
+    pub async fn list_resource_permissions<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
+        params: crate::params::use_case::UserListResourcePermissionsParams<'a>,
+        database_client: A
+    ) -> Result<Vec<crate::models::UserResourcePermission>, crate::errors::use_case::UserListResourcePermissionsError> {
+        use crate::utils::jwt_token::get_claims;
+        use crate::repositories::UserResourcePermissionRepository;
+        use crate::params::repository::UserResourcePermissionListParams as ListParams;
+        use crate::errors::use_case::UserListResourcePermissionsError as Error;
+
+        let mut database_client = database_client.acquire()
+            .await
+            .unwrap();
+        
+        let claims = get_claims(&params.token, &params.jwt_encryption_key).map_err(|_| Error::InvalidToken)?;
+        let user_id = claims.sub;
+
+        let permissions = UserResourcePermissionRepository::list(
+            ListParams { user_id: &user_id, service_id: params.service_id, resource_type: params.resource_type },
+            &mut *database_client
+        ).await;
+        
+        Ok(permissions)
+    }
+    
+    /// ### Description
+    /// check if user is permitted to specified resource with specifed permission.
+    ///
+    /// ### Arguments
+    /// 1. params: [crate::params::use_case::UserCheckResourcePermissionParams] - params needed for the
+    ///    operation
+    /// 2. database_client: [sqlx::Acquire] - the sqlx client connected to
+    ///    postgres database
+    ///
+    /// ### Return type
+    /// Returns result with either the list of fetched permissions or error of type
+    /// [crate::errors::use_case::UserCheckResourcePermissionError] inside.
+    /// 
+    pub async fn check_resource_permission<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
+        params: crate::params::use_case::UserCheckResourcePermissionParams<'a>,
+        database_client: A
+    ) -> Result<bool, crate::errors::use_case::UserCheckResourcePermissionError> {
+        use crate::utils::jwt_token::get_claims;
+        use crate::repositories::{
+            ResourcePermissionRepository,
+            UserResourcePermissionRepository
+        };
+        use crate::params::repository::{
+            ResourcePermissionRetrieveParams,
+            UserResourcePermissionRetrieveParams
+        };
+        use crate::errors::use_case::UserCheckResourcePermissionError as Error;
+
+        let mut database_client = database_client.acquire()
+            .await
+            .unwrap();
+        
+        let claims = get_claims(&params.token, &params.jwt_encryption_key)
+            .map_err(|_| Error::InvalidToken)?;
+        let user_id = claims.sub;
+        
+        // check if permission exist
+        let resource_permission = ResourcePermissionRepository::retrieve(
+            ResourcePermissionRetrieveParams { 
+                service_id: params.service_id, 
+                resource_type: params.resource_type, 
+                permission_name: params.permission_name
+            },
+            &mut *database_client
+        )
+            .await
+            .ok_or(Error::PermissionNotFound)?;
+
+        match UserResourcePermissionRepository::retrieve(
+            UserResourcePermissionRetrieveParams { 
+                user_id: &user_id, 
+                permission_id: &resource_permission.id,
+                resource_id: params.resource_id
+            },
+            &mut *database_client
+        ).await {
+            Some(_) => Ok(true),
+            None => Ok(false)
+        }
+    }
+    
+    /// ### Description
+    /// Grant user with specified id a resource permission matching specified criteria authorizing
+    /// the operation with root password
+    ///
+    /// ### Arguments
+    /// 1. params: [crate::params::use_case::UserGrantResourcePermissionParams] - params needed for the
+    ///    operation
+    /// 2. database_client: [sqlx::Acquire] - the sqlx client connected to
+    ///    postgres database
+    ///
+    /// ### Return type
+    /// Returns result with error of type [crate::errors::use_case::UserGrantResourcePermissionError] inside.
+    /// 
+    pub async fn grant_resource_permission<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
+        params: crate::params::use_case::UserGrantResourcePermissionParams<'a>,
+        database_client: A
+    ) -> Result<(), crate::errors::use_case::UserGrantResourcePermissionError> {
+        use crate::repositories::{
+            UserResourcePermissionRepository,
+            UserRepository,
+            ResourcePermissionRepository
+        };
+        use crate::params::repository::{
+            ResourcePermissionRetrieveParams,
+            UserRetrieveParams,
+            UserResourcePermissionInsertParams
+        };
+        use crate::errors::use_case::UserGrantResourcePermissionError as Error;
+        
+        let mut database_client = database_client.acquire()
+            .await
+            .unwrap();
+
+        if params.password != params.root_password {
+            return Err(Error::Unauthorized);
+        }
+        
+        let _ = UserRepository::retrieve(
+            UserRetrieveParams {
+                id: params.user_id
+            },
+            &mut *database_client
+        )
+            .await
+            .ok_or(Error::UserNotFound)?;
+
+
+        let resource_permission = ResourcePermissionRepository::retrieve(
+            ResourcePermissionRetrieveParams { 
+                service_id: params.service_id,
+                resource_type: params.resource_type,
+                permission_name: params.permission_name
+            },
+            &mut *database_client
+        )
+            .await
+            .ok_or(Error::PermissionNotFound)?;
+
+        let _ = UserResourcePermissionRepository::insert(
+            UserResourcePermissionInsertParams {
+                resource_permission_id: &resource_permission.id,
+                user_id: params.user_id,
+                resource_id: params.resource_id
+            },
+            &mut *database_client
+        )
+            .await
+            .ok_or(Error::AlreadyAdded)?;
+
+        Ok(())
+    }
+    
+    /// ### Description
+    /// Revoke user with specified id a resource permission matching specified criteria authorizing
+    /// the operation with root password
+    ///
+    /// ### Arguments
+    /// 1. params: [crate::params::use_case::UserRevokeResourcePermissionParams] - params needed for the
+    ///    operation
+    /// 2. database_client: [sqlx::Acquire] - the sqlx client connected to
+    ///    postgres database
+    ///
+    /// ### Return type
+    /// Returns result with error of type [crate::errors::use_case::UserRevokeResourcePermissionError] inside.
+    /// 
+    pub async fn revoke_resource_permission<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
+        params: crate::params::use_case::UserRevokeResourcePermissionParams<'a>,
+        database_client: A
+    ) -> Result<(), crate::errors::use_case::UserRevokeResourcePermissionError> {
+        use crate::repositories::{
+            UserResourcePermissionRepository,
+            UserRepository,
+            ResourcePermissionRepository
+        };
+        use crate::params::repository::{
+            ResourcePermissionRetrieveParams,
+            UserRetrieveParams,
+            UserResourcePermissionDeleteParams
+        };
+        use crate::errors::use_case::UserRevokeResourcePermissionError as Error;
+        
+        let mut database_client = database_client.acquire()
+            .await
+            .unwrap();
+
+        if params.password != params.root_password {
+            return Err(Error::Unauthorized);
+        }
+        
+        let _ = UserRepository::retrieve(
+            UserRetrieveParams {
+                id: params.user_id
+            },
+            &mut *database_client
+        )
+            .await
+            .ok_or(Error::UserNotFound)?;
+
+        let resource_permission = ResourcePermissionRepository::retrieve(
+            ResourcePermissionRetrieveParams { 
+                service_id: params.service_id,
+                resource_type: params.resource_type,
+                permission_name: params.permission_name
+            },
+            &mut *database_client
+        )
+            .await
+            .ok_or(Error::PermissionNotFound)?;
+
+        let _ = UserResourcePermissionRepository::delete(
+            UserResourcePermissionDeleteParams {
+                resource_permission_id: &resource_permission.id,
+                user_id: params.user_id,
+                resource_id: params.resource_id
+            },
+            &mut *database_client
+        )
+            .await
+            .ok_or(Error::NotAddedYet)?;
+
+        Ok(())
     }
 }

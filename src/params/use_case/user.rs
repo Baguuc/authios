@@ -73,5 +73,97 @@ pub struct UserUpdateParams<'p> {
     pub new_login: Option<String>,
     /// new password (no change when None)
     ///
-    pub new_password: Option<String>,
+    pub new_password: Option<String>
+}
+
+/// represents params needed to list user's resource permissions
+///
+pub struct UserListResourcePermissionsParams<'p> {
+    /// JWT session token
+    ///
+    pub token: &'p String,
+    /// JWT encryption key set in the config
+    ///
+    pub jwt_encryption_key: &'p String,
+    /// id of the service to filter by
+    ///
+    pub service_id: &'p String,
+    /// type of the resource to filter by
+    ///
+    pub resource_type: &'p String,
+}
+
+/// represents params needed to check if user is permitted to operation on resource
+///
+pub struct UserCheckResourcePermissionParams<'p> {
+    /// JWT session token
+    ///
+    pub token: &'p String,
+    /// JWT encryption key set in the config
+    ///
+    pub jwt_encryption_key: &'p String,
+    /// id of the service to filter by
+    ///
+    pub service_id: &'p String,
+    /// type of the resource to filter by
+    ///
+    pub resource_type: &'p String,
+    /// id of the resource to filter by
+    ///
+    pub resource_id: &'p i32,
+    /// name of the permission to check for
+    ///
+    pub permission_name: &'p String
+}
+
+/// represents params needed to grant user a resource permission
+///
+pub struct UserGrantResourcePermissionParams<'p> {
+    /// id of the user to grant the permission to
+    ///
+    pub user_id: &'p i32,
+    /// id of the service of the resource permission to grant
+    ///
+    pub service_id: &'p String,
+    /// type of the resource of the resource permission to grant
+    ///
+    pub resource_type: &'p String,
+    /// name of the permission of the resource permission to grant
+    ///
+    pub permission_name: &'p String,
+    /// id of the resource to grant the permission for
+    ///
+    pub resource_id: &'p i32,
+    /// password provided to the user
+    ///
+    pub password: &'p String,
+    /// root password from config
+    ///
+    pub root_password: &'p String
+}
+
+/// represents params needed to grant user a resource permission
+///
+pub struct UserRevokeResourcePermissionParams<'p> {
+    /// id of the user to revoke the permission to
+    ///
+    pub user_id: &'p i32,
+    /// id of the service of the resource permission to revoke
+    ///
+    pub service_id: &'p String,
+    /// type of the resource of the resource permission to revoke
+    ///
+    pub resource_type: &'p String,
+    /// name of the permission of the resource permission to revoke
+    ///
+    pub permission_name: &'p String,
+    /// id of the resource to revoke the permission from
+    ///
+    pub resource_id: &'p i32,
+    /// password provided to the user
+    ///
+    pub password: &'p String,
+    /// root password from config
+    ///
+    pub root_password: &'p String
 }

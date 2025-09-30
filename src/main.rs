@@ -20,18 +20,21 @@ async fn main() {
     
     use params::use_case::UserLoginParams as LParams;
     use params::use_case::UserUpdateParams as UParams;
-    use params::use_case::UserRetrieveFromTokenParams as RParams;
+    use params::use_case::UserRevokeResourcePermissionParams as Params;
     use use_cases::UserUseCase;
 
     /*let result = UserUseCase::login(LParams { login: &"bgc".to_string(), password: &"321".to_string(), jwt_encryption_key: &config.jwt.encryption_key }, &database_client).await;
     println!("{:?}", result);*/
 
-    let result = UserUseCase::retrieve_from_token(RParams { token: &"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjIsImV4cCI6MTc1OTc3MjIxMH0.rlo2nf-T8BXdMbTBPdF2qzShUNOQ0NSL2KOvsbI0roA".to_string(), jwt_encryption_key: &config.jwt.encryption_key }, &database_client).await;
-    println!("{:?}", result);
-    
-    let result = UserUseCase::update(UParams { token: &"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjIsImV4cCI6MTc1OTc3MjIxMH0.rlo2nf-T8BXdMbTBPdF2qzShUNOQ0NSL2KOvsbI0roA".to_string(), jwt_encryption_key: &config.jwt.encryption_key, new_login: Some("bgc".to_string()), new_password: None }, &database_client).await;
-    println!("{:?}", result);
-    
-    let result = UserUseCase::update(UParams { token: &"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjIsImV4cCI6MTc1OTc3MjIxMH0.rlo2nf-T8BXdMbTBPdF2qzShUNOQ0NSL2KOvsbI0roA".to_string(), jwt_encryption_key: &config.jwt.encryption_key, new_login: None, new_password: Some("321".to_string()) }, &database_client).await;
+    let params = Params {
+        password: &String::from("123"),
+        root_password: &config.root.password,
+        user_id: &2,
+        service_id: &String::from("hostios"),
+        resource_type: &String::from("vault"),
+        permission_name: &String::from("write"),
+        resource_id: &123
+    };
+    let result = UserUseCase::revoke_resource_permission(params, &database_client).await;
     println!("{:?}", result);
 }
