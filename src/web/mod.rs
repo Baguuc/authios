@@ -1,6 +1,7 @@
 pub mod routes;
+pub mod extractors;
 
-pub async fn run_api(config: crate::config::Config) -> Result<(), crate::errors::web::RunApiError> {
+pub async fn run_api(config: crate::config::Config) -> Result<(), crate::errors::web::ServerRunError> {
     use crate::utils::database::create_pool;
 
     let port = config.port;
@@ -10,6 +11,7 @@ pub async fn run_api(config: crate::config::Config) -> Result<(), crate::errors:
         actix_web::App::new()
             .app_data(actix_web::web::Data::new(pool.clone()))
             .app_data(actix_web::web::Data::new(config.clone()))
+            .service(routes::user::scope())
     });
     server.bind(("0.0.0.0", port))?
         .run()

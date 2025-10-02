@@ -1,0 +1,32 @@
+pub struct RootPasswordExtractor(pub String);
+
+impl actix_web::FromRequest for RootPasswordExtractor {
+    type Error = crate::errors::web::RootPasswordExtractionError;
+    type Future = std::future::Ready<Result<Self, Self::Error>>;
+
+    fn from_request(req: &actix_web::HttpRequest, _: &mut actix_web::dev::Payload) -> Self::Future {
+        use std::future::ready;
+        use crate::errors::web::RootPasswordExtractionError;
+
+        let raw_token = match req.headers().get("authorization") {
+            Some(token) => token,
+            None => return ready(Err(RootPasswordExtractionError::NotFound))
+        };
+
+        let token = match raw_token.to_str() {
+            Ok(token) => token.to_string(),
+            Err(_) => return ready(Err(RootPasswordExtractionError::Invalid))
+        };
+
+        if !token.starts_with("Custom ") {
+            return ready(Err(RootPasswordExtractionError::WrongType))
+        }
+        
+        let stripped_token = token
+            .replace("Custom ", "")
+            .to_string();
+        
+        std::future::ready(Ok(Self(stripped_token)))
+    }
+}
+
