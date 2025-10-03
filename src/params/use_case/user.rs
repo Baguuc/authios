@@ -70,10 +70,10 @@ pub struct UserUpdateParams<'p> {
     pub jwt_encryption_key: &'p String,
     /// new login (no change when None)
     ///
-    pub new_login: Option<String>,
+    pub new_login: &'p Option<String>,
     /// new password (no change when None)
     ///
-    pub new_password: Option<String>
+    pub new_password: &'p Option<String>
 }
 
 /// represents params needed to list user's resource permissions

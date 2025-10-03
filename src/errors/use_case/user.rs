@@ -4,7 +4,8 @@
 pub enum UserRetrieveFromTokenError {
     /// the token is invalid meaning is in a wrong format or points to a user that doesn't exist
     ///
-    #[error("INVALID_TOKEN")] InvalidToken }
+    #[error("INVALID_TOKEN")] InvalidToken
+}
 
 /// Represents any of the errors that can happen during logging in
 /// 
@@ -26,8 +27,8 @@ pub enum UserLoginError {
 pub enum UserRegisterError {
     /// the user with provided login already exist
     ///
-    #[error("ALREADY_EXIST")] 
-    AlreadyExist
+    #[error("ALREADY_EXISTS")] 
+    AlreadyExists
 }
 
 /// Represents any of the errors that can happen during deleting a user as admin

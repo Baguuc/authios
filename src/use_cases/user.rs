@@ -107,7 +107,7 @@ impl UserUseCase {
         UserRepository::insert(UserInsertParams { login: params.login, password_hash: &password_hash }, &mut *database_client)
             .await
             .map(|_| ())
-            .map_err(|_| Error::AlreadyExist)
+            .map_err(|_| Error::AlreadyExists)
     }
     
     /// ### Description
@@ -234,12 +234,11 @@ impl UserUseCase {
             .await
             .ok_or(Error::InvalidToken)?;
 
-        let new_login = params.new_login.unwrap_or(original_data.login);
-        let new_password_hash = if let Some(password) = params.new_password {
-            hash_password(&password).unwrap()
-        } else { 
-            original_data.password_hash
-        };
+        let new_login = if let Some(login) = params.new_login 
+            { login } else { &original_data.login };
+
+        let new_password_hash = if let Some(password) = params.new_password
+            { hash_password(&password).unwrap() } else { original_data.password_hash };
 
         UserRepository::update(UserUpdateParams { id: &user_id, login: &new_login, password_hash: &new_password_hash }, &mut *database_client)
             .await
@@ -247,7 +246,7 @@ impl UserUseCase {
 
         let new_data = User {
             id: original_data.id,
-            login: new_login,
+            login: new_login.clone(),
             password_hash: new_password_hash
         };
 
