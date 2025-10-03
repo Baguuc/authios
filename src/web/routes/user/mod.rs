@@ -4,6 +4,8 @@ mod login;
 mod update;
 mod list_resource_permissions;
 mod check_resource_permission;
+mod grant_resource_permission;
+mod revoke_resource_permission;
 
 pub fn scope() -> actix_web::Scope {
     actix_web::web::scope("/users")
@@ -13,4 +15,5 @@ pub fn scope() -> actix_web::Scope {
         .service(update::controller)
         .service(list_resource_permissions::controller)
         .service(check_resource_permission::controller)
+        .service(grant_resource_permission::controller)
 }
