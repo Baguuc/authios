@@ -1,4 +1,4 @@
-#[actix_web::get("/me")]
+#[actix_web::get("")]
 pub async fn controller(
     token: crate::web::extractors::TokenExtractor,
     config: actix_web::web::Data<crate::config::Config>,

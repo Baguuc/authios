@@ -1,14 +1,14 @@
-#[actix_web::patch("/me")]
+#[actix_web::get("/permissions/resource/{service_id}/{resource_type}/{resource_id}/{permission_name}")]
 pub async fn controller(
-    body: actix_web::web::Json<Body>,
     token: crate::web::extractors::TokenExtractor,
+    path: actix_web::web::Path<Path>,
     config: actix_web::web::Data<crate::config::Config>,
     database_client: actix_web::web::Data<sqlx::PgPool>
 ) -> actix_web::HttpResponse {
     use serde_json::json;
     use actix_web::HttpResponse;
-    use crate::params::use_case::UserUpdateParams as Params;
-    use crate::errors::use_case::UserUpdateError as Error;
+    use crate::params::use_case::UserCheckResourcePermissionParams as Params;
+    use crate::errors::use_case::UserCheckResourcePermissionError as Error;
     use crate::use_cases::UserUseCase as UseCase;
 
     let mut database_client = database_client
@@ -20,23 +20,30 @@ pub async fn controller(
     let params = Params {
         token: &token.0,
         jwt_encryption_key: &config.jwt.encryption_key,
-        new_login: &body.login,
-        new_password: &body.password
+        service_id: &path.service_id,
+        resource_type: &path.resource_type,
+        resource_id: &path.resource_id,
+        permission_name: &path.permission_name
     };
 
-    match UseCase::update(params, &mut *database_client).await {
+    match UseCase::check_resource_permission(params, &mut *database_client).await {
         Ok(token) => HttpResponse::Ok()
             .json(json!({ "token": token })),
         
         Err(error) => match error {
             Error::InvalidToken => HttpResponse::BadRequest()
                 .json(json!({ "msg": "invalid_token" })),
+
+            Error::PermissionNotFound => HttpResponse::NotFound()
+                .json(json!({ "msg": "permission_not_found" })),
         }
     }
 }
 
 #[derive(serde::Deserialize)]
-struct Body {
-    login: Option<String>,
-    password: Option<String>
+struct Path {
+    service_id: String,
+    resource_type: String,
+    resource_id: i32,
+    permission_name: String
 }

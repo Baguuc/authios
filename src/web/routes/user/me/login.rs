@@ -1,4 +1,4 @@
-#[actix_web::post("/me")]
+#[actix_web::post("")]
 pub async fn controller(
     body: actix_web::web::Json<Body>,
     config: actix_web::web::Data<crate::config::Config>,
