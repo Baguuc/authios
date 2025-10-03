@@ -1,3 +1,18 @@
+/// extracts the root password from HttpRequest with the extractor pattern.
+/// Example:
+/// ```rust
+/// #[get("/permissions/resource")]
+/// async fn controller(
+///     root_password: RootPasswordExtractor,
+///     // ...
+/// ) -> HttpResponse {
+///     // this is how to access the value of extracted root password
+///     let root_password = root_password.0; 
+///     
+///     // ...
+/// }
+/// ```
+///
 pub struct RootPasswordExtractor(pub String);
 
 impl actix_web::FromRequest for RootPasswordExtractor {

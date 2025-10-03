@@ -1,3 +1,18 @@
+/// extracts the JWT session token from HttpRequest with the extractor pattern.
+/// Example:
+/// ```rust
+/// #[get("/permissions/resource")]
+/// async fn controller(
+///     token: TokenExtractor,
+///     // ...
+/// ) -> HttpResponse {
+///     // this is how to access the value of extracted token
+///     let token = token.0; 
+///     
+///     // ...
+/// }
+/// ```
+///
 pub struct TokenExtractor(pub String);
 
 impl actix_web::FromRequest for TokenExtractor {
