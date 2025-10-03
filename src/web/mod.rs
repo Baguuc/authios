@@ -12,6 +12,7 @@ pub async fn run_api(config: crate::config::Config) -> Result<(), crate::errors:
             .app_data(actix_web::web::Data::new(pool.clone()))
             .app_data(actix_web::web::Data::new(config.clone()))
             .service(routes::user::scope())
+            .service(routes::permission::scope())
     });
     server.bind(("0.0.0.0", port))?
         .run()
