@@ -5,21 +5,21 @@ impl UserUseCase {
     /// retrieve user data from JWT session token
     ///
     /// ### Arguments
-    /// 1. params: [crate::params::use_case::UserRetrieveFromTokenParams] - params needed for the
+    /// 1. params: [crate::params::use_case::UserInfoParams] - params needed for the
     ///    operation
     /// 2. database_client: [sqlx::Acquire] - the sqlx client connected to
     ///    postgres database
     ///
     /// ### Return type
     /// Returns result with either a fetched user or error of type
-    /// [crate::errors::use_case::UserRetrieveFromTokenError] inside.
+    /// [crate::errors::use_case::UserInfoError] inside.
     ///
-    pub async fn retrieve_from_token<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
-        params: crate::params::use_case::UserRetrieveFromTokenParams<'a>,
+    pub async fn info<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
+        params: crate::params::use_case::UserInfoParams<'a>,
         database_client: A
-    ) -> Result<crate::models::User, crate::errors::use_case::UserRetrieveFromTokenError> {
+    ) -> Result<crate::models::User, crate::errors::use_case::UserInfoError> {
         use crate::utils::jwt_token::get_claims;
-        use crate::errors::use_case::UserRetrieveFromTokenError as Error;
+        use crate::errors::use_case::UserInfoError as Error;
         use crate::repositories::UserRepository;
         use crate::params::repository::UserRetrieveParams;
         

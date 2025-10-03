@@ -1,10 +1,11 @@
 /// Represents any of the errors that can happen during retrieving user data from JWT token
 /// 
 #[derive(thiserror::Error, Debug)]
-pub enum UserRetrieveFromTokenError {
+pub enum UserInfoError {
     /// the token is invalid meaning is in a wrong format or points to a user that doesn't exist
     ///
-    #[error("INVALID_TOKEN")] InvalidToken
+    #[error("INVALID_TOKEN")]
+    InvalidToken
 }
 
 /// Represents any of the errors that can happen during logging in

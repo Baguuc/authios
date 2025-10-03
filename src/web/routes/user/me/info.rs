@@ -6,8 +6,8 @@ pub async fn controller(
 ) -> actix_web::HttpResponse {
     use serde_json::json;
     use actix_web::HttpResponse;
-    use crate::params::use_case::UserRetrieveFromTokenParams as Params;
-    use crate::errors::use_case::UserRetrieveFromTokenError as Error;
+    use crate::params::use_case::UserInfoParams as Params;
+    use crate::errors::use_case::UserInfoError as Error;
     use crate::use_cases::UserUseCase as UseCase;
 
     let mut database_client = database_client
@@ -21,7 +21,7 @@ pub async fn controller(
         jwt_encryption_key: &config.jwt.encryption_key
     };
 
-    match UseCase::retrieve_from_token(params, &mut *database_client).await {
+    match UseCase::info(params, &mut *database_client).await {
         Ok(token) => HttpResponse::Ok()
             .json(json!({ "token": token })),
         

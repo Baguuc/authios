@@ -1,6 +1,6 @@
 /// represents params needed to retrieve user's data from JWT session token
 ///
-pub struct UserRetrieveFromTokenParams<'p> {
+pub struct UserInfoParams<'p> {
     /// JWT token provided by the user
     ///
     pub token: &'p String,

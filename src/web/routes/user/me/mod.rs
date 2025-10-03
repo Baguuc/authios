@@ -1,4 +1,4 @@
-mod retrieve_from_token;
+mod info;
 mod login;
 mod update;
 mod list_resource_permissions;
@@ -6,7 +6,7 @@ mod check_resource_permission;
 
 pub fn scope() -> actix_web::Scope {
     actix_web::web::scope("/me")
-        .service(retrieve_from_token::controller)
+        .service(info::controller)
         .service(login::controller)
         .service(update::controller)
         .service(list_resource_permissions::controller)
