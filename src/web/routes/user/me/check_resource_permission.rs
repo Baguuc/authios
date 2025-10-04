@@ -27,15 +27,15 @@ pub async fn controller(
     };
 
     match UseCase::check_resource_permission(params, &mut *database_client).await {
-        Ok(token) => HttpResponse::Ok()
-            .json(json!({ "token": token })),
+        Ok(_) => HttpResponse::Ok()
+            .json(json!({ "code": "ok" })),
         
         Err(error) => match error {
             Error::InvalidToken => HttpResponse::BadRequest()
-                .json(json!({ "msg": "invalid_token" })),
+                .json(json!({ "code": "invalid_token" })),
 
             Error::PermissionNotFound => HttpResponse::NotFound()
-                .json(json!({ "msg": "permission_not_found" })),
+                .json(json!({ "code": "permission_not_found" })),
         }
     }
 }

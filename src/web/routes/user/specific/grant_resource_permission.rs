@@ -1,4 +1,4 @@
-#[actix_web::post("/{user_id}/permissions/resource")]
+#[actix_web::post("/permissions/resource")]
 pub async fn controller(
     root_password: crate::web::extractors::RootPasswordExtractor,
     path: actix_web::web::Path<Path>,
@@ -29,21 +29,21 @@ pub async fn controller(
     };
 
     match UseCase::grant_resource_permission(params, &mut *database_client).await {
-        Ok(token) => HttpResponse::Ok()
-            .json(json!({ "token": token })),
+        Ok(_) => HttpResponse::Ok()
+            .json(json!({ "code": "ok" })),
         
         Err(error) => match error {
             Error::UserNotFound => HttpResponse::NotFound()
-                .json(json!({ "msg": "user_not_found" })),
+                .json(json!({ "code": "user_not_found" })),
             
             Error::PermissionNotFound => HttpResponse::NotFound()
-                .json(json!({ "msg": "permission_not_found" })),
+                .json(json!({ "code": "permission_not_found" })),
             
             Error::AlreadyAdded => HttpResponse::Conflict()
-                .json(json!({ "msg": "already_added" })),
+                .json(json!({ "code": "already_added" })),
             
             Error::Unauthorized => HttpResponse::Unauthorized()
-                .json(json!({ "msg": "wrong_password" }))
+                .json(json!({ "code": "wrong_password" }))
         }
     }
 }

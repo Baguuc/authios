@@ -1,8 +1,8 @@
-mod grant_resource_permission;
-mod revoke_resource_permission;
+pub mod grant_resource_permission;
+pub mod revoke_resource_permission;
 
 pub fn scope() -> actix_web::Scope {
-    actix_web::web::scope("/users")
+    actix_web::web::scope("/{user_id}")
         .service(grant_resource_permission::controller)
         .service(revoke_resource_permission::controller)
 }

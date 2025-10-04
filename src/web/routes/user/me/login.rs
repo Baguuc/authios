@@ -28,10 +28,10 @@ pub async fn controller(
         
         Err(error) => match error {
             Error::NotFound => HttpResponse::NotFound()
-                .json(json!({ "msg": "not_found" })),
+                .json(json!({ "code": "not_found" })),
 
             Error::WrongPassword => HttpResponse::Unauthorized()
-                .json(json!({ "msg": "wrong_password" })),
+                .json(json!({ "code": "wrong_password" })),
         }
     }
 }

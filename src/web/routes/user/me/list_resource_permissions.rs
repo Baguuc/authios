@@ -25,12 +25,12 @@ pub async fn controller(
     };
 
     match UseCase::list_resource_permissions(params, &mut *database_client).await {
-        Ok(token) => HttpResponse::Ok()
-            .json(json!({ "token": token })),
+        Ok(list) => HttpResponse::Ok()
+            .json(json!({ "resource_permissions": list })),
         
         Err(error) => match error {
             Error::InvalidToken => HttpResponse::BadRequest()
-                .json(json!({ "msg": "invalid_token" })),
+                .json(json!({ "code": "invalid_token" })),
         }
     }
 }

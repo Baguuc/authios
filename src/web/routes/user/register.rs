@@ -22,11 +22,11 @@ pub async fn controller(
 
     match UseCase::register(params, &mut *database_client).await {
         Ok(_) => HttpResponse::Created()
-            .json(json!({ "msg": "ok" })),
+            .json(json!({ "code": "ok" })),
 
         Err(error) => match error {
             Error::AlreadyExists => HttpResponse::Conflict()
-                .json(serde_json::json!({ "msg": "already_exists" }))
+                .json(serde_json::json!({ "code": "already_exists" }))
         }
     }
 }

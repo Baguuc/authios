@@ -27,14 +27,14 @@ pub async fn controller(
 
     match UseCase::delete(params, &mut *database_client).await {
         Ok(_) => HttpResponse::Ok()
-            .json(json!({ "msg": "ok" })),
+            .json(json!({ "code": "ok" })),
 
         Err(error) => match error {
             Error::NotFound => HttpResponse::Conflict()
-                .json(serde_json::json!({ "msg": "not_found" })),
+                .json(serde_json::json!({ "code": "not_found" })),
             
             Error::Unauthorized => HttpResponse::Unauthorized()
-                .json(serde_json::json!({ "msg": "wrong_password" }))
+                .json(serde_json::json!({ "code": "wrong_password" }))
         }
     }
 }

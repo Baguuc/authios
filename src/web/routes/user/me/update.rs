@@ -25,12 +25,12 @@ pub async fn controller(
     };
 
     match UseCase::update(params, &mut *database_client).await {
-        Ok(token) => HttpResponse::Ok()
-            .json(json!({ "token": token })),
+        Ok(_) => HttpResponse::Ok()
+            .json(json!({ "code": "ok" })),
         
         Err(error) => match error {
             Error::InvalidToken => HttpResponse::BadRequest()
-                .json(json!({ "msg": "invalid_token" })),
+                .json(json!({ "code": "invalid_token" })),
         }
     }
 }
