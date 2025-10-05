@@ -6,7 +6,7 @@ pub async fn controller(
     config: actix_web::web::Data<crate::config::Config>,
     database_client: actix_web::web::Data<sqlx::PgPool>
 ) -> actix_web::HttpResponse {
-    use serde_json::{json,Map,Value,Number};
+    use serde_json::json;
     use actix_web::HttpResponse;
     use crate::params::use_case::UserListResourcePermissionsParams as Params;
     use crate::errors::use_case::UserListResourcePermissionsError as Error;
@@ -28,65 +28,33 @@ pub async fn controller(
 
     match UseCase::list_resource_permissions(params, &mut *database_client).await {
         Ok(data) => {
-            let mut data_map = Map::new();
-
-            // there is 5 entries max so we don't worry about performance
+            // there is 5 entries max so we don't worry about performance and time of loop
+            // execution
             let permissions = data.permissions.iter()
-                .map(|row| {
-                    let mut data_map = Map::new();
-                    
-                    if query.get_service_id.unwrap_or(true) {
-                        data_map.insert(String::from("service_id"), Value::String(row.service_id.clone()));
+                .map(|e| {
+                    ResponseUserResourcePermission {         
+                        service_id: if query.get_service_id.unwrap_or(true) 
+                            { Some(e.service_id.clone()) } else { None },
+                        resource_type: if query.get_resource_type.unwrap_or(true) 
+                            { Some(e.resource_type.clone()) } else { None },
+                        resource_id: if query.get_resource_id.unwrap_or(true)
+                            { Some(e.resource_id) } else { None },
+                        permissions: if query.get_permission_names.unwrap_or(true)
+                            { Some(e.permissions.clone()) } else { None },
                     }
-                    
-                    if query.get_resource_type.unwrap_or(true) {
-                        data_map.insert(
-                            String::from("resource_type"),
-                            Value::String(row.resource_type.clone())
-                        );
-                    }
-                    
-                    if query.get_resource_id.unwrap_or(true) {
-                        data_map.insert(
-                            String::from("resource_id"),
-                            Value::Number(Number::from(row.resource_id))
-                        );
-                    }
-                    
-                    if query.get_permission_names.unwrap_or(true) {
-                        data_map.insert(
-                            String::from("permissions"),
-                            Value::Array(
-                                row.permissions.iter().map(|v| Value::String(v.to_string())).collect::<Vec<Value>>()
-                            )
-                        );
-                    }
-
-                    Value::Object(data_map)
                 })
-                .collect::<Vec<Value>>();
-            
-            data_map.insert(
-                String::from("permissions"),
-                Value::Array(permissions)
-            );
-            
-            if query.get_page_number.unwrap_or(true) {
-                data_map.insert(
-                    String::from("page_number"),
-                    Value::Number(Number::from(data.page_number))
-                );
-            }
+                .collect::<Vec<ResponseUserResourcePermission>>();
 
-            if query.get_total_page_count.unwrap_or(true) {
-                data_map.insert(
-                    String::from("total_page_count"),
-                    Value::Number(Number::from(data.total_page_count))
-                );
-            }
+            let response = Response {
+                page_number: if query.get_page_number.unwrap_or(true)
+                    { Some(data.page_number) } else { None },
+                total_page_count: if query.get_total_page_count.unwrap_or(true)
+                    { Some(data.total_page_count) } else { None },
+                permissions
+            };
 
             HttpResponse::Ok()
-                .json(json!(data_map))
+                .json(json!(response))
         },
         
         Err(error) => match error {
@@ -94,6 +62,23 @@ pub async fn controller(
                 .json(json!({ "code": "invalid_token" })),
         }
     }
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(serde::Serialize)]
+struct Response {
+    page_number: Option<u32>,
+    total_page_count: Option<u32>,
+    permissions: Vec<ResponseUserResourcePermission>
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(serde::Serialize)]
+struct ResponseUserResourcePermission {
+    service_id: Option<String>,
+    resource_type: Option<String>,
+    resource_id: Option<i32>,
+    permissions: Option<Vec<String>>
 }
 
 #[derive(serde::Deserialize)]

@@ -5,7 +5,7 @@ pub async fn controller(
     config: actix_web::web::Data<crate::config::Config>,
     database_client: actix_web::web::Data<sqlx::PgPool>
 ) -> actix_web::HttpResponse {
-    use serde_json::{json,Map,Value,Number};
+    use serde_json::json;
     use actix_web::HttpResponse;
     use crate::params::use_case::UserInfoParams as Params;
     use crate::errors::use_case::UserInfoError as Error;
@@ -24,22 +24,19 @@ pub async fn controller(
 
     match UseCase::info(params, &mut *database_client).await {
         Ok(user) => {
-            let mut data_map = Map::new();
-
-            if query.get_id.unwrap_or(true) {
-                data_map.insert(String::from("id"), Value::Number(Number::from(user.id)));
-            }
-            
-            if query.get_login.unwrap_or(true) {
-                data_map.insert(String::from("login"), Value::String(user.login));
-            }
-            
-            if query.get_password_hash.unwrap_or(true) {
-                data_map.insert(String::from("password_hash"), Value::String(user.password_hash));
-            }
+            let response = Response {
+                user: ResponseUser {
+                    id: if query.get_id.unwrap_or(true)
+                        { Some(user.id) } else { None },
+                    login: if query.get_login.unwrap_or(true)
+                        { Some(user.login.clone()) } else { None },
+                    password_hash: if query.get_password_hash.unwrap_or(true)
+                        { Some(user.password_hash.clone()) } else { None }
+                }
+            };
 
             HttpResponse::Ok()
-                .json(json!({ "user": data_map }))
+                .json(response)
         },
         
         Err(error) => match error {
@@ -47,6 +44,19 @@ pub async fn controller(
                 .json(json!({ "code": "invalid_token" })),
         }
     }
+}
+
+#[derive(serde::Serialize)]
+struct Response {
+    user: ResponseUser
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(serde::Serialize)]
+struct ResponseUser {
+    id: Option<i32>,
+    login: Option<String>,
+    password_hash: Option<String>
 }
 
 #[derive(serde::Deserialize)]
