@@ -5,11 +5,9 @@ pub async fn controller(
     config: actix_web::web::Data<crate::config::Config>,
     database_client: actix_web::web::Data<sqlx::PgPool>
 ) -> actix_web::HttpResponse {
-    use serde_json::json;
-    use actix_web::HttpResponse;
     use crate::params::use_case::UserCheckResourcePermissionParams as Params;
-    use crate::errors::use_case::UserCheckResourcePermissionError as Error;
     use crate::use_cases::UserUseCase as UseCase;
+    use crate::web::responses::UserCheckResourcePermissionResponse as Response;
 
     let mut database_client = database_client
         .into_inner()
@@ -26,18 +24,11 @@ pub async fn controller(
         permission_name: &path.permission_name
     };
 
-    match UseCase::check_resource_permission(params, &mut *database_client).await {
-        Ok(_) => HttpResponse::Ok()
-            .json(json!({ "code": "ok" })),
-        
-        Err(error) => match error {
-            Error::InvalidToken => HttpResponse::BadRequest()
-                .json(json!({ "code": "invalid_token" })),
+    let response: Response = UseCase::check_resource_permission(params, &mut *database_client)
+        .await
+        .into();
 
-            Error::PermissionNotFound => HttpResponse::NotFound()
-                .json(json!({ "code": "permission_not_found" })),
-        }
-    }
+    response.into()
 }
 
 #[derive(serde::Deserialize)]

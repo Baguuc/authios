@@ -1,5 +1,6 @@
 pub mod routes;
 pub mod extractors;
+pub mod responses;
 
 pub async fn run_api(config: crate::config::Config) -> Result<(), crate::errors::web::ServerRunError> {
     use actix_web::web::{

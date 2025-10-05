@@ -5,11 +5,9 @@ pub async fn controller(
     database_client: actix_web::web::Data<sqlx::PgPool>,
     config: actix_web::web::Data<crate::config::Config>
 ) -> actix_web::HttpResponse {
-    use serde_json::json;
-    use actix_web::HttpResponse;
     use crate::params::use_case::ResourcePermissionCreateParams as Params;
-    use crate::errors::use_case::ResourcePermissionCreateError as Error;
     use crate::use_cases::ResourcePermissionUseCase as UseCase;
+    use crate::web::responses::ResourcePermissionCreateResponse as Response;
 
     let mut database_client = database_client
         .into_inner()
@@ -25,18 +23,11 @@ pub async fn controller(
         root_password: &config.root.password
     };
 
-    match UseCase::create(params, &mut *database_client).await {
-        Ok(_) => HttpResponse::Created()
-            .json(json!({ "code": "ok" })),
+    let response: Response = UseCase::create(params, &mut *database_client)
+        .await
+        .into();
 
-        Err(error) => match error {
-            Error::AlreadyExists => HttpResponse::Conflict()
-                .json(serde_json::json!({ "code": "already_exists" })),
-            
-            Error::Unauthorized => HttpResponse::Unauthorized()
-                .json(serde_json::json!({ "code": "wrong_password" }))
-        }
-    }
+    response.into()
 }
 
 #[derive(serde::Deserialize)]

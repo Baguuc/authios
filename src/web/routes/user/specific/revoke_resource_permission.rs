@@ -5,11 +5,9 @@ pub async fn controller(
     config: actix_web::web::Data<crate::config::Config>,
     database_client: actix_web::web::Data<sqlx::PgPool>
 ) -> actix_web::HttpResponse {
-    use serde_json::json;
-    use actix_web::HttpResponse;
     use crate::params::use_case::UserRevokeResourcePermissionParams as Params;
-    use crate::errors::use_case::UserRevokeResourcePermissionError as Error;
     use crate::use_cases::UserUseCase as UseCase;
+    use crate::web::responses::UserRevokeResourcePermissionResponse as Response;
 
     let mut database_client = database_client
         .into_inner()
@@ -27,24 +25,11 @@ pub async fn controller(
         root_password: &config.root.password
     };
 
-    match UseCase::revoke_resource_permission(params, &mut *database_client).await {
-        Ok(_) => HttpResponse::Ok()
-            .json(json!({ "code": "ok" })),
-        
-        Err(error) => match error {
-            Error::UserNotFound => HttpResponse::NotFound()
-                .json(json!({ "code": "user_not_found" })),
-            
-            Error::PermissionNotFound => HttpResponse::NotFound()
-                .json(json!({ "code": "permission_not_found" })),
-            
-            Error::NotAddedYet => HttpResponse::Conflict()
-                .json(json!({ "code": "not_added_yet" })),
-            
-            Error::Unauthorized => HttpResponse::Unauthorized()
-                .json(json!({ "code": "wrong_password" }))
-        }
-    }
+    let response: Response = UseCase::revoke_resource_permission(params, &mut *database_client)
+        .await
+        .into();
+    
+    response.into()
 }
 
 #[derive(serde::Deserialize)]
