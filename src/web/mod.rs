@@ -20,10 +20,10 @@ pub async fn run_api(config: crate::config::Config) -> Result<(), crate::errors:
     let server = actix_web::HttpServer::new(move || {
         actix_web::App::new()
             .app_data(
-                PathConfig::default().error_handler(|_err, _req| PathDeserializeError.into())
+                PathConfig::default().error_handler(|err, _req| PathDeserializeError(err).into())
             )
             .app_data(
-                QueryConfig::default().error_handler(|_err, _req| QueryDeserializeError.into())
+                QueryConfig::default().error_handler(|err, _req| QueryDeserializeError(err).into())
             )
             .app_data(
                 JsonConfig::default().error_handler(|err, _req| JsonDeserializeError(err).into())

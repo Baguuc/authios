@@ -2,11 +2,11 @@
 /// actix_web one.
 ///
 #[derive(Debug)]
-pub struct QueryDeserializeError;
+pub struct QueryDeserializeError(pub actix_web::error::QueryPayloadError);
 
 impl std::fmt::Display for QueryDeserializeError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
-        write!(f, "invalid_query_data")
+        write!(f, "invalid_query_data:{}", self.0.to_string())
     }
 }
 
