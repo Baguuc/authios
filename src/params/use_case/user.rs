@@ -91,6 +91,10 @@ pub struct UserListResourcePermissionsParams<'p> {
     /// type of the resource to filter by
     ///
     pub resource_type: &'p String,
+    /// number of the page for pagination.
+    /// the page size is 5.
+    ///
+    pub page_number: &'p u32,
 }
 
 /// represents params needed to check if user is permitted to operation on resource

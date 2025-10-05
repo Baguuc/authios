@@ -269,10 +269,14 @@ impl UserUseCase {
     pub async fn list_resource_permissions<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: crate::params::use_case::UserListResourcePermissionsParams<'a>,
         database_client: A
-    ) -> Result<Vec<crate::models::UserResourcePermission>, crate::errors::use_case::UserListResourcePermissionsError> {
+    ) -> Result<crate::models::UserResourcePermissionPage, crate::errors::use_case::UserListResourcePermissionsError> {
         use crate::utils::jwt_token::get_claims;
+        use crate::models::UserResourcePermissionPage;
         use crate::repositories::UserResourcePermissionRepository;
-        use crate::params::repository::UserResourcePermissionListParams as ListParams;
+        use crate::params::repository::{
+            UserResourcePermissionListParams as ListParams,
+            UserResourcePermissionGetPageCountParams as GetCountParams
+        };
         use crate::errors::use_case::UserListResourcePermissionsError as Error;
 
         let mut database_client = database_client.acquire()
@@ -283,11 +287,22 @@ impl UserUseCase {
         let user_id = claims.sub;
 
         let permissions = UserResourcePermissionRepository::list(
-            ListParams { user_id: &user_id, service_id: params.service_id, resource_type: params.resource_type },
+            ListParams { user_id: &user_id, service_id: params.service_id, resource_type: params.resource_type, page_number: &Some(params.page_number.clone()) },
             &mut *database_client
         ).await;
+
+        let total_page_count = UserResourcePermissionRepository::get_page_count(
+            GetCountParams { user_id: &user_id, service_id: params.service_id, resource_type: params.resource_type },
+            &mut *database_client
+        ).await;
+
+        let page = UserResourcePermissionPage {
+            page_number: params.page_number.clone(),
+            total_page_count,
+            permissions
+        };
         
-        Ok(permissions)
+        Ok(page)
     }
     
     /// ### Description

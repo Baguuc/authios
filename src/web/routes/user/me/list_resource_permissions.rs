@@ -2,6 +2,7 @@
 pub async fn controller(
     token: crate::web::extractors::TokenExtractor,
     path: actix_web::web::Path<Path>,
+    query: actix_web::web::Query<Query>,
     config: actix_web::web::Data<crate::config::Config>,
     database_client: actix_web::web::Data<sqlx::PgPool>
 ) -> actix_web::HttpResponse {
@@ -21,12 +22,13 @@ pub async fn controller(
         token: &token.0,
         jwt_encryption_key: &config.jwt.encryption_key,
         service_id: &path.service_id,
-        resource_type: &path.resource_type
+        resource_type: &path.resource_type,
+        page_number: &query.page_number.unwrap_or(0)
     };
 
     match UseCase::list_resource_permissions(params, &mut *database_client).await {
         Ok(list) => HttpResponse::Ok()
-            .json(json!({ "resource_permissions": list })),
+            .json(json!(list)),
         
         Err(error) => match error {
             Error::InvalidToken => HttpResponse::BadRequest()
@@ -39,4 +41,9 @@ pub async fn controller(
 struct Path {
     service_id: String,
     resource_type: String
+}
+
+#[derive(serde::Deserialize)]
+struct Query {
+    page_number: Option<u32>
 }
