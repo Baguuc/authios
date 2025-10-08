@@ -6,9 +6,9 @@ pub enum UserGrantResourcePermissionResponse {
     Unauthorized
 }
 
-impl From<Result<(), crate::errors::use_case::UserGrantResourcePermissionError>> for UserGrantResourcePermissionResponse {
-    fn from(result: Result<(), crate::errors::use_case::UserGrantResourcePermissionError>) -> Self {
-        use crate::errors::use_case::UserGrantResourcePermissionError as Error;
+impl From<Result<(), crate::errors::use_case::AdminGrantUserResourcePermissionError>> for UserGrantResourcePermissionResponse {
+    fn from(result: Result<(), crate::errors::use_case::AdminGrantUserResourcePermissionError>) -> Self {
+        use crate::errors::use_case::AdminGrantUserResourcePermissionError as Error;
 
         match result {
             Ok(_) => Self::Ok,

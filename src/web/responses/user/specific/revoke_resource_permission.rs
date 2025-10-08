@@ -6,9 +6,9 @@ pub enum UserRevokeResourcePermissionResponse {
     Unauthorized
 }
 
-impl From<Result<(), crate::errors::use_case::UserRevokeResourcePermissionError>> for UserRevokeResourcePermissionResponse {
-    fn from(result: Result<(), crate::errors::use_case::UserRevokeResourcePermissionError>) -> Self {
-        use crate::errors::use_case::UserRevokeResourcePermissionError as Error;
+impl From<Result<(), crate::errors::use_case::AdminRevokeUserResourcePermissionError>> for UserRevokeResourcePermissionResponse {
+    fn from(result: Result<(), crate::errors::use_case::AdminRevokeUserResourcePermissionError>) -> Self {
+        use crate::errors::use_case::AdminRevokeUserResourcePermissionError as Error;
 
         match result {
             Ok(_) => Self::Ok,
