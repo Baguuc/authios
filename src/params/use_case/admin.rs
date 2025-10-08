@@ -97,3 +97,27 @@ pub struct AdminUpdateUserParams<'p> {
     ///
     pub new_password: &'p Option<String>
 }
+
+/// represents params needed to list user's resource permissions as admin
+///
+pub struct AdminListUserResourcePermissionsParams<'p> {
+    /// id of the user
+    ///
+    pub id: &'p i32,
+    /// password provided by user
+    ///
+    pub password: &'p String,
+    /// root password from the config
+    ///
+    pub root_password: &'p String,
+    /// id of the service to filter by
+    ///
+    pub service_id: &'p String,
+    /// type of the resource to filter by
+    ///
+    pub resource_type: &'p String,
+    /// number of the page for pagination.
+    /// the page size is 5.
+    ///
+    pub page_number: &'p u32,
+}

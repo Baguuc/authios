@@ -1,6 +1,58 @@
 pub struct AdminUseCase;
 
-impl AdminUseCase { 
+impl AdminUseCase {
+    /// ### Description
+    /// list user's resource permissions attached to specified service and resource type.
+    ///
+    /// ### Arguments
+    /// 1. params: [crate::params::use_case::AdminListUserResourcePermissionsParams] - params needed for the
+    ///    operation
+    /// 2. database_client: [sqlx::Acquire] - the sqlx client connected to
+    ///    postgres database
+    ///
+    /// ### Return type
+    /// Returns result with either the list of fetched permissions or error of type
+    /// [crate::errors::use_case::AdminListUserResourcePermissionsError] inside.
+    /// 
+    pub async fn list_user_resource_permissions<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
+        params: crate::params::use_case::AdminListUserResourcePermissionsParams<'a>,
+        database_client: A
+    ) -> Result<crate::models::UserResourcePermissionPage, crate::errors::use_case::AdminListUserResourcePermissionsError> {
+        use crate::models::UserResourcePermissionPage;
+        use crate::repositories::UserResourcePermissionRepository;
+        use crate::params::repository::{
+            UserResourcePermissionListParams as ListParams,
+            UserResourcePermissionGetPageCountParams as GetCountParams
+        };
+        use crate::errors::use_case::AdminListUserResourcePermissionsError as Error;
+
+        if params.password != params.root_password {
+            return Err(Error::Unauthorized);
+        }
+
+        let mut database_client = database_client.acquire()
+            .await
+            .unwrap();
+
+        let permissions = UserResourcePermissionRepository::list(
+            ListParams { user_id: params.id, service_id: params.service_id, resource_type: params.resource_type, page_number: &Some(params.page_number.clone()) },
+            &mut *database_client
+        ).await;
+
+        let total_page_count = UserResourcePermissionRepository::get_page_count(
+            GetCountParams { user_id: params.id, service_id: params.service_id, resource_type: params.resource_type },
+            &mut *database_client
+        ).await;
+
+        let page = UserResourcePermissionPage {
+            page_number: params.page_number.clone(),
+            total_page_count,
+            permissions
+        };
+        
+        Ok(page)
+    }
+
     /// ### Description
     /// get user info as admin 
     ///

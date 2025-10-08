@@ -83,3 +83,18 @@ pub enum AdminUpdateUserError {
     #[error("UNAUTHORIZED")]
     Unauthorized
 }
+
+/// Represents any of the errors that can happen during listing user's resource permissions as
+/// admin
+/// 
+#[derive(thiserror::Error, Debug)]
+pub enum AdminListUserResourcePermissionsError {
+    /// the user with specified id is not found
+    ///
+    #[error("NOT_FOUND")]
+    NotFound,
+    /// the user sending request is not authorized to do this operation
+    ///
+    #[error("UNAUTHORIZED")]
+    Unauthorized
+}

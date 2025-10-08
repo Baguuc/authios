@@ -213,7 +213,7 @@ impl UserUseCase {
         Ok(new_data)
     }
 
-    /// ### Description
+     /// ### Description
     /// list user's resource permissions attached to specified service and resource type.
     ///
     /// ### Arguments
@@ -264,7 +264,7 @@ impl UserUseCase {
         
         Ok(page)
     }
-    
+
     /// ### Description
     /// check if user is permitted to specified resource with specifed permission.
     ///
@@ -275,7 +275,8 @@ impl UserUseCase {
     ///    postgres database
     ///
     /// ### Return type
-    /// Returns result with either the list of fetched permissions or error of type
+    /// Returns result with either a boolean indicating if user has specified permission or error
+    /// of type
     /// [crate::errors::use_case::UserCheckResourcePermissionError] inside.
     /// 
     pub async fn check_resource_permission<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
