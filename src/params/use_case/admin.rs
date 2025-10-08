@@ -52,6 +52,20 @@ pub struct AdminRevokeUserResourcePermissionParams<'p> {
 
 /// represents params needed to delete a user as admin
 ///
+pub struct AdminGetUserInfoParams<'p> {
+    /// user id
+    ///
+    pub id: &'p i32,
+    /// password provided by the user
+    ///
+    pub password: &'p String,
+    /// root password from the config
+    ///
+    pub root_password: &'p String
+}
+
+/// represents params needed to delete a user as admin
+///
 pub struct AdminDeleteUserParams<'p> {
     /// user id
     ///

@@ -42,6 +42,20 @@ pub enum AdminRevokeUserResourcePermissionError {
     NotAddedYet
 }
 
+/// Represents any of the errors that can happen during getting user info as admin
+/// 
+#[derive(thiserror::Error, Debug)]
+pub enum AdminGetUserInfoError {
+    /// the user with provided login not exist
+    ///
+    #[error("NOT_FOUND")] 
+    NotFound,
+    /// the password do not match the one in the config
+    ///
+    #[error("UNAUTHORIZED")]
+    Unauthorized
+}
+
 /// Represents any of the errors that can happen during deleting a user as admin
 /// 
 #[derive(thiserror::Error, Debug)]

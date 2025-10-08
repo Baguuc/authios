@@ -1,17 +1,58 @@
 pub struct AdminUseCase;
 
-impl AdminUseCase { /// ### Description
-    /// Grant user with specified id a resource permission matching specified criteria authorizing
-    /// the operation with root password
+impl AdminUseCase { 
+    /// ### Description
+    /// get user info as admin 
     ///
     /// ### Arguments
-    /// 1. params: [crate::params::use_case::UserGrantResourcePermissionParams] - params needed for the
+    /// 1. params: [crate::params::use_case::AdminGetUserInfoParams] - params needed for the
     ///    operation
     /// 2. database_client: [sqlx::Acquire] - the sqlx client connected to
     ///    postgres database
     ///
     /// ### Return type
-    /// Returns result with error of type [crate::errors::use_case::UserGrantResourcePermissionError] inside.
+    /// Returns result with either a unit type value ("()") or error of type
+    /// [crate::errors::use_case::AdminGetUserInfoError] inside.
+    /// 
+    pub async fn get_user_info<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
+        params: crate::params::use_case::AdminGetUserInfoParams<'a>,
+        database_client: A
+    ) -> Result<crate::models::User, crate::errors::use_case::AdminGetUserInfoError> {
+        use crate::repositories::UserRepository;
+        use crate::params::repository::UserRetrieveParams;
+        use crate::errors::use_case::AdminGetUserInfoError as Error;
+
+        let mut database_client = database_client.acquire()
+            .await
+            .unwrap();
+
+        if params.password != params.root_password {
+            return Err(Error::Unauthorized);
+        }
+        
+        let user = UserRepository::retrieve(
+            UserRetrieveParams { id: params.id },
+            &mut *database_client
+        )
+            .await
+            .ok_or(Error::NotFound)?;
+        
+
+        Ok(user)
+    }
+
+    /// ### Description
+    /// Grant user with specified id a resource permission matching specified criteria authorizing
+    /// the operation with root password
+    ///
+    /// ### Arguments
+    /// 1. params: [crate::params::use_case::AdminGrantUserResourcePermissionParams] - params needed for the
+    ///    operation
+    /// 2. database_client: [sqlx::Acquire] - the sqlx client connected to
+    ///    postgres database
+    ///
+    /// ### Return type
+    /// Returns result with error of type [crate::errors::use_case::AdminGrantUserResourcePermissionError] inside.
     /// 
     pub async fn grant_resource_permission<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: crate::params::use_case::AdminGrantUserResourcePermissionParams<'a>,
@@ -77,13 +118,14 @@ impl AdminUseCase { /// ### Description
     /// the operation with root password
     ///
     /// ### Arguments
-    /// 1. params: [crate::params::use_case::UserRevokeResourcePermissionParams] - params needed for the
+    /// 1. params: [crate::params::use_case::AdminRevokeUserResourcePermissionParams] - params needed for the
     ///    operation
     /// 2. database_client: [sqlx::Acquire] - the sqlx client connected to
     ///    postgres database
     ///
     /// ### Return type
-    /// Returns result with error of type [crate::errors::use_case::UserRevokeResourcePermissionError] inside.
+    /// Returns result with error of type
+    /// [crate::errors::use_case::AdminRevokeUserResourcePermissionError] inside.
     /// 
     pub async fn revoke_resource_permission<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
         params: crate::params::use_case::AdminRevokeUserResourcePermissionParams<'a>,
