@@ -77,3 +77,23 @@ pub struct AdminDeleteUserParams<'p> {
     ///
     pub root_password: &'p String
 }
+
+/// represents params needed to delete a user as admin
+///
+pub struct AdminUpdateUserParams<'p> {
+    /// user id
+    ///
+    pub id: &'p i32,
+    /// password provided by the user
+    ///
+    pub password: &'p String,
+    /// root password from the config
+    ///
+    pub root_password: &'p String,
+    /// new login (no change when None)
+    ///
+    pub new_login: &'p Option<String>,
+    /// new password (no change when None)
+    ///
+    pub new_password: &'p Option<String>
+}

@@ -2,7 +2,7 @@
 /// 
 #[derive(thiserror::Error, Debug)]
 pub enum AdminGrantUserResourcePermissionError {
-    /// the token is invalid, meaning is in a wrong format or pointing to null user
+    /// the permission to grant is not found
     ///
     #[error("PERMISSION_NOT_FOUND")]
     PermissionNotFound,
@@ -24,7 +24,7 @@ pub enum AdminGrantUserResourcePermissionError {
 /// 
 #[derive(thiserror::Error, Debug)]
 pub enum AdminRevokeUserResourcePermissionError {
-    /// the token is invalid, meaning is in a wrong format or pointing to null user
+    /// the permission to revoke is not found
     ///
     #[error("PERMISSION_NOT_FOUND")]
     PermissionNotFound,
@@ -46,7 +46,7 @@ pub enum AdminRevokeUserResourcePermissionError {
 /// 
 #[derive(thiserror::Error, Debug)]
 pub enum AdminGetUserInfoError {
-    /// the user with provided login not exist
+    /// the user with provided id not exist
     ///
     #[error("NOT_FOUND")] 
     NotFound,
@@ -60,7 +60,21 @@ pub enum AdminGetUserInfoError {
 /// 
 #[derive(thiserror::Error, Debug)]
 pub enum AdminDeleteUserError {
-    /// the user with provided login not exist
+    /// the user with provided id not exist
+    ///
+    #[error("NOT_FOUND")] 
+    NotFound,
+    /// the password do not match the one in the config
+    ///
+    #[error("UNAUTHORIZED")]
+    Unauthorized
+}
+
+/// Represents any of the errors that can happen during updating user data as admin
+/// 
+#[derive(thiserror::Error, Debug)]
+pub enum AdminUpdateUserError {
+    /// the user with provided id not exist
     ///
     #[error("NOT_FOUND")] 
     NotFound,

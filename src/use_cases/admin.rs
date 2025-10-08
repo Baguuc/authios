@@ -224,4 +224,61 @@ impl AdminUseCase {
 
         Ok(())
     }
+    
+    /// ### Description
+    /// update user's data as admin
+    ///
+    /// ### Arguments
+    /// 1. params: [crate::params::use_case::AdminUpdateUserParams] - params needed for the
+    ///    operation
+    /// 2. database_client: [sqlx::Acquire] - the sqlx client connected to
+    ///    postgres database
+    ///
+    /// ### Return type
+    /// Returns result with either the updated user data or error of type
+    /// [crate::errors::use_case::AdminUpdateUserError] inside.
+    /// 
+    pub async fn update_user<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
+        params: crate::params::use_case::AdminUpdateUserParams<'a>,
+        database_client: A
+    ) -> Result<crate::models::User, crate::errors::use_case::AdminUpdateUserError> {
+        use crate::utils::password_hash::hash_password;
+        use crate::repositories::UserRepository;
+        use crate::params::repository::{
+            UserUpdateParams,
+            UserRetrieveParams
+        };
+        use crate::models::User;
+        use crate::errors::use_case::AdminUpdateUserError as Error;
+
+        if params.password != params.root_password {
+            return Err(Error::Unauthorized);
+        }
+        
+        let mut database_client = database_client.acquire()
+            .await
+            .unwrap();
+
+        let original_data = UserRepository::retrieve(UserRetrieveParams { id: &params.id }, &mut *database_client)
+            .await
+            .ok_or(Error::NotFound)?;
+
+        let new_login = if let Some(login) = params.new_login 
+            { login } else { &original_data.login };
+
+        let new_password_hash = if let Some(password) = params.new_password
+            { hash_password(&password).unwrap() } else { original_data.password_hash };
+
+        UserRepository::update(UserUpdateParams { id: params.id, login: &new_login, password_hash: &new_password_hash }, &mut *database_client)
+            .await
+            .ok_or(Error::NotFound)?;
+
+        let new_data = User {
+            id: original_data.id,
+            login: new_login.clone(),
+            password_hash: new_password_hash
+        };
+
+        Ok(new_data)
+    }
 }
