@@ -232,10 +232,14 @@ impl UserUseCase {
     ) -> Result<crate::models::UserResourcePermissionPage, crate::errors::use_case::UserListResourcePermissionsError> {
         use crate::utils::jwt_token::get_claims;
         use crate::models::UserResourcePermissionPage;
-        use crate::repositories::UserResourcePermissionRepository;
+        use crate::repositories::{
+            UserResourcePermissionRepository,
+            UserRepository
+        };
         use crate::params::repository::{
             UserResourcePermissionListParams as ListParams,
-            UserResourcePermissionGetPageCountParams as GetCountParams
+            UserResourcePermissionGetPageCountParams as GetCountParams,
+            UserRetrieveParams
         };
         use crate::errors::use_case::UserListResourcePermissionsError as Error;
 
@@ -245,6 +249,16 @@ impl UserUseCase {
         
         let claims = get_claims(&params.token, &params.jwt_encryption_key).map_err(|_| Error::InvalidToken)?;
         let user_id = claims.sub;
+        
+        // check if user exist
+        let _ = UserRepository::retrieve(
+            UserRetrieveParams {
+                id: &user_id
+            },
+            &mut *database_client
+        )
+            .await
+            .ok_or(Error::InvalidToken)?;
 
         let permissions = UserResourcePermissionRepository::list(
             ListParams { user_id: &user_id, service_id: params.service_id, resource_type: params.resource_type, page_number: &Some(params.page_number.clone()) },
