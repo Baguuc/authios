@@ -71,7 +71,7 @@ pub enum UserCheckResourcePermissionError {
     ///
     #[error("INVALID_TOKEN")]
     InvalidToken,
-    /// the token is invalid, meaning is in a wrong format or pointing to null user
+    /// the permission to check for is not found
     ///
     #[error("PERMISSION_NOT_FOUND")]
     PermissionNotFound

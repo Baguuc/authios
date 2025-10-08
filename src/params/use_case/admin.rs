@@ -121,3 +121,29 @@ pub struct AdminListUserResourcePermissionsParams<'p> {
     ///
     pub page_number: &'p u32,
 }
+
+/// represents params needed to check user's permission as admin
+///
+pub struct AdminCheckUserResourcePermissionParams<'p> {
+    /// id of the user to check permission of
+    ///
+    pub id: &'p i32,
+    /// password provided by the user
+    ///
+    pub password: &'p String,
+    /// root password specified in the config
+    ///
+    pub root_password: &'p String,
+    /// id of the service to filter by
+    ///
+    pub service_id: &'p String,
+    /// type of the resource to filter by
+    ///
+    pub resource_type: &'p String,
+    /// id of the resource to filter by
+    ///
+    pub resource_id: &'p i32,
+    /// name of the permission to check for
+    ///
+    pub permission_name: &'p String
+}

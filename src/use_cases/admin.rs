@@ -19,10 +19,14 @@ impl AdminUseCase {
         database_client: A
     ) -> Result<crate::models::UserResourcePermissionPage, crate::errors::use_case::AdminListUserResourcePermissionsError> {
         use crate::models::UserResourcePermissionPage;
-        use crate::repositories::UserResourcePermissionRepository;
+        use crate::repositories::{
+            UserResourcePermissionRepository,
+            UserRepository
+        };
         use crate::params::repository::{
             UserResourcePermissionListParams as ListParams,
-            UserResourcePermissionGetPageCountParams as GetCountParams
+            UserResourcePermissionGetPageCountParams as GetCountParams,
+            UserRetrieveParams
         };
         use crate::errors::use_case::AdminListUserResourcePermissionsError as Error;
 
@@ -33,6 +37,16 @@ impl AdminUseCase {
         let mut database_client = database_client.acquire()
             .await
             .unwrap();
+        
+        // check if user exist
+        let _ = UserRepository::retrieve(
+            UserRetrieveParams {
+                id: params.id
+            },
+            &mut *database_client
+        )
+            .await
+            .ok_or(Error::NotFound)?;
 
         let permissions = UserResourcePermissionRepository::list(
             ListParams { user_id: params.id, service_id: params.service_id, resource_type: params.resource_type, page_number: &Some(params.page_number.clone()) },
@@ -332,5 +346,78 @@ impl AdminUseCase {
         };
 
         Ok(new_data)
+    }
+    
+    /// ### Description
+    /// check if user has specified permission as admin
+    ///
+    /// ### Arguments
+    /// 1. params: [crate::params::use_case::AdminCheckUserResourcePermissionParams] - params needed for the
+    ///    operation
+    /// 2. database_client: [sqlx::Acquire] - the sqlx client connected to
+    ///    postgres database
+    ///
+    /// ### Return type
+    /// Returns result with either a boolean indicating if user has specified permission or error
+    /// of type
+    /// [crate::errors::use_case::AdminCheckUserResourcePermissionError] inside.
+    /// 
+    pub async fn check_user_resource_permission<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
+        params: crate::params::use_case::AdminCheckUserResourcePermissionParams<'a>,
+        database_client: A
+    ) -> Result<bool, crate::errors::use_case::AdminCheckUserResourcePermissionError> {
+        use crate::repositories::{
+            ResourcePermissionRepository,
+            UserResourcePermissionRepository,
+            UserRepository
+        };
+        use crate::params::repository::{
+            ResourcePermissionRetrieveParams,
+            UserResourcePermissionRetrieveParams,
+            UserRetrieveParams
+        };
+        use crate::errors::use_case::AdminCheckUserResourcePermissionError as Error;
+
+        let mut database_client = database_client.acquire()
+            .await
+            .unwrap();
+
+        if params.password != params.root_password {
+            return Err(Error::Unauthorized);
+        }
+        
+        // check if permission exist
+        let resource_permission = ResourcePermissionRepository::retrieve(
+            ResourcePermissionRetrieveParams { 
+                service_id: params.service_id, 
+                resource_type: params.resource_type, 
+                permission_name: params.permission_name
+            },
+            &mut *database_client
+        )
+            .await
+            .ok_or(Error::PermissionNotFound)?;
+        
+        // check if user exist
+        let _ = UserRepository::retrieve(
+            UserRetrieveParams {
+                id: params.id
+            },
+            &mut *database_client
+        )
+            .await
+            .ok_or(Error::NotFound)?;
+
+        match UserResourcePermissionRepository::retrieve(
+            UserResourcePermissionRetrieveParams { 
+                user_id: params.id, 
+                permission_id: &resource_permission.id,
+                resource_id: params.resource_id
+            },
+            &mut *database_client
+        ).await {
+            Some(_) => Ok(true),
+            None => Ok(false)
+        }
     }
 }

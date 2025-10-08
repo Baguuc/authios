@@ -98,3 +98,21 @@ pub enum AdminListUserResourcePermissionsError {
     #[error("UNAUTHORIZED")]
     Unauthorized
 }
+
+/// Represents any of the errors that can happen during checking user's permission as admin
+/// 
+#[derive(thiserror::Error, Debug)]
+pub enum AdminCheckUserResourcePermissionError {
+    /// the user with specified id is not found
+    ///
+    #[error("NOT_FOUND")]
+    NotFound,
+    /// the permission to check for is not found
+    ///
+    #[error("PERMISSION_NOT_FOUND")]
+    PermissionNotFound,
+    /// the user sending request is not authorized to do this operation
+    ///
+    #[error("UNAUTHORIZED")]
+    Unauthorized
+}
