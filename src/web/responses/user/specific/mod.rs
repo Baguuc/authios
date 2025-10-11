@@ -1,6 +1,9 @@
 mod list_resource_permissions;
 pub use list_resource_permissions::AdminListUserResourcePermissionsResponse;
 
+mod check_resource_permission;
+pub use check_resource_permission::AdminCheckUserResourcePermissionResponse;
+
 mod delete;
 pub use delete::UserDeleteAsAdminResponse;
 
