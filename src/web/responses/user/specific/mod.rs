@@ -1,3 +1,6 @@
+mod delete;
+pub use delete::UserDeleteAsAdminResponse;
+
 mod grant_resource_permission;
 pub use grant_resource_permission::UserGrantResourcePermissionResponse;
 
