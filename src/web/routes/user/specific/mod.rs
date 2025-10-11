@@ -1,3 +1,4 @@
+pub mod update;
 pub mod delete;
 pub mod grant_resource_permission;
 pub mod revoke_resource_permission;
