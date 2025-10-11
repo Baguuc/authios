@@ -7,6 +7,9 @@ pub use info::UserInfoResponse;
 mod update;
 pub use update::UserUpdateResponse;
 
+mod delete;
+pub use delete::UserDeleteResponse;
+
 mod check_resource_permission;
 pub use check_resource_permission::UserCheckResourcePermissionResponse;
 
