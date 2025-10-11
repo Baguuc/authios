@@ -10,4 +10,7 @@ pub use service_permission::ServicePermissionRepository;
 pub mod user_resource_permission;
 pub use user_resource_permission::UserResourcePermissionRepository;
 
+pub mod user_service_permission;
+pub use user_service_permission::UserServicePermissionRepository;
+
 pub const PAGE_SIZE: u8 = 5;
