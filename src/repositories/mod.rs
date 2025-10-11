@@ -4,6 +4,9 @@ pub use user::UserRepository;
 pub mod resource_permission;
 pub use resource_permission::ResourcePermissionRepository;
 
+pub mod service_permission;
+pub use service_permission::ServicePermissionRepository;
+
 pub mod user_resource_permission;
 pub use user_resource_permission::UserResourcePermissionRepository;
 
