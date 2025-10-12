@@ -52,3 +52,17 @@ pub enum LoggedUserCheckResourcePermissionError {
     #[error("PERMISSION_NOT_FOUND")]
     PermissionNotFound
 }
+
+/// Represents any of the errors that can happen during checking if user is permitted to a service
+/// 
+#[derive(thiserror::Error, Debug)]
+pub enum LoggedUserCheckServicePermissionError {
+    /// the token is invalid, meaning it is in a wrong format or pointing to null user
+    ///
+    #[error("INVALID_TOKEN")]
+    InvalidToken,
+    /// the permission to check for is not found
+    ///
+    #[error("PERMISSION_NOT_FOUND")]
+    PermissionNotFound
+}

@@ -147,3 +147,52 @@ pub struct SpecificUserCheckResourcePermissionParams<'p> {
     ///
     pub permission_name: &'p String
 }
+
+/// represents params needed to grant user a service permission
+///
+pub struct SpecificUserGrantServicePermissionParams<'p> {
+    /// id of the user to grant the permission to
+    ///
+    pub user_id: &'p i32,
+    /// id of the service of the permission to grant
+    ///
+    pub service_id: &'p String,
+    /// password provided to the user
+    ///
+    pub password: &'p String,
+    /// root password from config
+    ///
+    pub root_password: &'p String
+}
+
+/// represents params needed to revoke a service permission form user
+///
+pub struct SpecificUserRevokeServicePermissionParams<'p> {
+    /// id of the user to grant the permission to
+    ///
+    pub user_id: &'p i32,
+    /// id of the service of the permission to revoke
+    ///
+    pub service_id: &'p String,
+    /// password provided to the user
+    ///
+    pub password: &'p String,
+    /// root password from config
+    ///
+    pub root_password: &'p String
+}
+
+pub struct SpecificUserCheckServicePermissionParams<'p> {
+    /// id of the user to check permission of
+    ///
+    pub id: &'p i32,
+    /// id of the service to filter by
+    ///
+    pub service_id: &'p String,
+    /// password provided by the user
+    ///
+    pub password: &'p String,
+    /// root password specified in the config
+    ///
+    pub root_password: &'p String
+}

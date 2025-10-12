@@ -420,4 +420,212 @@ impl SpecificUserUseCase {
             None => Ok(false)
         }
     }
+    
+    /// ### Description
+    /// Grant user with specified id a service permission matching specified criteria authorizing
+    /// the operation with root password
+    ///
+    /// ### Arguments
+    /// 1. params: [crate::params::use_case::SpecificUserGrantServicePermissionParams] - params needed for the
+    ///    operation
+    /// 2. database_client: [sqlx::Acquire] - the sqlx client connected to
+    ///    postgres database
+    ///
+    /// ### Return type
+    /// Returns result with error of type [crate::errors::use_case::SpecificUserGrantServicePermissionError] inside.
+    /// 
+    pub async fn grant_service_permission<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
+        params: crate::params::use_case::SpecificUserGrantServicePermissionParams<'a>,
+        database_client: A
+    ) -> Result<(), crate::errors::use_case::SpecificUserGrantServicePermissionError> {
+        use crate::repositories::{
+            UserServicePermissionRepository,
+            UserRepository,
+            ServicePermissionRepository
+        };
+        use crate::params::repository::{
+            ServicePermissionRetrieveParams,
+            UserRetrieveParams,
+            UserServicePermissionInsertParams
+        };
+        use crate::errors::use_case::SpecificUserGrantServicePermissionError as Error;
+        
+        let mut database_client = database_client.acquire()
+            .await
+            .unwrap();
+
+        if params.password != params.root_password {
+            return Err(Error::Unauthorized);
+        }
+        
+        let _ = UserRepository::retrieve(
+            UserRetrieveParams {
+                id: params.user_id
+            },
+            &mut *database_client
+        )
+            .await
+            .ok_or(Error::UserNotFound)?;
+
+
+        let permission = ServicePermissionRepository::retrieve(
+            ServicePermissionRetrieveParams { 
+                service_id: params.service_id
+            },
+            &mut *database_client
+        )
+            .await
+            .ok_or(Error::PermissionNotFound)?;
+
+        let _ = UserServicePermissionRepository::insert(
+            UserServicePermissionInsertParams {
+                permission_id: &permission.id,
+                user_id: params.user_id
+            },
+            &mut *database_client
+        )
+            .await
+            .ok_or(Error::AlreadyAdded)?;
+
+        Ok(())
+    }
+    
+    /// ### Description
+    /// Revoke user with specified id a service permission matching specified criteria authorizing
+    /// the operation with root password
+    ///
+    /// ### Arguments
+    /// 1. params: [crate::params::use_case::SpecificUserRevokeServicePermissionParams] - params needed for the
+    ///    operation
+    /// 2. database_client: [sqlx::Acquire] - the sqlx client connected to
+    ///    postgres database
+    ///
+    /// ### Return type
+    /// Returns result with error of type
+    /// [crate::errors::use_case::SpecificUserRevokeServicePermissionError] inside.
+    /// 
+    pub async fn revoke_service_permission<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
+        params: crate::params::use_case::SpecificUserRevokeServicePermissionParams<'a>,
+        database_client: A
+    ) -> Result<(), crate::errors::use_case::SpecificUserRevokeServicePermissionError> {
+        use crate::repositories::{
+            UserServicePermissionRepository,
+            UserRepository,
+            ServicePermissionRepository
+        };
+        use crate::params::repository::{
+            ServicePermissionRetrieveParams,
+            UserRetrieveParams,
+            UserServicePermissionDeleteParams
+        };
+        use crate::errors::use_case::SpecificUserRevokeServicePermissionError as Error;
+        
+        let mut database_client = database_client.acquire()
+            .await
+            .unwrap();
+
+        if params.password != params.root_password {
+            return Err(Error::Unauthorized);
+        }
+        
+        let _ = UserRepository::retrieve(
+            UserRetrieveParams {
+                id: params.user_id
+            },
+            &mut *database_client
+        )
+            .await
+            .ok_or(Error::UserNotFound)?;
+
+        let permission = ServicePermissionRepository::retrieve(
+            ServicePermissionRetrieveParams { 
+                service_id: params.service_id
+            },
+            &mut *database_client
+        )
+            .await
+            .ok_or(Error::PermissionNotFound)?;
+
+        let _ = UserServicePermissionRepository::delete(
+            UserServicePermissionDeleteParams {
+                permission_id: &permission.id,
+                user_id: params.user_id
+            },
+            &mut *database_client
+        )
+            .await
+            .ok_or(Error::NotAddedYet)?;
+
+        Ok(())
+    }
+    
+    /// ### Description
+    /// check if user has specified permission as admin
+    ///
+    /// ### Arguments
+    /// 1. params: [crate::params::use_case::SpecificUserCheckServicePermissionParams] - params needed for the
+    ///    operation
+    /// 2. database_client: [sqlx::Acquire] - the sqlx client connected to
+    ///    postgres database
+    ///
+    /// ### Return type
+    /// Returns result with either a boolean indicating if user has specified permission or error
+    /// of type
+    /// [crate::errors::use_case::SpecificUserCheckServicePermissionError] inside.
+    /// 
+    pub async fn check_service_permission<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
+        params: crate::params::use_case::SpecificUserCheckServicePermissionParams<'a>,
+        database_client: A
+    ) -> Result<bool, crate::errors::use_case::SpecificUserCheckServicePermissionError> {
+        use crate::repositories::{
+            ServicePermissionRepository,
+            UserServicePermissionRepository,
+            UserRepository
+        };
+        use crate::params::repository::{
+            ServicePermissionRetrieveParams,
+            UserServicePermissionRetrieveParams,
+            UserRetrieveParams
+        };
+        use crate::errors::use_case::SpecificUserCheckServicePermissionError as Error;
+
+        let mut database_client = database_client.acquire()
+            .await
+            .unwrap();
+
+        if params.password != params.root_password {
+            return Err(Error::Unauthorized);
+        }
+        
+        // check if permission exist
+        let service_permission = ServicePermissionRepository::retrieve(
+            ServicePermissionRetrieveParams { 
+                service_id: params.service_id 
+            },
+            &mut *database_client
+        )
+            .await
+            .ok_or(Error::PermissionNotFound)?;
+        
+        // check if user exist
+        let _ = UserRepository::retrieve(
+            UserRetrieveParams {
+                id: params.id
+            },
+            &mut *database_client
+        )
+            .await
+            .ok_or(Error::NotFound)?;
+
+        match UserServicePermissionRepository::retrieve(
+            UserServicePermissionRetrieveParams {
+                user_id: params.id, 
+                permission_id: &service_permission.id
+            },
+            &mut *database_client
+        ).await {
+            Some(_) => Ok(true),
+            None => Ok(false)
+        }
+    }
 }

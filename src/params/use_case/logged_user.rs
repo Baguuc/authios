@@ -80,3 +80,17 @@ pub struct LoggedUserCheckResourcePermissionParams<'p> {
     ///
     pub permission_name: &'p String
 }
+
+/// represents params needed to check if user is permitted to specified service
+///
+pub struct LoggedUserCheckServicePermissionParams<'p> {
+    /// JWT session token
+    ///
+    pub token: &'p String,
+    /// JWT encryption key set in the config
+    ///
+    pub jwt_encryption_key: &'p String,
+    /// id of the service to filter by
+    ///
+    pub service_id: &'p String,
+}

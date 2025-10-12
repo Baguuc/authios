@@ -263,4 +263,63 @@ impl LoggedUserUseCase {
             None => Ok(false)
         }
     }
+    
+    /// ### Description
+    /// check if user is permitted to specified service with specifed permission.
+    ///
+    /// ### Arguments
+    /// 1. params: [crate::params::use_case::LoggedUserCheckServicePermissionParams] - params needed for the
+    ///    operation
+    /// 2. database_client: [sqlx::Acquire] - the sqlx client connected to
+    ///    postgres database
+    ///
+    /// ### Return type
+    /// Returns result with either a boolean indicating if user has specified permission or error
+    /// of type
+    /// [crate::errors::use_case::LoggedUserCheckServicePermissionError] inside.
+    /// 
+    pub async fn check_service_permission<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
+        params: crate::params::use_case::LoggedUserCheckServicePermissionParams<'a>,
+        database_client: A
+    ) -> Result<bool, crate::errors::use_case::LoggedUserCheckServicePermissionError> {
+        use crate::utils::jwt_token::get_claims;
+        use crate::repositories::{
+            ServicePermissionRepository,
+            UserServicePermissionRepository
+        };
+        use crate::params::repository::{
+            ServicePermissionRetrieveParams,
+            UserServicePermissionRetrieveParams
+        };
+        use crate::errors::use_case::LoggedUserCheckServicePermissionError as Error;
+
+        let mut database_client = database_client.acquire()
+            .await
+            .unwrap();
+        
+        let claims = get_claims(&params.token, &params.jwt_encryption_key)
+            .map_err(|_| Error::InvalidToken)?;
+        let user_id = claims.sub;
+        
+        // check if permission exist
+        let service_permission = ServicePermissionRepository::retrieve(
+            ServicePermissionRetrieveParams { 
+                service_id: params.service_id 
+            },
+            &mut *database_client
+        )
+            .await
+            .ok_or(Error::PermissionNotFound)?;
+
+        match UserServicePermissionRepository::retrieve(
+            UserServicePermissionRetrieveParams { 
+                user_id: &user_id, 
+                permission_id: &service_permission.id
+            },
+            &mut *database_client
+        ).await {
+            Some(_) => Ok(true),
+            None => Ok(false)
+        }
+    }
 }
