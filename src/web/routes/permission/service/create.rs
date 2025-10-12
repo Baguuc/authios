@@ -1,13 +1,13 @@
-#[actix_web::delete("/{service_id}/{resource_type}/{permission_name}")]
+#[actix_web::post("")]
 pub async fn controller(
     root_password: crate::web::extractors::RootPasswordExtractor,
-    body: actix_web::web::Json<Path>,
+    body: actix_web::web::Json<Body>,
     database_client: actix_web::web::Data<sqlx::PgPool>,
     config: actix_web::web::Data<crate::config::Config>
 ) -> actix_web::HttpResponse {
-    use crate::params::use_case::ServicePermissionDeleteParams as Params;
+    use crate::params::use_case::ServicePermissionCreateParams as Params;
     use crate::use_cases::ServicePermissionUseCase as UseCase;
-    use crate::web::responses::ServicePermissionDeleteResponse as Response;
+    use crate::web::responses::ServicePermissionCreateResponse as Response;
 
     let mut database_client = database_client
         .into_inner()
@@ -21,7 +21,7 @@ pub async fn controller(
         root_password: &config.root.password
     };
 
-    let response: Response = UseCase::delete(params, &mut *database_client)
+    let response: Response = UseCase::create(params, &mut *database_client)
         .await
         .into();
 
@@ -29,6 +29,6 @@ pub async fn controller(
 }
 
 #[derive(serde::Deserialize)]
-struct Path {
+struct Body {
     service_id: String
 }
