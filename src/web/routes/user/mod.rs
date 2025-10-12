@@ -1,12 +1,10 @@
 mod me;
 mod specific;
-mod register;
+mod all;
 
 pub fn scope() -> actix_web::Scope {
     actix_web::web::scope("/users")
-        .service(register::controller)
-        /*.service(specific::grant_resource_permission::controller)
-        .service(specific::revoke_resource_permission::controller)*/
+        .service(all::scope())
         .service(me::scope())
         .service(specific::scope())
 }

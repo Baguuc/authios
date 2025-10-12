@@ -1,7 +1,7 @@
 /// Represents any of the errors that can happen during granting user a resource permission
 /// 
 #[derive(thiserror::Error, Debug)]
-pub enum AdminGrantUserResourcePermissionError {
+pub enum SpecificUserGrantResourcePermissionError {
     /// the permission to grant is not found
     ///
     #[error("PERMISSION_NOT_FOUND")]
@@ -23,7 +23,7 @@ pub enum AdminGrantUserResourcePermissionError {
 /// Represents any of the errors that can happen during revoking user a resource permission
 /// 
 #[derive(thiserror::Error, Debug)]
-pub enum AdminRevokeUserResourcePermissionError {
+pub enum SpecificUserRevokeResourcePermissionError {
     /// the permission to revoke is not found
     ///
     #[error("PERMISSION_NOT_FOUND")]
@@ -45,7 +45,7 @@ pub enum AdminRevokeUserResourcePermissionError {
 /// Represents any of the errors that can happen during getting user info as admin
 /// 
 #[derive(thiserror::Error, Debug)]
-pub enum AdminGetUserInfoError {
+pub enum SpecificUserGetInfoError {
     /// the user with provided id not exist
     ///
     #[error("NOT_FOUND")] 
@@ -59,7 +59,7 @@ pub enum AdminGetUserInfoError {
 /// Represents any of the errors that can happen during deleting a user as admin
 /// 
 #[derive(thiserror::Error, Debug)]
-pub enum AdminDeleteUserError {
+pub enum SpecificUserDeleteError {
     /// the user with provided id not exist
     ///
     #[error("NOT_FOUND")] 
@@ -73,7 +73,7 @@ pub enum AdminDeleteUserError {
 /// Represents any of the errors that can happen during updating user data as admin
 /// 
 #[derive(thiserror::Error, Debug)]
-pub enum AdminUpdateUserError {
+pub enum SpecificUserUpdateError {
     /// the user with provided id not exist
     ///
     #[error("NOT_FOUND")] 
@@ -88,7 +88,7 @@ pub enum AdminUpdateUserError {
 /// admin
 /// 
 #[derive(thiserror::Error, Debug)]
-pub enum AdminListUserResourcePermissionsError {
+pub enum SpecificUserListResourcePermissionsError {
     /// the user with specified id is not found
     ///
     #[error("NOT_FOUND")]
@@ -102,7 +102,7 @@ pub enum AdminListUserResourcePermissionsError {
 /// Represents any of the errors that can happen during checking user's permission as admin
 /// 
 #[derive(thiserror::Error, Debug)]
-pub enum AdminCheckUserResourcePermissionError {
+pub enum SpecificUserCheckResourcePermissionError {
     /// the user with specified id is not found
     ///
     #[error("NOT_FOUND")]

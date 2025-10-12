@@ -1,13 +1,13 @@
-pub enum AdminCheckUserResourcePermissionResponse {
+pub enum SpecificUserCheckResourcePermissionResponse {
     Ok(bool),
     Unauthorized,
     UserNotFound,
     PermissionNotFound
 }
 
-impl From<Result<bool, crate::errors::use_case::AdminCheckUserResourcePermissionError>> for AdminCheckUserResourcePermissionResponse {
-    fn from(result: Result<bool, crate::errors::use_case::AdminCheckUserResourcePermissionError>) -> Self {
-        use crate::errors::use_case::AdminCheckUserResourcePermissionError as Error;
+impl From<Result<bool, crate::errors::use_case::SpecificUserCheckResourcePermissionError>> for SpecificUserCheckResourcePermissionResponse {
+    fn from(result: Result<bool, crate::errors::use_case::SpecificUserCheckResourcePermissionError>) -> Self {
+        use crate::errors::use_case::SpecificUserCheckResourcePermissionError as Error;
 
         match result {
             Ok(has_permission) => Self::Ok(has_permission),
@@ -20,7 +20,7 @@ impl From<Result<bool, crate::errors::use_case::AdminCheckUserResourcePermission
     }
 }
 
-impl Into<actix_web::HttpResponse> for AdminCheckUserResourcePermissionResponse {
+impl Into<actix_web::HttpResponse> for SpecificUserCheckResourcePermissionResponse {
     fn into(self) -> actix_web::HttpResponse {
         use actix_web::HttpResponse;
         use serde_json::json;

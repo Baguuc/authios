@@ -1,8 +1,11 @@
-mod user;
-pub use user::*;
+mod logged_user;
+pub use logged_user::*;
 
-mod admin;
-pub use admin::*;
+mod specific_user;
+pub use specific_user::*;
+
+mod all_user;
+pub use all_user::*;
 
 mod resource_permission;
 pub use resource_permission::*;

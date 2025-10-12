@@ -1,5 +1,5 @@
-mod register;
-pub use register::UserRegisterResponse;
+mod all;
+pub use all::*;
 
 mod me;
 pub use me::*;

@@ -1,12 +1,12 @@
-pub enum UserDeleteAsAdminResponse {
+pub enum SpecificUserDeleteResponse {
     Ok,
     Unauthorized,
     NotFound
 }
 
-impl From<Result<(), crate::errors::use_case::AdminDeleteUserError>> for UserDeleteAsAdminResponse {
-    fn from(result: Result<(), crate::errors::use_case::AdminDeleteUserError>) -> Self {
-        use crate::errors::use_case::AdminDeleteUserError as Error;
+impl From<Result<(), crate::errors::use_case::SpecificUserDeleteError>> for SpecificUserDeleteResponse {
+    fn from(result: Result<(), crate::errors::use_case::SpecificUserDeleteError>) -> Self {
+        use crate::errors::use_case::SpecificUserDeleteError as Error;
 
         match result {
             Ok(_) => Self::Ok,
@@ -18,7 +18,7 @@ impl From<Result<(), crate::errors::use_case::AdminDeleteUserError>> for UserDel
     }
 }
 
-impl Into<actix_web::HttpResponse> for UserDeleteAsAdminResponse {
+impl Into<actix_web::HttpResponse> for SpecificUserDeleteResponse {
     fn into(self) -> actix_web::HttpResponse {
         use actix_web::HttpResponse;
         use serde_json::json;

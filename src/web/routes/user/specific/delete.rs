@@ -5,9 +5,9 @@ pub async fn controller(
     config: actix_web::web::Data<crate::config::Config>,
     database_client: actix_web::web::Data<sqlx::PgPool>
 ) -> actix_web::HttpResponse {
-    use crate::params::use_case::AdminDeleteUserParams as Params;
-    use crate::use_cases::AdminUseCase as UseCase;
-    use crate::web::responses::UserDeleteAsAdminResponse as Response;
+    use crate::params::use_case::SpecificUserDeleteParams as Params;
+    use crate::use_cases::SpecificUserUseCase as UseCase;
+    use crate::web::responses::SpecificUserDeleteResponse as Response;
 
     let mut database_client = database_client
         .into_inner()
@@ -21,7 +21,7 @@ pub async fn controller(
         root_password: &config.root.password 
     };
 
-    let response: Response = UseCase::delete_user(params, &mut *database_client)
+    let response: Response = UseCase::delete(params, &mut *database_client)
         .await
         .into();
     

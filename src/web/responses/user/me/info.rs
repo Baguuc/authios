@@ -1,9 +1,9 @@
-pub enum UserInfoResponse {
+pub enum LoggedUserInfoResponse {
     Ok(OkData),
     InvalidToken
 }
 
-impl UserInfoResponse {
+impl LoggedUserInfoResponse {
     pub fn partialize_ok(self: Self, save_id: bool, save_login: bool, save_password: bool) -> Self {
         match self {
             Self::Ok(data) => {
@@ -25,9 +25,9 @@ impl UserInfoResponse {
     }
 }
 
-impl From<Result<crate::models::User, crate::errors::use_case::UserInfoError>> for UserInfoResponse {
-    fn from(result: Result<crate::models::User, crate::errors::use_case::UserInfoError>) -> Self {
-        use crate::errors::use_case::UserInfoError as Error;
+impl From<Result<crate::models::User, crate::errors::use_case::LoggedUserInfoError>> for LoggedUserInfoResponse {
+    fn from(result: Result<crate::models::User, crate::errors::use_case::LoggedUserInfoError>) -> Self {
+        use crate::errors::use_case::LoggedUserInfoError as Error;
 
         match result {
             Ok(user) => {
@@ -46,7 +46,7 @@ impl From<Result<crate::models::User, crate::errors::use_case::UserInfoError>> f
     }
 }
 
-impl Into<actix_web::HttpResponse> for UserInfoResponse {
+impl Into<actix_web::HttpResponse> for LoggedUserInfoResponse {
     fn into(self) -> actix_web::HttpResponse {
         use actix_web::HttpResponse;
         use serde_json::json;

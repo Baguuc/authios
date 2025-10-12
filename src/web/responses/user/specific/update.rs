@@ -1,12 +1,12 @@
-pub enum AdminUpdateUserResponse {
+pub enum SpecificUserUpdateResponse {
     Ok,
     NotFound,
     Unauthorized
 }
 
-impl From<Result<crate::models::User, crate::errors::use_case::AdminUpdateUserError>> for AdminUpdateUserResponse {
-    fn from(result: Result<crate::models::User, crate::errors::use_case::AdminUpdateUserError>) -> Self {
-        use crate::errors::use_case::AdminUpdateUserError as Error;
+impl From<Result<crate::models::User, crate::errors::use_case::SpecificUserUpdateError>> for SpecificUserUpdateResponse {
+    fn from(result: Result<crate::models::User, crate::errors::use_case::SpecificUserUpdateError>) -> Self {
+        use crate::errors::use_case::SpecificUserUpdateError as Error;
 
         match result {
             Ok(_) => Self::Ok,
@@ -18,7 +18,7 @@ impl From<Result<crate::models::User, crate::errors::use_case::AdminUpdateUserEr
     }
 }
 
-impl Into<actix_web::HttpResponse> for AdminUpdateUserResponse {
+impl Into<actix_web::HttpResponse> for SpecificUserUpdateResponse {
     fn into(self) -> actix_web::HttpResponse {
         use actix_web::HttpResponse;
         use serde_json::json;

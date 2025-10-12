@@ -1,25 +1,25 @@
-pub struct UserUseCase;
+pub struct LoggedUserUseCase;
 
-impl UserUseCase {
+impl LoggedUserUseCase {
     /// ### Description
     /// retrieve user data from JWT session token
     ///
     /// ### Arguments
-    /// 1. params: [crate::params::use_case::UserInfoParams] - params needed for the
+    /// 1. params: [crate::params::use_case::LoggedUserInfoParams] - params needed for the
     ///    operation
     /// 2. database_client: [sqlx::Acquire] - the sqlx client connected to
     ///    postgres database
     ///
     /// ### Return type
     /// Returns result with either a fetched user or error of type
-    /// [crate::errors::use_case::UserInfoError] inside.
+    /// [crate::errors::use_case::LoggedUserInfoError] inside.
     ///
     pub async fn info<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
-        params: crate::params::use_case::UserInfoParams<'a>,
+        params: crate::params::use_case::LoggedUserInfoParams<'a>,
         database_client: A
-    ) -> Result<crate::models::User, crate::errors::use_case::UserInfoError> {
+    ) -> Result<crate::models::User, crate::errors::use_case::LoggedUserInfoError> {
         use crate::utils::jwt_token::get_claims;
-        use crate::errors::use_case::UserInfoError as Error;
+        use crate::errors::use_case::LoggedUserInfoError as Error;
         use crate::repositories::UserRepository;
         use crate::params::repository::UserRetrieveParams;
         
@@ -34,103 +34,26 @@ impl UserUseCase {
     }
     
     /// ### Description
-    /// log in as a user returning session token
-    ///
-    /// ### Arguments
-    /// 1. params: [crate::params::use_case::UserLoginParams] - params needed for the
-    ///    operation
-    /// 2. database_client: [sqlx::Acquire] - the sqlx client connected to
-    ///    postgres database
-    ///
-    /// ### Return type
-    /// Returns result with either a JWT session token or error of type
-    /// [crate::errors::use_case::UserLoginError] inside.
-    /// 
-    pub async fn login<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
-        params: crate::params::use_case::UserLoginParams<'a>,
-        database_client: A
-    ) -> Result<String, crate::errors::use_case::UserLoginError> {
-        use crate::utils::{
-            password_hash::verify_password,
-            jwt_token::generate as generate_token
-        };
-        use crate::repositories::UserRepository;
-        use crate::params::repository::UserRetrieveByLoginParams;
-        use crate::errors::use_case::UserLoginError as Error;
-
-        let mut database_client = database_client.acquire()
-            .await
-            .unwrap();
-        let user = UserRepository::retrieve_by_login(
-            UserRetrieveByLoginParams { login: params.login },
-            &mut *database_client
-        )
-            .await
-            .ok_or(Error::NotFound)?;
-
-        if !verify_password(params.password, &user.password_hash) {
-            return Err(Error::WrongPassword);
-        }
-
-        let token = generate_token(user.id, params.jwt_encryption_key).unwrap();
-
-        Ok(token)
-    }
-    
-    /// ### Description
-    /// register a user
-    ///
-    /// ### Arguments
-    /// 1. params: [crate::params::use_case::UserRegisterParams] - params needed for the
-    ///    operation
-    /// 2. database_client: [sqlx::Acquire] - the sqlx client connected to
-    ///    postgres database
-    ///
-    /// ### Return type
-    /// Returns result with either a fetched user or error of type
-    /// [crate::errors::use_case::UserRegisterError] inside.
-    ///
-    pub async fn register<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
-        params: crate::params::use_case::UserRegisterParams<'a>,
-        database_client: A
-    ) -> Result<(), crate::errors::use_case::UserRegisterError> {
-        use crate::utils::password_hash::hash_password;
-        use crate::repositories::UserRepository;
-        use crate::params::repository::UserInsertParams;
-        use crate::errors::use_case::UserRegisterError as Error;
-
-        let mut database_client = database_client.acquire()
-            .await
-            .unwrap();
-        let password_hash = hash_password(params.password).unwrap();
-        
-        UserRepository::insert(UserInsertParams { login: params.login, password_hash: &password_hash }, &mut *database_client)
-            .await
-            .map(|_| ())
-            .map_err(|_| Error::AlreadyExists)
-    }
-    
-    /// ### Description
     /// delete user from currently logged in 
     ///
     /// ### Arguments
-    /// 1. params: [crate::params::use_case::UserDeleteAsSelfParams] - params needed for the
+    /// 1. params: [crate::params::use_case::LoggedUserDeleteAsSelfParams] - params needed for the
     ///    operation
     /// 2. database_client: [sqlx::Acquire] - the sqlx client connected to
     ///    postgres database
     ///
     /// ### Return type
     /// Returns result with either a unit type value ("()") or error of type
-    /// [crate::errors::use_case::UserDeleteAsSelfError] inside.
+    /// [crate::errors::use_case::LoggedUserDeleteAsSelfError] inside.
     /// 
     pub async fn delete<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
-        params: crate::params::use_case::UserDeleteParams<'a>,
+        params: crate::params::use_case::LoggedUserDeleteParams<'a>,
         database_client: A
-    ) -> Result<(), crate::errors::use_case::UserDeleteError> {
+    ) -> Result<(), crate::errors::use_case::LoggedUserDeleteError> {
         use crate::utils::jwt_token::get_claims;
         use crate::repositories::UserRepository;
         use crate::params::repository::UserDeleteParams;
-        use crate::errors::use_case::UserDeleteError as Error;
+        use crate::errors::use_case::LoggedUserDeleteError as Error;
 
         let mut database_client = database_client.acquire()
             .await
@@ -156,19 +79,19 @@ impl UserUseCase {
     /// update user's data
     ///
     /// ### Arguments
-    /// 1. params: [crate::params::use_case::UserUpdateParams] - params needed for the
+    /// 1. params: [crate::params::use_case::LoggedUserUpdateParams] - params needed for the
     ///    operation
     /// 2. database_client: [sqlx::Acquire] - the sqlx client connected to
     ///    postgres database
     ///
     /// ### Return type
     /// Returns result with either the updated user data or error of type
-    /// [crate::errors::use_case::UserUpdateError] inside.
+    /// [crate::errors::use_case::LoggedUserUpdateError] inside.
     /// 
     pub async fn update<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
-        params: crate::params::use_case::UserUpdateParams<'a>,
+        params: crate::params::use_case::LoggedUserUpdateParams<'a>,
         database_client: A
-    ) -> Result<crate::models::User, crate::errors::use_case::UserUpdateError> {
+    ) -> Result<crate::models::User, crate::errors::use_case::LoggedUserUpdateError> {
         use crate::utils::{
             jwt_token::get_claims,
             password_hash::hash_password
@@ -179,7 +102,7 @@ impl UserUseCase {
             UserRetrieveParams
         };
         use crate::models::User;
-        use crate::errors::use_case::UserUpdateError as Error;
+        use crate::errors::use_case::LoggedUserUpdateError as Error;
         
         let mut database_client = database_client.acquire()
             .await
@@ -217,19 +140,19 @@ impl UserUseCase {
     /// list user's resource permissions attached to specified service and resource type.
     ///
     /// ### Arguments
-    /// 1. params: [crate::params::use_case::UserListResourcePermissionsParams] - params needed for the
+    /// 1. params: [crate::params::use_case::LoggedUserListResourcePermissionsParams] - params needed for the
     ///    operation
     /// 2. database_client: [sqlx::Acquire] - the sqlx client connected to
     ///    postgres database
     ///
     /// ### Return type
     /// Returns result with either the list of fetched permissions or error of type
-    /// [crate::errors::use_case::UserListResourcePermissionsError] inside.
+    /// [crate::errors::use_case::LoggedUserListResourcePermissionsError] inside.
     /// 
     pub async fn list_resource_permissions<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
-        params: crate::params::use_case::UserListResourcePermissionsParams<'a>,
+        params: crate::params::use_case::LoggedUserListResourcePermissionsParams<'a>,
         database_client: A
-    ) -> Result<crate::models::UserResourcePermissionPage, crate::errors::use_case::UserListResourcePermissionsError> {
+    ) -> Result<crate::models::UserResourcePermissionPage, crate::errors::use_case::LoggedUserListResourcePermissionsError> {
         use crate::utils::jwt_token::get_claims;
         use crate::models::UserResourcePermissionPage;
         use crate::repositories::{
@@ -241,7 +164,7 @@ impl UserUseCase {
             UserResourcePermissionGetPageCountParams as GetCountParams,
             UserRetrieveParams
         };
-        use crate::errors::use_case::UserListResourcePermissionsError as Error;
+        use crate::errors::use_case::LoggedUserListResourcePermissionsError as Error;
 
         let mut database_client = database_client.acquire()
             .await
@@ -283,7 +206,7 @@ impl UserUseCase {
     /// check if user is permitted to specified resource with specifed permission.
     ///
     /// ### Arguments
-    /// 1. params: [crate::params::use_case::UserCheckResourcePermissionParams] - params needed for the
+    /// 1. params: [crate::params::use_case::LoggedUserCheckResourcePermissionParams] - params needed for the
     ///    operation
     /// 2. database_client: [sqlx::Acquire] - the sqlx client connected to
     ///    postgres database
@@ -291,12 +214,12 @@ impl UserUseCase {
     /// ### Return type
     /// Returns result with either a boolean indicating if user has specified permission or error
     /// of type
-    /// [crate::errors::use_case::UserCheckResourcePermissionError] inside.
+    /// [crate::errors::use_case::LoggedUserCheckResourcePermissionError] inside.
     /// 
     pub async fn check_resource_permission<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
-        params: crate::params::use_case::UserCheckResourcePermissionParams<'a>,
+        params: crate::params::use_case::LoggedUserCheckResourcePermissionParams<'a>,
         database_client: A
-    ) -> Result<bool, crate::errors::use_case::UserCheckResourcePermissionError> {
+    ) -> Result<bool, crate::errors::use_case::LoggedUserCheckResourcePermissionError> {
         use crate::utils::jwt_token::get_claims;
         use crate::repositories::{
             ResourcePermissionRepository,
@@ -306,7 +229,7 @@ impl UserUseCase {
             ResourcePermissionRetrieveParams,
             UserResourcePermissionRetrieveParams
         };
-        use crate::errors::use_case::UserCheckResourcePermissionError as Error;
+        use crate::errors::use_case::LoggedUserCheckResourcePermissionError as Error;
 
         let mut database_client = database_client.acquire()
             .await

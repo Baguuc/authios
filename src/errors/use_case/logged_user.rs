@@ -1,41 +1,17 @@
 /// Represents any of the errors that can happen during retrieving user data from JWT token
 /// 
 #[derive(thiserror::Error, Debug)]
-pub enum UserInfoError {
+pub enum LoggedUserInfoError {
     /// the token is invalid meaning is in a wrong format or points to a user that doesn't exist
     ///
     #[error("INVALID_TOKEN")]
     InvalidToken
 }
 
-/// Represents any of the errors that can happen during logging in
-/// 
-#[derive(thiserror::Error, Debug)]
-pub enum UserLoginError {
-    /// the user with provided login not exist
-    ///
-    #[error("NOT_FOUND")] 
-    NotFound,
-    /// the password do not match the one in database
-    ///
-    #[error("WRONG_PASSWORD")]
-    WrongPassword
-}
-
-/// Represents any of the errors that can happen during registering a user
-/// 
-#[derive(thiserror::Error, Debug)]
-pub enum UserRegisterError {
-    /// the user with provided login already exist
-    ///
-    #[error("ALREADY_EXISTS")] 
-    AlreadyExists
-}
-
 /// Represents any of the errors that can happen during deleting a user as himself
 /// 
 #[derive(thiserror::Error, Debug)]
-pub enum UserDeleteError {
+pub enum LoggedUserDeleteError {
     /// the token is invalid
     ///
     #[error("INVALID_TOKEN")]
@@ -45,7 +21,7 @@ pub enum UserDeleteError {
 /// Represents any of the errors that can happen during updating user data
 /// 
 #[derive(thiserror::Error, Debug)]
-pub enum UserUpdateError {
+pub enum LoggedUserUpdateError {
     /// the token is invalid, meaning is in a wrong format or pointing to null user
     ///
     #[error("INVALID_TOKEN")]
@@ -55,7 +31,7 @@ pub enum UserUpdateError {
 /// Represents any of the errors that can happen during listing user's resource permissions
 /// 
 #[derive(thiserror::Error, Debug)]
-pub enum UserListResourcePermissionsError {
+pub enum LoggedUserListResourcePermissionsError {
     /// the token is invalid, meaning is in a wrong format or pointing to null user
     ///
     #[error("INVALID_TOKEN")]
@@ -66,7 +42,7 @@ pub enum UserListResourcePermissionsError {
 /// on resource permissions
 /// 
 #[derive(thiserror::Error, Debug)]
-pub enum UserCheckResourcePermissionError {
+pub enum LoggedUserCheckResourcePermissionError {
     /// the token is invalid, meaning is in a wrong format or pointing to null user
     ///
     #[error("INVALID_TOKEN")]

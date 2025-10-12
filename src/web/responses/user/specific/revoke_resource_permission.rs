@@ -1,4 +1,4 @@
-pub enum UserRevokeResourcePermissionResponse {
+pub enum SpecificUserRevokeResourcePermissionResponse {
     Ok,
     UserNotFound,
     PermissionNotFound,
@@ -6,9 +6,9 @@ pub enum UserRevokeResourcePermissionResponse {
     Unauthorized
 }
 
-impl From<Result<(), crate::errors::use_case::AdminRevokeUserResourcePermissionError>> for UserRevokeResourcePermissionResponse {
-    fn from(result: Result<(), crate::errors::use_case::AdminRevokeUserResourcePermissionError>) -> Self {
-        use crate::errors::use_case::AdminRevokeUserResourcePermissionError as Error;
+impl From<Result<(), crate::errors::use_case::SpecificUserRevokeResourcePermissionError>> for SpecificUserRevokeResourcePermissionResponse {
+    fn from(result: Result<(), crate::errors::use_case::SpecificUserRevokeResourcePermissionError>) -> Self {
+        use crate::errors::use_case::SpecificUserRevokeResourcePermissionError as Error;
 
         match result {
             Ok(_) => Self::Ok,
@@ -22,7 +22,7 @@ impl From<Result<(), crate::errors::use_case::AdminRevokeUserResourcePermissionE
     }
 }
 
-impl Into<actix_web::HttpResponse> for UserRevokeResourcePermissionResponse {
+impl Into<actix_web::HttpResponse> for SpecificUserRevokeResourcePermissionResponse {
     fn into(self) -> actix_web::HttpResponse {
         use actix_web::HttpResponse;
         use serde_json::json;

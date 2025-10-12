@@ -1,17 +1,14 @@
-mod login;
-pub use login::UserLoginResponse;
-
 mod info;
-pub use info::UserInfoResponse;
+pub use info::LoggedUserInfoResponse;
 
 mod update;
-pub use update::UserUpdateResponse;
+pub use update::LoggedUserUpdateResponse;
 
 mod delete;
-pub use delete::UserDeleteResponse;
+pub use delete::LoggedUserDeleteResponse;
 
 mod check_resource_permission;
-pub use check_resource_permission::UserCheckResourcePermissionResponse;
+pub use check_resource_permission::LoggedUserCheckResourcePermissionResponse;
 
 mod list_resource_permissions;
-pub use list_resource_permissions::UserListResourcePermissionsResponse;
+pub use list_resource_permissions::LoggedUserListResourcePermissionsResponse;

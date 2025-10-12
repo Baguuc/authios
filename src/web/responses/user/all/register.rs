@@ -1,11 +1,11 @@
-pub enum UserRegisterResponse {
+pub enum AllUserRegisterResponse {
     Ok,
     AlreadyExists
 }
 
-impl From<Result<(), crate::errors::use_case::UserRegisterError>> for UserRegisterResponse {
-    fn from(result: Result<(), crate::errors::use_case::UserRegisterError>) -> Self {
-        use crate::errors::use_case::UserRegisterError as Error;
+impl From<Result<(), crate::errors::use_case::AllUserRegisterError>> for AllUserRegisterResponse {
+    fn from(result: Result<(), crate::errors::use_case::AllUserRegisterError>) -> Self {
+        use crate::errors::use_case::AllUserRegisterError as Error;
 
         match result {
             Ok(_) => Self::Ok,
@@ -16,7 +16,7 @@ impl From<Result<(), crate::errors::use_case::UserRegisterError>> for UserRegist
     }
 }
 
-impl Into<actix_web::HttpResponse> for UserRegisterResponse {
+impl Into<actix_web::HttpResponse> for AllUserRegisterResponse {
     fn into(self) -> actix_web::HttpResponse {
         use actix_web::HttpResponse;
         use serde_json::json;

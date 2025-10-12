@@ -5,9 +5,9 @@ pub async fn controller(
     config: actix_web::web::Data<crate::config::Config>,
     database_client: actix_web::web::Data<sqlx::PgPool>
 ) -> actix_web::HttpResponse {
-    use crate::params::use_case::UserUpdateParams as Params;
-    use crate::use_cases::UserUseCase as UseCase;
-    use crate::web::responses::UserUpdateResponse as Response;
+    use crate::params::use_case::LoggedUserUpdateParams as Params;
+    use crate::use_cases::LoggedUserUseCase as UseCase;
+    use crate::web::responses::LoggedUserUpdateResponse as Response;
 
     let mut database_client = database_client
         .into_inner()

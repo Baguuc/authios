@@ -1,6 +1,6 @@
 /// represents params needed to grant user a resource permission
 ///
-pub struct AdminGrantUserResourcePermissionParams<'p> {
+pub struct SpecificUserGrantResourcePermissionParams<'p> {
     /// id of the user to grant the permission to
     ///
     pub user_id: &'p i32,
@@ -26,7 +26,7 @@ pub struct AdminGrantUserResourcePermissionParams<'p> {
 
 /// represents params needed to grant user a resource permission
 ///
-pub struct AdminRevokeUserResourcePermissionParams<'p> {
+pub struct SpecificUserRevokeResourcePermissionParams<'p> {
     /// id of the user to revoke the permission to
     ///
     pub user_id: &'p i32,
@@ -52,7 +52,7 @@ pub struct AdminRevokeUserResourcePermissionParams<'p> {
 
 /// represents params needed to delete a user as admin
 ///
-pub struct AdminGetUserInfoParams<'p> {
+pub struct SpecificUserGetInfoParams<'p> {
     /// user id
     ///
     pub id: &'p i32,
@@ -66,7 +66,7 @@ pub struct AdminGetUserInfoParams<'p> {
 
 /// represents params needed to delete a user as admin
 ///
-pub struct AdminDeleteUserParams<'p> {
+pub struct SpecificUserDeleteParams<'p> {
     /// user id
     ///
     pub id: &'p i32,
@@ -80,7 +80,7 @@ pub struct AdminDeleteUserParams<'p> {
 
 /// represents params needed to delete a user as admin
 ///
-pub struct AdminUpdateUserParams<'p> {
+pub struct SpecificUserUpdateParams<'p> {
     /// user id
     ///
     pub id: &'p i32,
@@ -100,7 +100,7 @@ pub struct AdminUpdateUserParams<'p> {
 
 /// represents params needed to list user's resource permissions as admin
 ///
-pub struct AdminListUserResourcePermissionsParams<'p> {
+pub struct SpecificUserListResourcePermissionsParams<'p> {
     /// id of the user
     ///
     pub id: &'p i32,
@@ -124,7 +124,7 @@ pub struct AdminListUserResourcePermissionsParams<'p> {
 
 /// represents params needed to check user's permission as admin
 ///
-pub struct AdminCheckUserResourcePermissionParams<'p> {
+pub struct SpecificUserCheckResourcePermissionParams<'p> {
     /// id of the user to check permission of
     ///
     pub id: &'p i32,

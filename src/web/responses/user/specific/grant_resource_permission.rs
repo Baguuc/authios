@@ -1,4 +1,4 @@
-pub enum UserGrantResourcePermissionResponse {
+pub enum SpecificUserGrantResourcePermissionResponse {
     Ok,
     UserNotFound,
     PermissionNotFound,
@@ -6,9 +6,9 @@ pub enum UserGrantResourcePermissionResponse {
     Unauthorized
 }
 
-impl From<Result<(), crate::errors::use_case::AdminGrantUserResourcePermissionError>> for UserGrantResourcePermissionResponse {
-    fn from(result: Result<(), crate::errors::use_case::AdminGrantUserResourcePermissionError>) -> Self {
-        use crate::errors::use_case::AdminGrantUserResourcePermissionError as Error;
+impl From<Result<(), crate::errors::use_case::SpecificUserGrantResourcePermissionError>> for SpecificUserGrantResourcePermissionResponse {
+    fn from(result: Result<(), crate::errors::use_case::SpecificUserGrantResourcePermissionError>) -> Self {
+        use crate::errors::use_case::SpecificUserGrantResourcePermissionError as Error;
 
         match result {
             Ok(_) => Self::Ok,
@@ -22,7 +22,7 @@ impl From<Result<(), crate::errors::use_case::AdminGrantUserResourcePermissionEr
     }
 }
 
-impl Into<actix_web::HttpResponse> for UserGrantResourcePermissionResponse {
+impl Into<actix_web::HttpResponse> for SpecificUserGrantResourcePermissionResponse {
     fn into(self) -> actix_web::HttpResponse {
         use actix_web::HttpResponse;
         use serde_json::json;

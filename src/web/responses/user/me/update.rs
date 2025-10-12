@@ -1,11 +1,11 @@
-pub enum UserUpdateResponse {
+pub enum LoggedUserUpdateResponse {
     Ok,
     InvalidToken
 }
 
-impl From<Result<crate::models::User, crate::errors::use_case::UserUpdateError>> for UserUpdateResponse {
-    fn from(result: Result<crate::models::User, crate::errors::use_case::UserUpdateError>) -> Self {
-        use crate::errors::use_case::UserUpdateError as Error;
+impl From<Result<crate::models::User, crate::errors::use_case::LoggedUserUpdateError>> for LoggedUserUpdateResponse {
+    fn from(result: Result<crate::models::User, crate::errors::use_case::LoggedUserUpdateError>) -> Self {
+        use crate::errors::use_case::LoggedUserUpdateError as Error;
 
         match result {
             Ok(_) => Self::Ok,
@@ -16,7 +16,7 @@ impl From<Result<crate::models::User, crate::errors::use_case::UserUpdateError>>
     }
 }
 
-impl Into<actix_web::HttpResponse> for UserUpdateResponse {
+impl Into<actix_web::HttpResponse> for LoggedUserUpdateResponse {
     fn into(self) -> actix_web::HttpResponse {
         use actix_web::HttpResponse;
         use serde_json::json;

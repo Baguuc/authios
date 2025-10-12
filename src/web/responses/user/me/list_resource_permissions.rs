@@ -1,9 +1,9 @@
-pub enum UserListResourcePermissionsResponse {
+pub enum LoggedUserListResourcePermissionsResponse {
     Ok(OkData),
     InvalidToken
 }
 
-impl UserListResourcePermissionsResponse {
+impl LoggedUserListResourcePermissionsResponse {
     pub fn partialize_ok(
         self: Self,
         save_page_number: bool,
@@ -48,9 +48,9 @@ impl UserListResourcePermissionsResponse {
     }
 }
 
-impl From<Result<crate::models::UserResourcePermissionPage, crate::errors::use_case::UserListResourcePermissionsError>> for UserListResourcePermissionsResponse {
-    fn from(result: Result<crate::models::UserResourcePermissionPage, crate::errors::use_case::UserListResourcePermissionsError>) -> Self {
-        use crate::errors::use_case::UserListResourcePermissionsError as Error;
+impl From<Result<crate::models::UserResourcePermissionPage, crate::errors::use_case::LoggedUserListResourcePermissionsError>> for LoggedUserListResourcePermissionsResponse {
+    fn from(result: Result<crate::models::UserResourcePermissionPage, crate::errors::use_case::LoggedUserListResourcePermissionsError>) -> Self {
+        use crate::errors::use_case::LoggedUserListResourcePermissionsError as Error;
 
         match result {
             Ok(page) => {
@@ -67,7 +67,7 @@ impl From<Result<crate::models::UserResourcePermissionPage, crate::errors::use_c
     }
 }
 
-impl Into<actix_web::HttpResponse> for UserListResourcePermissionsResponse {
+impl Into<actix_web::HttpResponse> for LoggedUserListResourcePermissionsResponse {
     fn into(self) -> actix_web::HttpResponse {
         use actix_web::HttpResponse;
         use serde_json::json;

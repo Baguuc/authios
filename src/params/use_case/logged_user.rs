@@ -1,6 +1,6 @@
 /// represents params needed to retrieve user's data from JWT session token
 ///
-pub struct UserInfoParams<'p> {
+pub struct LoggedUserInfoParams<'p> {
     /// JWT token provided by the user
     ///
     pub token: &'p String,
@@ -9,34 +9,9 @@ pub struct UserInfoParams<'p> {
     pub jwt_encryption_key: &'p String
 }
 
-/// represents params needed to log in as a user
-///
-pub struct UserLoginParams<'p> {
-    /// user login
-    ///
-    pub login: &'p String,
-    /// user password
-    ///
-    pub password: &'p String,
-    /// JWT encryption key set in the config
-    ///
-    pub jwt_encryption_key: &'p String
-}
-
-/// represents params needed to register a user
-///
-pub struct UserRegisterParams<'p> {
-    /// user login
-    ///
-    pub login: &'p String,
-    /// user password
-    ///
-    pub password: &'p String
-}
-
 /// represents params needed to delete a user as himself
 ///
-pub struct UserDeleteParams<'p> {
+pub struct LoggedUserDeleteParams<'p> {
     /// JWT session token
     ///
     pub token: &'p String,
@@ -47,7 +22,7 @@ pub struct UserDeleteParams<'p> {
 
 /// represents params needed to update user's data
 ///
-pub struct UserUpdateParams<'p> {
+pub struct LoggedUserUpdateParams<'p> {
     /// JWT session token
     ///
     pub token: &'p String,
@@ -64,7 +39,7 @@ pub struct UserUpdateParams<'p> {
 
 /// represents params needed to list user's resource permissions
 ///
-pub struct UserListResourcePermissionsParams<'p> {
+pub struct LoggedUserListResourcePermissionsParams<'p> {
     /// JWT session token
     ///
     pub token: &'p String,
@@ -85,7 +60,7 @@ pub struct UserListResourcePermissionsParams<'p> {
 
 /// represents params needed to check if user is permitted to operation on resource
 ///
-pub struct UserCheckResourcePermissionParams<'p> {
+pub struct LoggedUserCheckResourcePermissionParams<'p> {
     /// JWT session token
     ///
     pub token: &'p String,

@@ -1,12 +1,12 @@
-pub enum UserLoginResponse {
+pub enum AllUserLoginResponse {
     Ok(String),
     NotFound,
     WrongPassword
 }
 
-impl From<Result<String, crate::errors::use_case::UserLoginError>> for UserLoginResponse {
-    fn from(result: Result<String, crate::errors::use_case::UserLoginError>) -> Self {
-        use crate::errors::use_case::UserLoginError as Error;
+impl From<Result<String, crate::errors::use_case::AllUserLoginError>> for AllUserLoginResponse {
+    fn from(result: Result<String, crate::errors::use_case::AllUserLoginError>) -> Self {
+        use crate::errors::use_case::AllUserLoginError as Error;
 
         match result {
             Ok(token) => Self::Ok(token),
@@ -18,7 +18,7 @@ impl From<Result<String, crate::errors::use_case::UserLoginError>> for UserLogin
     }
 }
 
-impl Into<actix_web::HttpResponse> for UserLoginResponse {
+impl Into<actix_web::HttpResponse> for AllUserLoginResponse {
     fn into(self) -> actix_web::HttpResponse {
         use actix_web::HttpResponse;
         use serde_json::json;
