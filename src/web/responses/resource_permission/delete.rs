@@ -28,7 +28,7 @@ impl Into<actix_web::HttpResponse> for ResourcePermissionDeleteResponse {
                 .json(json!({ "code": "ok" })),
             
             Self::NotFound => HttpResponse::Conflict()
-                .json(json!({ "code": "not_found" })),
+                .json(json!({ "code": "permission_not_found" })),
 
             Self::Unauthorized => HttpResponse::Conflict()
                 .json(json!({ "code": "unauthorized" }))

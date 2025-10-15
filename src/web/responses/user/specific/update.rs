@@ -28,7 +28,7 @@ impl Into<actix_web::HttpResponse> for SpecificUserUpdateResponse {
                 .json(json!({ "code": "ok" })),
             
             Self::NotFound => HttpResponse::NotFound()
-                .json(json!({ "code": "not_found" })),
+                .json(json!({ "code": "user_not_found" })),
             
             Self::Unauthorized => HttpResponse::Unauthorized()
                 .json(json!({ "code": "unauthorized" }))

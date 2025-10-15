@@ -31,7 +31,7 @@ impl Into<actix_web::HttpResponse> for SpecificUserDeleteResponse {
                 .json(json!({ "code": "unauthorized" })),
             
             Self::NotFound => HttpResponse::NotFound()
-                .json(json!({ "code": "not_found" }))
+                .json(json!({ "code": "user_not_found" }))
         }
     }
 }

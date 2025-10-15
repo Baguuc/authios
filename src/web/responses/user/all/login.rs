@@ -28,7 +28,7 @@ impl Into<actix_web::HttpResponse> for AllUserLoginResponse {
                 .json(json!({ "code": "ok", "token": token })),
             
             Self::NotFound => HttpResponse::NotFound()
-                .json(json!({ "code": "not_found" })),
+                .json(json!({ "code": "user_not_found" })),
 
             Self::WrongPassword => HttpResponse::Unauthorized()
                 .json(json!({ "code": "wrong_password" })),
