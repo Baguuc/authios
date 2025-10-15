@@ -25,7 +25,7 @@ impl Into<actix_web::HttpResponse> for AllUserLoginResponse {
 
         match self {
             Self::Ok(token) => HttpResponse::Ok()
-                .json(json!({ "token": token })),
+                .json(json!({ "code": "ok", "token": token })),
             
             Self::NotFound => HttpResponse::NotFound()
                 .json(json!({ "code": "not_found" })),

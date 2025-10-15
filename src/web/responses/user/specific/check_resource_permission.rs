@@ -27,7 +27,7 @@ impl Into<actix_web::HttpResponse> for SpecificUserCheckResourcePermissionRespon
 
         match self {
             Self::Ok(has) => HttpResponse::Ok()
-                .json(json!({ "has_permission": has })),
+                .json(json!({ "code": "ok", "has_permission": has })),
             
             Self::UserNotFound => HttpResponse::NotFound()
                 .json(json!({ "code": "user_not_found" })),

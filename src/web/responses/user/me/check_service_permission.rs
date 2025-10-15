@@ -25,7 +25,7 @@ impl Into<actix_web::HttpResponse> for LoggedUserCheckServicePermissionResponse 
 
         match self {
             Self::Ok(has) => HttpResponse::Ok()
-                .json(json!({ "has_permission": has })),
+                .json(json!({ "code": "ok", "has_permission": has })),
             
             Self::InvalidToken => HttpResponse::BadRequest()
                 .json(json!({ "code": "invalid_token" })),
