@@ -53,7 +53,7 @@ impl Into<actix_web::HttpResponse> for LoggedUserInfoResponse {
 
         match self {
             Self::Ok(data) => HttpResponse::Ok()
-                .json(json!({ "code": "ok", "user": data })),
+                .json(json!({ "code": "ok", "user": data.user })),
             
             Self::InvalidToken => HttpResponse::BadRequest()
                 .json(json!({ "code": "invalid_token" })),
