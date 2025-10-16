@@ -23,8 +23,9 @@ impl UserServicePermissionRepository {
             .await
             .unwrap();
 
-        let sql = "SELECT sp.id, sp.service_id FROM user_service_permissions usp INNER JOIN sp ON usp.service_permission_id = sp.id WHERE sp.id = $1";
+        let sql = "SELECT sp.id, sp.service_id FROM user_service_permissions usp INNER JOIN service_permissions sp ON usp.service_permission_id = sp.id WHERE usp.user_id = $1 AND usp.service_permission_id = $2;";
         let result = sqlx::query_as(sql)
+            .bind(params.user_id)
             .bind(params.permission_id)
             .fetch_one(&mut *database_client)
             .await
