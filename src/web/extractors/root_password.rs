@@ -33,12 +33,12 @@ impl actix_web::FromRequest for RootPasswordExtractor {
             Err(_) => return ready(Err(RootPasswordExtractionError::Invalid))
         };
 
-        if !token.starts_with("Custom ") {
+        if !token.starts_with("Bearer ") {
             return ready(Err(RootPasswordExtractionError::WrongType))
         }
         
         let stripped_token = token
-            .replace("Custom ", "")
+            .replace("Bearer ", "")
             .to_string();
         
         std::future::ready(Ok(Self(stripped_token)))
