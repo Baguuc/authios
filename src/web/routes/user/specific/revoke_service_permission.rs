@@ -1,4 +1,4 @@
-#[actix_web::delete("/permissions/resource/{service_id}")]
+#[actix_web::delete("/permissions/service/{service_id}")]
 pub async fn controller(
     root_password: crate::web::extractors::RootPasswordExtractor,
     path: actix_web::web::Path<Path>,
