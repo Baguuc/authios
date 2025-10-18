@@ -110,7 +110,7 @@ impl LoggedUserUseCase {
         
         // it is safe as to have a JWT token the user had to login first so we know he is
         // authorized to update his own account
-        let claims = get_claims(params.token, params.jwt_encryption_key).unwrap();
+        let claims = get_claims(params.token, params.jwt_encryption_key).map_err(|_| Error::InvalidToken)?;
         let user_id = claims.sub;
 
         let original_data = UserRepository::retrieve(UserRetrieveParams { id: &user_id }, &mut *database_client)
