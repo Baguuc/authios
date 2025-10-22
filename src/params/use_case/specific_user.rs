@@ -15,7 +15,7 @@ pub struct SpecificUserGrantResourcePermissionParams<'p> {
     pub permission_name: &'p String,
     /// id of the resource to grant the permission for
     ///
-    pub resource_id: &'p i32,
+    pub resource_id: &'p String,
     /// password provided to the user
     ///
     pub password: &'p String,
@@ -41,7 +41,7 @@ pub struct SpecificUserRevokeResourcePermissionParams<'p> {
     pub permission_name: &'p String,
     /// id of the resource to revoke the permission from
     ///
-    pub resource_id: &'p i32,
+    pub resource_id: &'p String,
     /// password provided to the user
     ///
     pub password: &'p String,
@@ -142,7 +142,7 @@ pub struct SpecificUserCheckResourcePermissionParams<'p> {
     pub resource_type: &'p String,
     /// id of the resource to filter by
     ///
-    pub resource_id: &'p i32,
+    pub resource_id: &'p String,
     /// name of the permission to check for
     ///
     pub permission_name: &'p String

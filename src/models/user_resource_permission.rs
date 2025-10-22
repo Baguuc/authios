@@ -5,6 +5,6 @@
 pub struct UserResourcePermission {
     pub service_id: String,
     pub resource_type: String,
-    pub resource_id: i32,
+    pub resource_id: String,
     pub permissions: Vec<String>
 }

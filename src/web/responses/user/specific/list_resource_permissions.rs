@@ -25,7 +25,7 @@ impl SpecificUserListResourcePermissionsResponse { pub fn partialize_ok(
                             resource_type: if save_resource_type 
                                 { e.resource_type.clone() } else { None },
                             resource_id: if save_resource_id
-                                { e.resource_id } else { None },
+                                { e.resource_id.clone() } else { None },
                             permissions: if save_permission_names
                                 { e.permissions.clone() } else { None },
                         }
@@ -99,7 +99,7 @@ pub struct OkData {
 pub struct UserPermissionData {
     service_id: Option<String>,
     resource_type: Option<String>,
-    resource_id: Option<i32>,
+    resource_id: Option<String>,
     permissions: Option<Vec<String>>,
 }
 

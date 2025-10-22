@@ -42,6 +42,6 @@ struct Path {
 struct Body {
     service_id: String,
     resource_type: String,
-    resource_id: i32,
+    resource_id: String,
     permission_name: String
 }

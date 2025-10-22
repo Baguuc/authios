@@ -34,7 +34,7 @@ pub async fn controller(
 
 #[derive(serde::Deserialize)]
 struct Query {
-    pub get_id: Option<bool>,
-    pub get_login: Option<bool>,
-    pub get_password_hash: Option<bool>
+    get_id: Option<bool>,
+    get_login: Option<bool>,
+    get_password_hash: Option<bool>
 }

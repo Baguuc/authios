@@ -41,7 +41,7 @@ pub struct UserResourcePermissionRetrieveParams<'p> {
     pub permission_id: &'p i32,
     /// id of the resource
     ///
-    pub resource_id: &'p i32,
+    pub resource_id: &'p String,
 }
 
 /// params needed to grant a user a resource permission
@@ -55,7 +55,7 @@ pub struct UserResourcePermissionInsertParams<'p> {
     pub resource_permission_id: &'p i32,
     /// id of the resource
     ///
-    pub resource_id: &'p i32,
+    pub resource_id: &'p String,
 }
 
 /// params needed to revoke a user a resource permission
@@ -69,5 +69,5 @@ pub struct UserResourcePermissionDeleteParams<'p> {
     pub resource_permission_id: &'p i32,
     /// id of the resource
     ///
-    pub resource_id: &'p i32,
+    pub resource_id: &'p String,
 }
