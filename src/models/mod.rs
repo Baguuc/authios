@@ -13,5 +13,8 @@ pub use user_resource_permission::UserResourcePermission;
 mod user_resource_permission_page;
 pub use user_resource_permission_page::UserResourcePermissionPage;
 
+mod users_page;
+pub use users_page::UsersPage;
+
 mod service_permission;
 pub use service_permission::ServicePermission;

@@ -86,4 +86,56 @@ impl ResourcePermissionUseCase {
 
         Ok(())
     }
+
+    /// ### Description
+    /// list users having permission to a resource 
+    ///
+    /// ### Arguments
+    /// 1. params: [crate::params::use_case::ResourcePermissionListUsersParams] - params needed for the
+    ///    operation
+    /// 2. database_client: [sqlx::Acquire] - the sqlx client connected to
+    ///    postgres database
+    ///
+    /// ### Return type
+    /// Returns result with a error of type
+    /// [crate::errors::use_case::ResourcePermissionListUsersError] inside.
+    /// 
+    pub async fn list_users<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
+        params: crate::params::use_case::ResourcePermissionListUsersParams<'a>,
+        database_client: A
+    ) -> Result<crate::models::UsersPage, crate::errors::use_case::ResourcePermissionListUsersError> {
+        use crate::repositories::UserResourcePermissionRepository;
+        use crate::params::repository::{
+            UserResourcePermissionListUsersParams as ListParams,
+            UserResourcePermissionGetUsersPageCountParams as GetCountParams
+        };
+        use crate::errors::use_case::ResourcePermissionListUsersError as Error;
+        use crate::models::UsersPage;
+
+        let mut database_client = database_client.acquire()
+            .await
+            .unwrap();
+
+        if params.password != params.root_password {
+            return Err(Error::Unauthorized);
+        }
+        
+        let users = UserResourcePermissionRepository::list_users(
+            ListParams { service_id: params.service_id, resource_type: params.resource_type, resource_id: params.resource_id, page_number: &Some(params.page_number.clone()) },
+            &mut *database_client
+        ).await;
+
+        let total_page_count = UserResourcePermissionRepository::get_users_page_count(
+            GetCountParams { service_id: params.service_id, resource_type: params.resource_type, resource_id: params.resource_id },
+            &mut *database_client
+        ).await;
+
+        let page = UsersPage {
+            page_number: params.page_number.clone(),
+            total_page_count,
+            users
+        };
+
+        Ok(page)
+    }
 }

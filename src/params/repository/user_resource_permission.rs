@@ -30,6 +30,39 @@ pub struct UserResourcePermissionGetPageCountParams<'p> {
     pub resource_type: &'p String
 }
 
+/// params needed to list users that have permission to particular resource
+///
+pub struct UserResourcePermissionListUsersParams<'p> {
+    /// id of the service to filter by
+    ///
+    pub service_id: &'p String,
+    /// type of the resource to filter by
+    ///
+    pub resource_type: &'p String,
+    /// number of the page for pagination.
+    /// the page size is 5.
+    ///
+    pub resource_id: &'p String,
+    pub page_number: &'p Option<u32>,
+}
+
+/// params needed to list users that have permission to particular resource
+///
+pub struct UserResourcePermissionGetUsersPageCountParams<'p> {
+    /// id of the service to filter by
+    ///
+    pub service_id: &'p String,
+    /// type of the resource to filter by
+    ///
+    pub resource_type: &'p String,
+    /// number of the page for pagination.
+    /// the page size is 5.
+    ///
+    pub resource_id: &'p String
+}
+
+
+
 /// params needed to retrieve user's resource permission from the database
 ///
 pub struct UserResourcePermissionRetrieveParams<'p> {
