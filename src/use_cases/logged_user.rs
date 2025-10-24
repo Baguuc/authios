@@ -161,7 +161,6 @@ impl LoggedUserUseCase {
         };
         use crate::params::repository::{
             UserResourcePermissionListParams as ListParams,
-            UserResourcePermissionGetPageCountParams as GetCountParams,
             UserRetrieveParams
         };
         use crate::errors::use_case::LoggedUserListResourcePermissionsError as Error;
@@ -188,15 +187,9 @@ impl LoggedUserUseCase {
             &mut *database_client
         ).await;
 
-        let total_page_count = UserResourcePermissionRepository::get_page_count(
-            GetCountParams { user_id: &user_id, service_id: params.service_id, resource_type: params.resource_type },
-            &mut *database_client
-        ).await;
-
         let page = UserResourcePermissionPage {
             page_number: params.page_number.clone(),
-            total_page_count,
-            permissions
+            permissions: if permissions.len() == 0 { None } else { Some(permissions) }
         };
         
         Ok(page)

@@ -31,7 +31,6 @@ pub async fn controller(
 
     response.partialize_ok(
         query.get_page_number.unwrap_or(true),
-        query.get_total_page_count.unwrap_or(true),
         query.get_id.unwrap_or(true),
         query.get_login.unwrap_or(true),
         query.get_password_hash.unwrap_or(true)
@@ -50,7 +49,6 @@ struct Path {
 struct Query {
     page_number: Option<u32>,
     get_page_number: Option<bool>,
-    get_total_page_count: Option<bool>,
     get_id: Option<bool>,
     get_login: Option<bool>,
     get_password_hash: Option<bool>

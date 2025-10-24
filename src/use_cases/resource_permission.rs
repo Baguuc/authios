@@ -105,10 +105,7 @@ impl ResourcePermissionUseCase {
         database_client: A
     ) -> Result<crate::models::UsersPage, crate::errors::use_case::ResourcePermissionListUsersError> {
         use crate::repositories::UserResourcePermissionRepository;
-        use crate::params::repository::{
-            UserResourcePermissionListUsersParams as ListParams,
-            UserResourcePermissionGetUsersPageCountParams as GetCountParams
-        };
+        use crate::params::repository::UserResourcePermissionListUsersParams as ListParams;
         use crate::errors::use_case::ResourcePermissionListUsersError as Error;
         use crate::models::UsersPage;
 
@@ -125,15 +122,9 @@ impl ResourcePermissionUseCase {
             &mut *database_client
         ).await;
 
-        let total_page_count = UserResourcePermissionRepository::get_users_page_count(
-            GetCountParams { service_id: params.service_id, resource_type: params.resource_type, resource_id: params.resource_id },
-            &mut *database_client
-        ).await;
-
         let page = UsersPage {
             page_number: params.page_number.clone(),
-            total_page_count,
-            users
+            users: if users.len() == 0 { None } else { Some(users) }
         };
 
         Ok(page)

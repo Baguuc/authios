@@ -2,7 +2,7 @@
 ///
 #[derive(serde::Serialize, serde::Deserialize)]
 pub struct UsersPage { 
-    pub total_page_count: u32,
     pub page_number: u32,
-    pub users: Vec<crate::models::User>
+    /// when None it means that the page is too big
+    pub users: Option<Vec<crate::models::User>>
 }

@@ -11,7 +11,7 @@ impl SpecificUserUseCase {
     ///    postgres database
     ///
     /// ### Return type
-    /// Returns result with either the list of fetched permissions or error of type
+    /// Returns result with either a page of fetched permissions or error of type
     /// [crate::errors::use_case::SpecificUserListResourcePermissionsError] inside.
     /// 
     pub async fn list_resource_permissions<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
@@ -25,7 +25,6 @@ impl SpecificUserUseCase {
         };
         use crate::params::repository::{
             UserResourcePermissionListParams as ListParams,
-            UserResourcePermissionGetPageCountParams as GetCountParams,
             UserRetrieveParams
         };
         use crate::errors::use_case::SpecificUserListResourcePermissionsError as Error;
@@ -52,16 +51,10 @@ impl SpecificUserUseCase {
             ListParams { user_id: params.id, service_id: params.service_id, resource_type: params.resource_type, page_number: &Some(params.page_number.clone()) },
             &mut *database_client
         ).await;
-
-        let total_page_count = UserResourcePermissionRepository::get_page_count(
-            GetCountParams { user_id: params.id, service_id: params.service_id, resource_type: params.resource_type },
-            &mut *database_client
-        ).await;
-
+        
         let page = UserResourcePermissionPage {
             page_number: params.page_number.clone(),
-            total_page_count,
-            permissions
+            permissions: if permissions.len() == 0 { None } else { Some(permissions) }
         };
         
         Ok(page)

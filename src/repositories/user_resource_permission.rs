@@ -55,60 +55,6 @@ impl UserResourcePermissionRepository {
     }
     
     /// ### Description
-    /// Get number of pages of resource permissions the user is assigned.
-    /// Designed for use with pagination.
-    ///
-    /// ### Arguments
-    /// 1. params: [crate::params::repository::UserResourcePermissionCountEntriesParams] - params for the
-    ///    operation
-    /// 2. database_client: [sqlx::Acquire] - the sqlx client connected to
-    ///    postgres database
-    /// 
-    /// ### Return type
-    /// returns number of all pages matching criteria for pagination.
-    ///
-    pub async fn get_page_count<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
-        params: crate::params::repository::UserResourcePermissionGetPageCountParams<'a>,
-        database_client: A
-    ) -> u32 {
-        let mut database_client = database_client.acquire()
-            .await
-            .unwrap();
-
-        let sql = "SELECT CAST(COUNT(*) AS INTEGER) as num_rows FROM (SELECT
-            rp.service_id,
-            rp.resource_type,
-            urp.resource_id,
-            ARRAY_REMOVE(ARRAY_AGG(rp.permission_name), NULL) AS permissions
-        FROM
-          user_resource_permissions urp
-        INNER JOIN
-          resource_permissions rp
-        ON
-            urp.resource_permission_id = rp.id
-        WHERE 
-            urp.user_id = $1 AND
-            rp.service_id = $2 AND
-            rp.resource_type = $3
-        GROUP BY rp.service_id, rp.resource_type, urp.resource_id);";
-        
-        let result: (i32,) = sqlx::query_as(sql)
-            .bind(params.user_id)
-            .bind(params.service_id)
-            .bind(params.resource_type)
-            .fetch_one(&mut *database_client)
-            .await
-            .unwrap();
-        let num_rows = result.0 as u32;
-
-        if num_rows % 5 == 0 {
-            return num_rows / PAGE_SIZE as u32;
-        } else {
-            return (num_rows / PAGE_SIZE as u32)+1;
-        }
-    }
-    
-    /// ### Description
     /// list users that have any permission to a particular resource
     ///
     /// ### Arguments
@@ -159,62 +105,6 @@ impl UserResourcePermissionRepository {
             .fetch_all(&mut *database_client)
             .await
             .unwrap_or(vec![])
-    }
-    
-    /// ### Description
-    /// get number of pages for list_users method
-    /// 
-    /// ### Arguments
-    /// 1. params: [crate::params::repository::UserResourcePermissionGetUsersPageCountParams] - params for the
-    ///    operation
-    /// 2. database_client: [sqlx::Acquire] - the sqlx client connected to
-    ///    postgres database
-    /// 
-    /// ### Return type
-    /// Returns a number indicating how much pages are for the query 
-    ///
-    pub async fn get_users_page_count<'a, A: sqlx::Acquire<'a, Database = sqlx::Postgres>>(
-        params: crate::params::repository::UserResourcePermissionGetUsersPageCountParams<'a>,
-        database_client: A
-    ) -> u32 {
-        let mut database_client = database_client.acquire()
-            .await
-            .unwrap();
-
-        let sql = "SELECT CAST(COUNT(*) AS INTEGER) as num_rows FROM (SELECT
-          u.id,
-          u.login,
-          u.password_hash
-        FROM
-          user_resource_permissions urp
-        INNER JOIN
-          resource_permissions rp
-        ON
-          urp.resource_permission_id = rp.id
-        INNER JOIN
-        users u
-        ON
-        urp.user_id = u.id
-        WHERE 
-          rp.service_id = $1 AND
-          rp.resource_type = $2 AND
-          urp.resource_id = $3
-        GROUP BY u.id, u.login, u.password_hash);";
-        
-        let result: (i32,) = sqlx::query_as(sql)
-            .bind(params.service_id)
-            .bind(params.resource_type)
-            .bind(params.resource_id)
-            .fetch_one(&mut *database_client)
-            .await
-            .unwrap();
-        let num_rows = result.0 as u32;
-
-        if num_rows % 5 == 0 {
-            return num_rows / PAGE_SIZE as u32;
-        } else {
-            return (num_rows / PAGE_SIZE as u32)+1;
-        }
     }
     
     /// ### Description

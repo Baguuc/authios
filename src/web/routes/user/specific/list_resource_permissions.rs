@@ -31,7 +31,6 @@ pub async fn controller(
 
     response.partialize_ok(
         query.get_page_number.unwrap_or(true),
-        query.get_total_page_count.unwrap_or(true),
         query.get_service_id.unwrap_or(true),
         query.get_resource_type.unwrap_or(true),
         query.get_resource_id.unwrap_or(true),
@@ -51,7 +50,6 @@ struct Path {
 struct Query {
     page_number: Option<u32>,
     get_page_number: Option<bool>,
-    get_total_page_count: Option<bool>,
     get_service_id: Option<bool>,
     get_resource_type: Option<bool>,
     get_resource_id: Option<bool>,

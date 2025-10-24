@@ -7,7 +7,6 @@ pub enum ResourcePermissionListUsersResponse {
 impl ResourcePermissionListUsersResponse { pub fn partialize_ok(
         self: Self,
         save_page_number: bool,
-        save_total_page_count: bool,
         save_id: bool,
         save_login: bool,
         save_password_hash: bool
@@ -16,8 +15,8 @@ impl ResourcePermissionListUsersResponse { pub fn partialize_ok(
             Self::Ok(data) => {
                 // there is 5 entries max so we don't worry about performance and time of loop
                 // execution
-                let users = data.users.iter()
-                    .map(|e| {
+                let users = if let Some(users) = data.users {
+                    Some(users.iter().map(|e| {
                         UserData {         
                             id: if save_id 
                                 { e.id.clone() } else { None },
@@ -27,14 +26,14 @@ impl ResourcePermissionListUsersResponse { pub fn partialize_ok(
                                 { e.password_hash.clone() } else { None }
                         }
                     })
-                    .collect::<Vec<UserData>>();
+                    .collect::<Vec<UserData>>())
+                } else {
+                    None
+                };
 
                 let ok_data = OkData { 
                     page_number: if save_page_number
                         { data.page_number } else { None },
-                    total_page_count: if save_total_page_count
-                        { data.total_page_count } else { None },
-
                     users
                 };
 
@@ -53,8 +52,7 @@ impl From<Result<crate::models::UsersPage, crate::errors::use_case::ResourcePerm
             Ok(page) => {
                 Self::Ok(OkData {
                     page_number: Some(page.page_number),
-                    total_page_count: Some(page.total_page_count),
-                    users: page.users.iter().map(|e| e.into()).collect()
+                    users: if let Some(users) = page.users { Some(users.iter().map(|e| e.into()).collect()) } else { None }
                 })
             },
             Err(error) => match error {
@@ -72,7 +70,7 @@ impl Into<actix_web::HttpResponse> for ResourcePermissionListUsersResponse {
 
         match self {
             Self::Ok(data) => HttpResponse::Ok()
-                .json(json!({ "code": "ok", "list": data })),
+                .json(json!({ "code": "ok", "page": data })),
             
             Self::PermissionNotFound => HttpResponse::NotFound()
                 .json(json!({ "code": "permission_not_found" })),
@@ -87,8 +85,7 @@ impl Into<actix_web::HttpResponse> for ResourcePermissionListUsersResponse {
 #[derive(serde::Serialize)]
 pub struct OkData {
     page_number: Option<u32>,
-    total_page_count: Option<u32>,
-    users: Vec<UserData>
+    users: Option<Vec<UserData>>
 }
 
 #[serde_with::skip_serializing_none]
