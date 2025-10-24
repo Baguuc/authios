@@ -24,61 +24,34 @@ impl UserResourcePermissionRepository {
             .await
             .unwrap();
 
-        if let Some(page_number) = params.page_number {
-            let sql = "SELECT
-                rp.service_id,
-                rp.resource_type,
-                urp.resource_id,
-                ARRAY_REMOVE(ARRAY_AGG(rp.permission_name), NULL) AS permissions
-            FROM
-              user_resource_permissions urp
-            INNER JOIN
-              resource_permissions rp
-            ON
-                urp.resource_permission_id = rp.id
-            WHERE 
-                urp.user_id = $1 AND
-                rp.service_id = $2 AND
-                rp.resource_type = $3
-            GROUP BY rp.service_id, rp.resource_type, urp.resource_id
-            LIMIT $4
-            OFFSET $5;";
-            
-            sqlx::query_as(sql)
-                .bind(params.user_id)
-                .bind(params.service_id)
-                .bind(params.resource_type)
-                .bind(PAGE_SIZE as i32)
-                .bind((page_number*PAGE_SIZE as u32) as i32)
-                .fetch_all(&mut *database_client)
-                .await
-                .unwrap_or(vec![])
-        } else {
-            let sql = "SELECT
-                rp.service_id,
-                rp.resource_type,
-                urp.resource_id,
-                ARRAY_REMOVE(ARRAY_AGG(rp.permission_name), NULL) AS permissions
-            FROM
-              user_resource_permissions urp
-            INNER JOIN
-              resource_permissions rp
-            ON
-                urp.resource_permission_id = rp.id
-            WHERE 
-                urp.user_id = $1 AND
-                rp.service_id = $2 AND
-                rp.resource_type = $3
-            GROUP BY rp.service_id, rp.resource_type, urp.resource_id;";
-            
-            sqlx::query_as(sql)
-                .bind(params.user_id)
-                .bind(params.service_id)
-                .bind(params.resource_type)
-                .fetch_all(&mut *database_client)
-                .await
-                .unwrap_or(vec![])
-        }
+        let sql = "SELECT
+            rp.service_id,
+            rp.resource_type,
+            urp.resource_id,
+            ARRAY_REMOVE(ARRAY_AGG(rp.permission_name), NULL) AS permissions
+        FROM
+          user_resource_permissions urp
+        INNER JOIN
+          resource_permissions rp
+        ON
+            urp.resource_permission_id = rp.id
+        WHERE 
+            urp.user_id = $1 AND
+            rp.service_id = $2 AND
+            rp.resource_type = $3
+        GROUP BY rp.service_id, rp.resource_type, urp.resource_id
+        LIMIT $4
+        OFFSET $5;";
+        
+        sqlx::query_as(sql)
+            .bind(params.user_id)
+            .bind(params.service_id)
+            .bind(params.resource_type)
+            .bind(PAGE_SIZE as i32)
+            .bind((params.page_number.unwrap_or(0)*PAGE_SIZE as u32) as i32)
+            .fetch_all(&mut *database_client)
+            .await
+            .unwrap_or(vec![])
     }
     
     /// ### Description
